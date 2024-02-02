@@ -1,4 +1,5 @@
-import { BitmapLayer, CompositeLayer, TileLayer } from 'deck.gl';
+import { BitmapLayer, CompositeLayer, TerrainLayer, TileLayer } from 'deck.gl';
+import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import { USE_TERRAIN_3D } from 'src/utils/settings';
 

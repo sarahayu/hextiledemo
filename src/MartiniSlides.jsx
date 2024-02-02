@@ -1,13 +1,13 @@
-import { CompositeLayer, PolygonLayer } from 'deck.gl';
+import { CompositeLayer } from 'deck.gl';
 
-import SlideAverages from './slides/SlideAverages';
-import SlideDeliveries from './slides/SlideDeliveries';
-import SlideDemandIntro from './slides/SlideDemandIntro';
-import SlideDemandVsUnmet from './slides/SlideDemandVsUnmet';
-import SlideEndRandomized from './slides/SlideEndRandomized';
-import SlideOwners from './slides/SlideOwners';
-import SlideScenarioExplanations from './slides/SlideScenarioExplanations';
-import SlideTerrain from './slides/SlideTerrain';
+import SlideAverages from 'src/slides/SlideAverages';
+import SlideDeliveries from 'src/slides/SlideDeliveries';
+import SlideDemandIntro from 'src/slides/SlideDemandIntro';
+import SlideDemandVsUnmet from 'src/slides/SlideDemandVsUnmet';
+import SlideEndRandomized from 'src/slides/SlideEndRandomized';
+import SlideOwners from 'src/slides/SlideOwners';
+import SlideScenarioExplanations from 'src/slides/SlideScenarioExplanations';
+import SlideTerrain from 'src/slides/SlideTerrain';
 
 export default class MartiniSlides extends CompositeLayer {
   renderLayers() {

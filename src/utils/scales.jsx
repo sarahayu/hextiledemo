@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
-import { data } from './data';
-import { saturate } from './utils';
+import { temporalData } from 'src/utils/data';
+import { saturate } from 'src/utils/utils';
 
 const stepRes = 10;
 
@@ -8,7 +8,7 @@ const a = d3
   .scaleQuantize()
   .domain(
     d3.extent(
-      Object.values(Object.values(data).slice(-1)[0]).map(
+      Object.values(Object.values(temporalData).slice(-1)[0]).map(
         (d) => d['UnmetDemandBaselineAverage']
       )
     )
@@ -20,7 +20,7 @@ const b = d3
   .scaleQuantize()
   .domain(
     d3.extent(
-      Object.values(Object.values(data).slice(-1)[0]).map(
+      Object.values(Object.values(temporalData).slice(-1)[0]).map(
         (d) => d['DemandBaselineAverage']
       )
     )
@@ -32,7 +32,7 @@ const c = d3
   .scaleLinear()
   .domain(
     d3.extent(
-      Object.values(Object.values(data).slice(-1)[0]).map(
+      Object.values(Object.values(temporalData).slice(-1)[0]).map(
         (d) => d['DemandBaselineAverage'] + d['UnmetDemandBaselineAverage']
       )
     )

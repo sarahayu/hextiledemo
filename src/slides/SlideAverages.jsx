@@ -1,8 +1,8 @@
 import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
 import { CompositeLayer } from 'deck.gl';
-import SolidHexTileLayer from '../hextile/SolidHexTileLayer';
-import { colorInterpDemand, colorInterpUnmet } from '../utils/scales';
-import { inRange, USE_TERRAIN_3D } from '../utils/settings';
+import { colorInterpDemand, colorInterpUnmet } from 'src/utils/scales';
+import { inRange, USE_TERRAIN_3D } from 'src/utils/settings';
+import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 
 export default class SlideAverages extends CompositeLayer {
   initializeState() {
@@ -19,7 +19,7 @@ export default class SlideAverages extends CompositeLayer {
     });
   }
   updateState(params) {
-    const { props, oldProps, changeFlags, context } = params;
+    const { props, oldProps } = params;
 
     if (
       props.transitioning != oldProps.transitioning ||
@@ -37,7 +37,7 @@ export default class SlideAverages extends CompositeLayer {
     }
   }
   renderLayers() {
-    const { data, curRes, slide, transitioning } = this.props;
+    const { data, slide, transitioning } = this.props;
 
     return [
       new SolidHexTileLayer({

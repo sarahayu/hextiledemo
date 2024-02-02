@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { inRange } from '../utils/settings';
+import { inRange } from 'src/utils/settings';
 
 export default function useCounters({ slide }) {
   const [counter, setCounter] = useState(1026);

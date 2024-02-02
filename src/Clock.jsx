@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { colorDemand, colorGW, dateInterpIdx } from './utils/scales';
 import * as d3 from 'd3';
-import averageData from './assets/averages.json';
-import { saturate } from './utils/utils';
+import { useEffect, useRef } from 'react';
+import { averageData } from './utils/data';
+import { colorDemand, colorGW, dateInterpIdx } from 'src/utils/scales';
+import { saturate } from 'src/utils/utils';
 
 const gwUnsat = saturate({
   col: colorGW,

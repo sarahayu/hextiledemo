@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { dateInterpIdx } from '../utils/scales';
+import { dateInterpIdx } from 'src/utils/scales';
 import {
   COWS_OUT_VIEW_STATE,
   COWS_VIEW_STATE,
@@ -9,12 +9,9 @@ import {
   PROJ_OUT_VIEW_STATE,
   PROJ_VIEW_STATE,
   SETT_VIEW_STATE,
-} from '../utils/settings';
+} from 'src/utils/settings';
 
-export default function useCamera({
-  slide,
-  setCurScenario,
-}) {
+export default function useCamera({ slide, setCurScenario }) {
   const [curViewState, setCurViewState] = useState(INITIAL_VIEW_STATE);
   const [transitioning, setTransitioning] = useState(false);
 

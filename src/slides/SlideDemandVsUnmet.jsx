@@ -1,18 +1,18 @@
 import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
 import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer } from 'deck.gl';
-import AnimatedIconHexTileLayer from '../hextile/AnimatedIconHexTileLayer';
-import SolidHexTileLayer from '../hextile/SolidHexTileLayer';
+import AnimatedIconHexTileLayer from 'src/hextile/AnimatedIconHexTileLayer';
+import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import {
   colorInterpGW,
   valueInterpDemand,
   valueInterpUnmet,
-} from '../utils/scales';
-import { inRange, USE_TERRAIN_3D } from '../utils/settings';
+} from 'src/utils/scales';
+import { inRange, USE_TERRAIN_3D } from 'src/utils/settings';
 
 export default class SlideDemandVsUnmet extends CompositeLayer {
   renderLayers() {
-    const { data, curRes, slide, counter } = this.props;
+    const { data, slide, counter } = this.props;
 
     return [
       new SolidHexTileLayer({
@@ -43,13 +43,11 @@ export default class SlideDemandVsUnmet extends CompositeLayer {
         id: `UnmetDemandIcons1`,
         data,
         loaders: [OBJLoader],
-        mesh: './src/assets/drop.obj',
+        mesh: 'assets/drop.obj',
         raised: true,
         extruded: false,
 
-        getColor: inRange(slide, 2, 3)
-          ? (d) => [255, 130, 35]
-          : (d) => [255, 130, 35],
+        getColor: inRange(slide, 2, 3) ? [255, 130, 35] : [255, 130, 35],
         getValue:
           slide == 2 || slide == 5
             ? (d) => 0
@@ -73,13 +71,11 @@ export default class SlideDemandVsUnmet extends CompositeLayer {
         id: `UnmetDemandIcons2`,
         data,
         loaders: [OBJLoader],
-        mesh: './src/assets/drop.obj',
+        mesh: 'assets/drop.obj',
         raised: true,
         extruded: false,
 
-        getColor: inRange(slide, 4, 5)
-          ? (d) => [255, 130, 35]
-          : (d) => [255, 130, 35],
+        getColor: inRange(slide, 4, 5) ? [255, 130, 35] : [255, 130, 35],
         getValue:
           slide == 4 || slide == 7
             ? (d) => 0

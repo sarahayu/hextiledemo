@@ -1,7 +1,7 @@
 import React from 'react';
-import Card from './Card';
-import Clock from './Clock';
-import { inRange, SCENARIO_LABELS } from './utils/settings';
+import Card from 'src/Card';
+import Clock from 'src/Clock';
+import { inRange, SCENARIO_LABELS } from 'src/utils/settings';
 
 export default function MainGUI({
   slide,

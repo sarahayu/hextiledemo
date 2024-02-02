@@ -2,7 +2,7 @@ import { CompositeLayer, SolidPolygonLayer } from 'deck.gl';
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';
 import { lerp } from '@math.gl/core';
-import { resScale } from '../utils/scales';
+import { resScale } from 'src/utils/scales';
 
 function scaleBounds(hexId, paths, value = 1) {
   // if(!outside) return
@@ -53,7 +53,7 @@ export default class SolidHexTileLayer extends CompositeLayer {
   }
 
   createPolygons() {
-    console.log('updating SolidHexTile polygons');
+    // console.log('updating SolidHexTile polygons');
     const { lastResolution } = this.state;
 
     const polygons = [];
@@ -103,7 +103,6 @@ export default class SolidHexTileLayer extends CompositeLayer {
   updateState(params) {
     const { resRange, lastResolution } = this.state;
     const { props, oldProps, changeFlags, context } = params;
-    // const sup = super.shouldUpdateState(params);
 
     if (
       props.getElevation != oldProps.getElevation ||

@@ -1,18 +1,18 @@
 import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
 import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer } from 'deck.gl';
-import AnimatedIconHexTileLayer from '../hextile/AnimatedIconHexTileLayer';
-import SolidHexTileLayer from '../hextile/SolidHexTileLayer';
+import AnimatedIconHexTileLayer from 'src/hextile/AnimatedIconHexTileLayer';
+import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import {
   colorInterpDifference,
   colorInterpGW,
   valueInterpUnmet,
-} from '../utils/scales';
-import { inRange, SCENARIOS, USE_TERRAIN_3D } from '../utils/settings';
+} from 'src/utils/scales';
+import { inRange, SCENARIOS, USE_TERRAIN_3D } from 'src/utils/settings';
 
 export default class SlideScenarioExplanations extends CompositeLayer {
   renderLayers() {
-    const { data, curRes, slide, curScenario, cycler } = this.props;
+    const { data, slide, curScenario, cycler } = this.props;
 
     return [
       new SolidHexTileLayer({
@@ -44,7 +44,7 @@ export default class SlideScenarioExplanations extends CompositeLayer {
         id: `ScenarioUnmet`,
         data,
         loaders: [OBJLoader],
-        mesh: './src/assets/drop.obj',
+        mesh: 'assets/drop.obj',
         raised: true,
         extruded: false,
 
@@ -95,7 +95,7 @@ export default class SlideScenarioExplanations extends CompositeLayer {
         id: `ScenarioUnmet1197`,
         data,
         loaders: [OBJLoader],
-        mesh: './src/assets/drop.obj',
+        mesh: 'assets/drop.obj',
         raised: true,
         extruded: false,
 

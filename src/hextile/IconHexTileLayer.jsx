@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 import { CompositeLayer, SimpleMeshLayer } from 'deck.gl';
 import * as h3 from 'h3-js';
-import { resScale } from '../utils/scales';
-import { FORMATIONS } from '../utils/utils';
+import { resScale } from 'src/utils/scales';
+import { FORMATIONS } from 'src/utils/utils';
 
 const formationInterp = d3
   .scaleQuantize()
@@ -33,7 +33,7 @@ export default class IconHexTileLayer extends CompositeLayer {
   }
 
   createPolygons() {
-    console.log('updating IconHexTile polygons');
+    // console.log('updating IconHexTile polygons');
     const { hextiles, lastResolution } = this.state;
 
     const data = [];
@@ -82,13 +82,11 @@ export default class IconHexTileLayer extends CompositeLayer {
   updateState(params) {
     const { resRange, lastResolution } = this.state;
     const { props, oldProps, changeFlags, context } = params;
-    // const sup = super.shouldUpdateState(params);
 
     if (
       props.getElevation != oldProps.getElevation ||
       changeFlags.viewportChanged
     ) {
-      // console.log(props.getElevation, oldProps.getElevation);
       const curRes = d3.scaleQuantize().domain([0, 1]).range(resRange)(
         resScale(context.viewport.zoom)
       );

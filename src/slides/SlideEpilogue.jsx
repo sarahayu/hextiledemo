@@ -1,16 +1,16 @@
 import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
 import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer } from 'deck.gl';
-import IconHexTileLayer from '../hextile/IconHexTileLayer';
-import SolidHexTileLayer from '../hextile/SolidHexTileLayer';
+import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
+import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import {
   colorInterpDifference,
   colorInterpGW,
   valueInterpDemand,
   valueInterpUnmet,
-} from '../utils/scales';
-import { SCENARIOS, USE_TERRAIN_3D } from '../utils/settings';
-import { dataFilter } from '../utils/utils';
+} from 'src/utils/scales';
+import { SCENARIOS, USE_TERRAIN_3D } from 'src/utils/settings';
+import { dataFilter } from 'src/utils/utils';
 
 export default class SlideEpilogue extends CompositeLayer {
   initializeState() {
@@ -92,7 +92,7 @@ export default class SlideEpilogue extends CompositeLayer {
         id: `ScenarioUnmetEpilogue`,
         data,
         loaders: [OBJLoader],
-        mesh: './src/assets/drop.obj',
+        mesh: 'assets/drop.obj',
         raised: true,
         extruded: false,
 
@@ -121,7 +121,7 @@ export default class SlideEpilogue extends CompositeLayer {
         id: `ScenarioDemandEpilogue`,
         data,
         loaders: [OBJLoader],
-        mesh: './src/assets/drop.obj',
+        mesh: 'assets/drop.obj',
         raised: true,
         extruded: false,
 
@@ -150,10 +150,10 @@ export default class SlideEpilogue extends CompositeLayer {
         id: `SettlementIconsEpilogue`,
         data: this.state.data0,
         loaders: [OBJLoader],
-        mesh: './src/assets/dam.obj',
+        mesh: 'assets/dam.obj',
         raised: false,
 
-        getColor: (d) => [255, 127, 206],
+        getColor: [255, 127, 206],
         sizeScale: 0.8 * 500,
         visible: displayLandUse && isEpilogue,
         opacity: 1,
@@ -174,10 +174,10 @@ export default class SlideEpilogue extends CompositeLayer {
         id: `ExhangeIconsEpilogue`,
         data: this.state.data1,
         loaders: [OBJLoader],
-        mesh: './src/assets/cow.obj',
+        mesh: 'assets/cow.obj',
         raised: false,
 
-        getColor: (d) => [255, 127, 206],
+        getColor: [255, 127, 206],
         sizeScale: 0.8 * 550,
         visible: displayLandUse && isEpilogue,
         opacity: 1,
@@ -198,10 +198,10 @@ export default class SlideEpilogue extends CompositeLayer {
         id: `ProjectIconsEpilogue`,
         data: this.state.data2,
         loaders: [OBJLoader],
-        mesh: './src/assets/project.obj',
+        mesh: 'assets/project.obj',
         raised: false,
 
-        getColor: (d) => [255, 127, 206],
+        getColor: [255, 127, 206],
         sizeScale: 0.8 * 180,
         visible: displayLandUse && isEpilogue,
         opacity: 1,
@@ -222,10 +222,10 @@ export default class SlideEpilogue extends CompositeLayer {
         id: `NonProjectIconsEpilogue`,
         data: this.state.data3,
         loaders: [OBJLoader],
-        mesh: './src/assets/nonproject.obj',
+        mesh: 'assets/nonproject.obj',
         raised: false,
 
-        getColor: (d) => [255, 127, 206],
+        getColor: [255, 127, 206],
         sizeScale: 0.8 * 140,
         visible: displayLandUse && isEpilogue,
         opacity: 1,

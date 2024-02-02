@@ -4,8 +4,8 @@ import { Map } from 'react-map-gl';
 
 import DeckGL from '@deck.gl/react';
 
-import mapStyle from './assets/style.json';
-import { LIGHTING } from './utils/settings';
+import mapStyle from 'src/assets/style.json';
+import { LIGHTING } from 'src/utils/settings';
 
 export default function WaterDeckGL({ layers, curViewState, getTooltip }) {
   return (

@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
-import { dateInterpIdx } from '../utils/scales';
+import { dateInterpIdx } from 'src/utils/scales';
 import {
   HOLDERS,
   inRange,
   SCENARIOS,
   SCENARIO_LABELS,
-} from '../utils/settings';
+} from 'src/utils/settings';
 
 export default function useHexTooltip({
   slide,

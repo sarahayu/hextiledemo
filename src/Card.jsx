@@ -4,7 +4,7 @@ import {
   colorDiffHigh,
   colorDiffLow,
   colorUnmet,
-} from './utils/scales';
+} from 'src/utils/scales';
 
 const TEXT = {
   0: `This is California’s <b>Central Valley</b>, home to over 7 million people and 18% of California’s total population. (2020 US Census)`,

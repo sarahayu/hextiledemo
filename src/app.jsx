@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { data } from './utils/data';
+import { temporalData } from 'src/utils/data';
 
-import MartiniSlides from './MartiniSlides';
-import SlideEpilogue from './slides/SlideEpilogue';
-import WaterDeckGL from './WaterDeckGL';
+import MartiniSlides from 'src/MartiniSlides';
+import SlideEpilogue from 'src/slides/SlideEpilogue';
+import WaterDeckGL from 'src/WaterDeckGL';
 
-import MainGUI from './MainGUI';
-import SandboxGUI from './SandboxGUI';
+import MainGUI from 'src/MainGUI';
+import SandboxGUI from 'src/SandboxGUI';
 
-import useCamera from './hooks/useCamera';
-import useCounters from './hooks/useCounters';
-import useHexTooltip from './hooks/useHexTooltip';
-import useSandboxGUI from './hooks/useSandboxGUI';
+import useCamera from 'src/hooks/useCamera';
+import useCounters from 'src/hooks/useCounters';
+import useHexTooltip from 'src/hooks/useHexTooltip';
+import useSandboxGUI from 'src/hooks/useSandboxGUI';
 
 export default function App() {
   const [slide, setSlide] = useState(0);
   const [curScenario, setCurScenario] = useState(0);
 
   const curState = {
-    data,
+    data: temporalData,
     slide,
     setSlide,
     curScenario,

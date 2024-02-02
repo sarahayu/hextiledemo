@@ -1,21 +1,21 @@
 import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
 import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer } from 'deck.gl';
-import IconHexTileLayer from '../hextile/IconHexTileLayer';
-import SolidHexTileLayer from '../hextile/SolidHexTileLayer';
-import { colorInterpDifference, valueInterpUnmet } from '../utils/scales';
-import { inRange, SCENARIOS, USE_TERRAIN_3D } from '../utils/settings';
+import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
+import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
+import { colorInterpDifference, valueInterpUnmet } from 'src/utils/scales';
+import { inRange, SCENARIOS, USE_TERRAIN_3D } from 'src/utils/settings';
 
 export default class SlideEndRandomized extends CompositeLayer {
   renderLayers() {
-    const { data, curRes, slide, cycler } = this.props;
+    const { data, slide, cycler } = this.props;
 
     return [
       new IconHexTileLayer({
         id: `ScenarioUnmetRandomized`,
         data,
         loaders: [OBJLoader],
-        mesh: './src/assets/drop.obj',
+        mesh: 'assets/drop.obj',
         raised: true,
         extruded: false,
 

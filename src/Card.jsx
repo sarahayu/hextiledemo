@@ -11,7 +11,7 @@ const TEXT = {
   1: `We have lots of demand that tends to cycle through highs and lows depending on the time of the year, peaking at around July. Each drop that you see represents a unit of <b>demand</b> for water.`,
   2: `However, our groundwater supply stays consistent throughout the year, and usually cannot keep up during peak demands.`,
   3: `This leads to unmet demand. For example, take May 2007. This is the demand of that month.`,
-  4: `As you can see, not everyone will get their demand. Notice anything?`,
+  4: `This is unmet demand. As you can see, not everyone will get their demand. Notice anything?`,
   5: `Let’s try another timestep. This is water demand from July 2021.`,
   6: `This is unmet demand.`,
   7: `This is the average over 100 years. We can see that the areas of <b style="color: rgb(${colorUnmet});">unmet demand</b> does not necessarily correspond with areas of <b style="color: rgb(${colorDemand});">demand</b>.`,

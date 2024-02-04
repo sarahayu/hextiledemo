@@ -36,7 +36,7 @@ export default function MainGUI({
           dataset={slide == 2 ? 'averageGroundwater' : 'averageDemandBaseline'}
         />
       )}
-      {slide < 22 && (
+      {/* {slide < 22 && (
         <button
           onClick={() => {
             setSlide((s) => s + 1);
@@ -55,7 +55,7 @@ export default function MainGUI({
         >
           {'\u27E8'}
         </button>
-      )}
+      )} */}
       {inRange(slide, 15, 21) && (
         <h1>
           {SCENARIO_LABELS[inRange(slide, 20, 21) ? cycler % 3 : curScenario]}

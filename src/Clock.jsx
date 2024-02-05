@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
 import { averageData } from './utils/data';
-import { colorDemand, colorGW, dateInterpIdx } from 'src/utils/scales';
+import { colorDemandAverage, colorGW, dateInterpIdx } from 'src/utils/scales';
 import { saturate } from 'src/utils/utils';
 
 const gwUnsat = saturate({
@@ -14,11 +14,11 @@ const gwSat = saturate({
   brightness: 0.5,
 });
 const demandUnsat = saturate({
-  col: colorDemand,
+  col: colorDemandAverage,
   saturation: 0.5,
 });
 const demandSat = saturate({
-  col: colorDemand,
+  col: colorDemandAverage,
   saturation: 0.5,
   brightness: 0.5,
 });

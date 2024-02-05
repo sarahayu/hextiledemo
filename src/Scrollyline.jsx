@@ -6,7 +6,7 @@ import mapStyle from 'src/assets/style.json';
 
 import { useState } from 'react';
 
-import { temporalData } from 'src/utils/data';
+import { temporalDataHex } from 'src/utils/data';
 
 import MartiniSlides from 'src/MartiniSlides';
 import SlideEpilogue from 'src/slides/SlideEpilogue';
@@ -45,7 +45,7 @@ export default function Scrollyline() {
   }, []);
 
   const curState = {
-    data: temporalData,
+    data: temporalDataHex,
     slide,
     setSlide,
     curScenario,
@@ -95,7 +95,7 @@ export default function Scrollyline() {
       <div
         className="scroll-indic"
         style={{
-          transform: `scaleY(${
+          transform: `translateY(${
             ((scrollIdx % scrollMult) / scrollMult) * 100
           }%)`,
         }}

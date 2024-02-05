@@ -111,13 +111,19 @@ h1 {
 }
 
 .scroll-indic {
-  top: 0;
+  bottom: 100%;
   left: 0;
-  width: 5px;
+  width: 15px;
   height: 100%;
   position: absolute;
   background-color: hsl(208, 100%, 40%);
   opacity: 80%;
-  /* transform: scaleY(50%); */
+  border-radius: 0 0 100vw 100vw;
   transform-origin: top;
+}
+
+.deck-tooltip {
+  transform: translate(1rem, 1rem) !important;
+  z-index: 10000 !important;
+  background-color: rgba(41, 50, 60, 0.95);
 }

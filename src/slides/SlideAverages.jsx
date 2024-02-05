@@ -1,6 +1,9 @@
 import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
 import { CompositeLayer } from 'deck.gl';
-import { colorInterpDemand, colorInterpUnmet } from 'src/utils/scales';
+import {
+  colorInterpDemandAverage,
+  colorInterpUnmetAverage,
+} from 'src/utils/scales';
 import { inRange, USE_TERRAIN_3D } from 'src/utils/settings';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 
@@ -50,7 +53,7 @@ export default class SlideAverages extends CompositeLayer {
         getElevation: this.state.getElevationFn,
         raised: false,
         getFillColor: (d) =>
-          colorInterpDemand(d.properties.DemandBaselineAverage),
+          colorInterpDemandAverage(d.properties.DemandBaselineAverage),
         visible: inRange(slide, 6, 11),
         opacity: slide >= 7 ? 1.0 : 0,
         transitions: {
@@ -73,7 +76,7 @@ export default class SlideAverages extends CompositeLayer {
         getElevation: this.state.getElevationFn,
         raised: false,
         getFillColor: (d) =>
-          colorInterpUnmet(d.properties.UnmetDemandBaselineAverage),
+          colorInterpUnmetAverage(d.properties.UnmetDemandBaselineAverage),
         visible: inRange(slide, 6, 11),
         opacity: slide >= 7 ? 1 : 0,
         transitions: {

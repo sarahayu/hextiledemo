@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { temporalData } from 'src/utils/data';
+import { temporalDataHex } from 'src/utils/data';
 import { saturate } from 'src/utils/utils';
 
 const stepRes = 10;
@@ -8,7 +8,7 @@ const a = d3
   .scaleQuantize()
   .domain(
     d3.extent(
-      Object.values(Object.values(temporalData).slice(-1)[0]).map(
+      Object.values(Object.values(temporalDataHex).slice(-1)[0]).map(
         (d) => d['UnmetDemandBaselineAverage']
       )
     )
@@ -20,7 +20,7 @@ const b = d3
   .scaleQuantize()
   .domain(
     d3.extent(
-      Object.values(Object.values(temporalData).slice(-1)[0]).map(
+      Object.values(Object.values(temporalDataHex).slice(-1)[0]).map(
         (d) => d['DemandBaselineAverage']
       )
     )
@@ -32,7 +32,7 @@ const c = d3
   .scaleLinear()
   .domain(
     d3.extent(
-      Object.values(Object.values(temporalData).slice(-1)[0]).map(
+      Object.values(Object.values(temporalDataHex).slice(-1)[0]).map(
         (d) => d['DemandBaselineAverage'] + d['UnmetDemandBaselineAverage']
       )
     )
@@ -85,6 +85,41 @@ export const valueInterpDemand = d3
   .range([0, 1])
   .clamp(true);
 
+const w = d3
+  .scaleQuantize()
+  .domain([-150, 0])
+  .range(d3.range(1, -0.001, -1 / stepRes));
+
+const x = d3
+  .scaleQuantize()
+  .domain([0, 150])
+  .range(d3.range(0, 1.001, 1 / stepRes));
+
+export const colorInterpUnmet = (val) => [
+  ...saturate({
+    col: d3
+      .interpolateOranges(w(val))
+      .replace(/[^\d,]/g, '')
+      .split(',')
+      .map((d) => Number(d)),
+    saturation: 2,
+  }),
+  w(val) < 1 / stepRes ? 0 : 255,
+];
+
+export const colorInterpDemand = (val) => [
+  ...saturate({
+    col: d3
+      .interpolateOranges(x(val))
+      .replace(/[^\d,]/g, '')
+      .split(',')
+      .map((d) => Number(d)),
+    saturation: 2,
+    // brightness: 1.3,
+  }),
+  x(val) < 1 / stepRes ? 0 : 255,
+];
+
 export const dateInterpIdx = d3
   .scaleTime()
   .domain([new Date('10/31/1921'), new Date('9/30/2021')])
@@ -96,10 +131,10 @@ export const resScale = d3
   .range([0, 1])
   .clamp(true);
 
-export const colorInterpUnmet = (val) => [
+export const colorInterpUnmetAverage = (val) => [
   ...saturate({
     col: d3
-      .interpolateGreys(a(val))
+      .interpolateReds(a(val))
       .replace(/[^\d,]/g, '')
       .split(',')
       .map((d) => Number(d)),
@@ -108,7 +143,7 @@ export const colorInterpUnmet = (val) => [
   a(val) < 1 / stepRes ? 0 : 255,
 ];
 
-export const colorInterpDemand = (val) =>
+export const colorInterpDemandAverage = (val) =>
   saturate({
     col: d3
       .interpolateGreens(b(val))
@@ -132,9 +167,11 @@ export const colorInterpDiffDemand = (val) => [
   c(val) < 1 / stepRes ? 0 : 255,
 ];
 
-export const colorUnmet = colorInterpUnmet(a.invertExtent(0.5)[0]);
-export const colorDemand = saturate({
-  col: colorInterpDemand(b.invertExtent(0.5)[0]),
+export const colorUnmetAverage = colorInterpUnmetAverage(
+  a.invertExtent(0.5)[0]
+);
+export const colorDemandAverage = saturate({
+  col: colorInterpDemandAverage(b.invertExtent(0.5)[0]),
 });
 export const colorDiffDemand = colorInterpDiffDemand(c.invert(0.5));
 

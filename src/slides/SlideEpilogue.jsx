@@ -85,7 +85,7 @@ export default class SlideEpilogue extends CompositeLayer {
         opacity: 1.0,
         ...(USE_TERRAIN_3D ? { extensions: [new TerrainExtension()] } : {}),
         updateTriggers: {
-          getFillColor: [speedyCounter],
+          getFillColor: [speedyCounter, curScenario],
         },
       }),
       new IconHexTileLayer({
@@ -114,7 +114,7 @@ export default class SlideEpilogue extends CompositeLayer {
             }
           : {}),
         updateTriggers: {
-          getTranslation: [speedyCounter],
+          getTranslation: [speedyCounter, curScenario],
         },
       }),
       new IconHexTileLayer({
@@ -143,7 +143,7 @@ export default class SlideEpilogue extends CompositeLayer {
             }
           : {}),
         updateTriggers: {
-          getTranslation: [speedyCounter],
+          getTranslation: [speedyCounter, curScenario],
         },
       }),
       new IconHexTileLayer({

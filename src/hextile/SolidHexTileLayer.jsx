@@ -81,10 +81,12 @@ export default class SolidHexTileLayer extends CompositeLayer {
                 : this.props.getElevation,
             ])
           ),
+          hexId: hexId,
           properties: properts,
         });
       else
         polygons.push({
+          hexId: hexId,
           polygon: tilePolygon,
           properties: properts,
         });
@@ -145,10 +147,12 @@ export default class SolidHexTileLayer extends CompositeLayer {
             material: this.props.material,
             transitions: this.props.transitions,
             updateTriggers: this.props.updateTriggers,
+            onHover: this.props.onHover,
           },
           id: `${this.props.id}SolidHexTileLayer`,
           data: this.state.polygons,
           getPolygon: (d) => d.polygon,
+          onHover: this.props.onHover,
         })
       ),
     ];

@@ -107,6 +107,22 @@ export const colorInterpUnmet = (val) => [
   w(val) < 1 / stepRes ? 0 : 255,
 ];
 
+const q = d3.scaleLinear().domain([-150, 0]).range([1, 0]);
+
+export const colorInterpUnmetCont = (val) => [
+  ...saturate({
+    col: d3
+      .interpolateOranges(q(val))
+      .replace(/[^\d,]/g, '')
+      .split(',')
+      .map((d) => Number(d)),
+    saturation: 2,
+  }),
+  255,
+];
+
+export const heightInterpUnmet = (val) => d3.scaleLinear([100, 4090])(w(val));
+
 export const colorInterpDemand = (val) => [
   ...saturate({
     col: d3

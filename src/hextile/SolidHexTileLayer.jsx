@@ -153,6 +153,8 @@ export default class SolidHexTileLayer extends CompositeLayer {
           data: this.state.polygons,
           getPolygon: (d) => d.polygon,
           onHover: this.props.onHover,
+          pickable: this.props.pickable,
+          autoHighlight: this.props.autoHighlight,
         })
       ),
     ];

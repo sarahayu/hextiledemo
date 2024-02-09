@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from 'src/Card';
+import Card from 'src/scrollyline/Card';
 import Clock from 'src/Clock';
 import { inRange, SCENARIO_LABELS } from 'src/utils/settings';
 

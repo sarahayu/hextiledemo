@@ -8,17 +8,17 @@ import { useState } from 'react';
 
 import { temporalDataHex } from 'src/utils/data';
 
-import MartiniSlides from 'src/MartiniSlides';
-import SlideEpilogue from 'src/slides/SlideEpilogue';
+import MartiniSlides from 'src/scrollyline/MartiniSlides';
+import SlideEpilogue from 'src/scrollyline/slides/SlideEpilogue';
 
-import MainGUI from 'src/MainGUI';
-import SandboxGUI from 'src/SandboxGUI';
+import MainGUI from 'src/scrollyline/MainGUI';
+import SandboxGUI from 'src/scrollyline/SandboxGUI';
 
-import useCamera from 'src/hooks/useCamera';
-import useCounters from 'src/hooks/useCounters';
-import useHexTooltip from 'src/hooks/useHexTooltip';
-import useSandboxGUI from 'src/hooks/useSandboxGUI';
-import { LIGHTING } from './utils/settings';
+import useCamera from 'src/scrollyline/hooks/useCamera';
+import useCounters from 'src/scrollyline/hooks/useCounters';
+import useHexTooltip from 'src/scrollyline/hooks/useHexTooltip';
+import useSandboxGUI from 'src/scrollyline/hooks/useSandboxGUI';
+import { LIGHTING } from '../utils/settings';
 
 export default function Scrollyline() {
   const [slide, setSlide] = useState(0);

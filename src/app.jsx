@@ -2,8 +2,8 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Scrollyline from './Scrollyline';
-import Sandbox from './Sandbox';
+import Scrollyline from './scrollyline/Scrollyline';
+import Sandbox from './sandbox/Sandbox';
 
 const router = createBrowserRouter([
   {

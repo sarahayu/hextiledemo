@@ -56,5 +56,4 @@ export default class SlideTerrain extends CompositeLayer {
 SlideTerrain.layerName = 'SlideTerrain';
 SlideTerrain.defaultProps = {
   ...CompositeLayer.defaultProps,
-  // pickable: true,
 };

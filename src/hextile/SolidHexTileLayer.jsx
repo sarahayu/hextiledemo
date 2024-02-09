@@ -147,12 +147,10 @@ export default class SolidHexTileLayer extends CompositeLayer {
             material: this.props.material,
             transitions: this.props.transitions,
             updateTriggers: this.props.updateTriggers,
-            onHover: this.props.onHover,
           },
           id: `${this.props.id}SolidHexTileLayer`,
           data: this.state.polygons,
           getPolygon: (d) => d.polygon,
-          onHover: this.props.onHover,
           pickable: this.props.pickable,
           autoHighlight: this.props.autoHighlight,
         })
@@ -167,4 +165,5 @@ SolidHexTileLayer.defaultProps = {
   ...SolidPolygonLayer.defaultProps,
   thicknessRange: [0.7, 0.9],
   getValue: undefined,
+  raised: false,
 };

@@ -15,8 +15,6 @@ export default function useHexTooltip({
     ({ object }) => {
       if (!object) return;
 
-      // if (object.)
-
       const date = dateInterpIdx(speedyCounter);
       return (
         object && {

@@ -42,30 +42,19 @@ export default class SandboxSlide extends CompositeLayer {
       displayDemand,
       displayLandUse,
       displayDemAsRings,
-      hovHovHexArr,
-      setHovHovHexArr,
-      hovHex,
-      setHovHex,
-      curHex,
-      setCurHex,
-      clickHex,
-      setClickHex,
-      clickHex2,
-      setClickHex2,
-      hovHexArr,
-      setHovHexArr,
-      clickHexArr,
-      setClickHexArr,
+      hoveredGeoActive,
+      hoveredGeos,
+      clickedHex,
+      clickedGeoJSON,
+      clickedGeos,
     } = this.props;
 
     return [
       new GeoJsonLayer({
         id: 'GeoJsonExt',
-        data: clickHex,
+        data: clickedGeoJSON,
         opacity: 0.75,
-        filled: true,
         extruded: true,
-        // wireframe: true,
         getElevation: (d) =>
           heightInterpUnmet(
             curScenario > -1
@@ -73,7 +62,6 @@ export default class SandboxSlide extends CompositeLayer {
               : d.properties.UnmetDemandBaseline[speedyCounter]
           ),
         pickable: true,
-        // autoHighlight: true,
         getLineWidth: 100,
         getFillColor: (d) => {
           let fill = colorInterpUnmetCont(
@@ -86,7 +74,7 @@ export default class SandboxSlide extends CompositeLayer {
             fill = [255, 255, 255, 255];
           }
 
-          if (hovHovHexArr && hovHovHexArr.includes(d.properties.DU_ID)) {
+          if (d.properties.DU_ID == hoveredGeoActive) {
             const hlcol = [0 / 255, 0 / 255, 128 / 255, 128 / 255];
             return [
               (hlcol[0] * hlcol[3] + (fill[0] / 255) * (1 - hlcol[3])) * 255,
@@ -99,36 +87,23 @@ export default class SandboxSlide extends CompositeLayer {
           return fill;
         },
         updateTriggers: {
-          getFillColor: [curScenario, speedyCounter, hovHovHexArr, curScenario],
+          getFillColor: [curScenario, speedyCounter, hoveredGeoActive],
         },
       }),
       new GeoJsonLayer({
         id: 'GeoJsonGray',
         data: temporalDataGeo,
         opacity: 0.3,
-        stroked: true,
-        pickable: !curHex,
-        // autoHighlight: !curHex,
-        filled: true,
-        extruded: false,
-        // wireframe: true,
-        // getElevation: (f) => Math.sqrt(f.properties.valuePerSqm) * 10,
-        getLineWidth: 100,
+        stroked: false,
         getFillColor: (d) => {
-          if (!curHex && hovHexArr && hovHexArr.includes(d.properties.DU_ID)) {
-            return [100, 100, 100, 205 * hovHex[d.properties.DU_ID] + 50];
+          if (!clickedHex && d.properties.DU_ID in hoveredGeos) {
+            return [100, 100, 100, 205 * hoveredGeos[d.properties.DU_ID] + 50];
           }
           return [0, 0, 0, 0];
-          // const inter = intersect(h3ToFeature(hovHex), d.geometry);
-          // if (!inter) return [100, 100, 100, 0];
-          // const ar = area(intersect(h3ToFeature(hovHex), d.geometry)) / area(h3ToFeature(hovHex));
-          // // console.log(ar);
-          // return [50, 50, 50, 205 * ar + 50];
         },
-        getLineColor: [255, 255, 255, 0],
-        // pickable: true,
+        visible: !clickedHex,
         updateTriggers: {
-          getFillColor: [hovHexArr, clickHexArr, curHex],
+          getFillColor: [clickedHex, hoveredGeos],
         },
       }),
       new GeoJsonLayer({
@@ -136,28 +111,22 @@ export default class SandboxSlide extends CompositeLayer {
         data: {
           type: 'FeatureCollection',
           features: temporalDataGeo.features.filter(
-            (f) => clickHexArr && clickHexArr.includes(f.properties.DU_ID)
+            (f) => f.properties.DU_ID in clickedGeos
           ),
         },
         opacity: 0.3,
-        stroked: true,
         pickable: true,
-        // autoHighlight: true,
-        filled: true,
-        extruded: false,
-        // wireframe: true,
-        // getElevation: (f) => Math.sqrt(f.properties.valuePerSqm) * 10,
         getLineWidth: (d) =>
-          hovHovHexArr && hovHovHexArr.includes(d.properties.DU_ID) ? 100 : 20,
+          d.properties.DU_ID == hoveredGeoActive ? 100 : 20,
         getFillColor: (d) => {
-          if (hovHovHexArr && hovHovHexArr.includes(d.properties.DU_ID)) {
+          if (d.properties.DU_ID == hoveredGeoActive) {
             const hlcol = [0 / 255, 0 / 255, 128 / 255, 128 / 255];
             const fill = colorInterpUnmetCont(
               curScenario > -1
-                ? clickHex2[d.properties.DU_ID].UnmetDemand[
+                ? clickedGeos[d.properties.DU_ID].UnmetDemand[
                     SCENARIOS[curScenario]
                   ][speedyCounter]
-                : clickHex2[d.properties.DU_ID].UnmetDemandBaseline[
+                : clickedGeos[d.properties.DU_ID].UnmetDemandBaseline[
                     speedyCounter
                   ]
             );
@@ -168,57 +137,38 @@ export default class SandboxSlide extends CompositeLayer {
               (hlcol[3] * hlcol[3] + (fill[3] / 255) * (1 - hlcol[3])) * 255,
             ];
           }
-          if (clickHexArr && clickHexArr.includes(d.properties.DU_ID)) {
+          if (d.properties.DU_ID in clickedGeos) {
             return colorInterpUnmetCont(
               curScenario > -1
-                ? clickHex2[d.properties.DU_ID].UnmetDemand[
+                ? clickedGeos[d.properties.DU_ID].UnmetDemand[
                     SCENARIOS[curScenario]
                   ][speedyCounter]
-                : clickHex2[d.properties.DU_ID].UnmetDemandBaseline[
+                : clickedGeos[d.properties.DU_ID].UnmetDemandBaseline[
                     speedyCounter
                   ]
             );
           }
           return [0, 0, 0, 0];
-          // const inter = intersect(h3ToFeature(hovHex), d.geometry);
-          // if (!inter) return [100, 100, 100, 0];
-          // const ar = area(intersect(h3ToFeature(hovHex), d.geometry)) / area(h3ToFeature(hovHex));
-          // // console.log(ar);
-          // return [50, 50, 50, 205 * ar + 50];
         },
         getLineColor: [0, 0, 0],
-        // pickable: true,
         updateTriggers: {
-          getFillColor: [hovHexArr, clickHexArr, hovHovHexArr, curScenario],
-          getLineWidth: [hovHovHexArr],
+          getFillColor: [clickedGeos, hoveredGeoActive, curScenario],
+          getLineWidth: [hoveredGeoActive],
         },
       }),
       new SolidHexTileLayer({
-        id: `HoveringTilesEpilogue`,
+        id: `HoveringTiles`,
         data: data,
         thicknessRange: [0, 1],
-        filled: true,
-
-        extruded: false,
-        raised: false,
         getFillColor: [0, 0, 0, 0],
         ...(USE_TERRAIN_3D ? { extensions: [new TerrainExtension()] } : {}),
-        pickable: !curHex,
-        autoHighlight: !curHex,
-        // onHover: ({ object }) => {
-        //   if (!object) return setHovHex(null);
-        //   console.log('in solid');
-        //   return setHovHex(object.hexId);
-        // },
+        pickable: !clickedHex,
+        autoHighlight: !clickedHex,
       }),
       new SolidHexTileLayer({
-        id: `GroundwaterEpilogue`,
+        id: `Groundwater`,
         data,
         thicknessRange: [0, 1],
-        filled: true,
-
-        extruded: false,
-        raised: false,
         getFillColor: (d) =>
           colorInterpGW(d.properties.Groundwater[speedyCounter]),
         visible: displayGW,
@@ -229,13 +179,9 @@ export default class SandboxSlide extends CompositeLayer {
         },
       }),
       new SolidHexTileLayer({
-        id: `DifferenceEpilogue`,
+        id: `Difference`,
         data,
         thicknessRange: [0.5, 0.65],
-        filled: true,
-
-        extruded: false,
-        raised: false,
         getFillColor: (d) =>
           colorInterpDifference(
             curScenario < 0
@@ -255,10 +201,6 @@ export default class SandboxSlide extends CompositeLayer {
         id: `UnmetRings`,
         data,
         thicknessRange: [0.5, 0.65],
-        filled: true,
-
-        extruded: false,
-        raised: false,
         getFillColor: (d) =>
           colorInterpUnmet(
             curScenario > -1
@@ -276,10 +218,6 @@ export default class SandboxSlide extends CompositeLayer {
         id: `DemandRings`,
         data,
         thicknessRange: [0.5, 0.65],
-        filled: true,
-
-        extruded: false,
-        raised: false,
         getFillColor: (d) =>
           colorInterpDemand(
             curScenario > -1
@@ -294,13 +232,11 @@ export default class SandboxSlide extends CompositeLayer {
         },
       }),
       new IconHexTileLayer({
-        id: `ScenarioUnmetEpilogue`,
+        id: `ScenarioUnmet`,
         data,
         loaders: [OBJLoader],
         mesh: 'assets/drop.obj',
         raised: true,
-        extruded: false,
-
         getColor: [255, 130, 35],
         getValue: (d) =>
           valueInterpUnmet(
@@ -325,13 +261,11 @@ export default class SandboxSlide extends CompositeLayer {
         },
       }),
       new IconHexTileLayer({
-        id: `ScenarioDemandEpilogue`,
+        id: `ScenarioDemand`,
         data,
         loaders: [OBJLoader],
         mesh: 'assets/drop.obj',
         raised: true,
-        extruded: false,
-
         getColor: [255, 130, 35],
         getValue: (d) =>
           valueInterpDemand(
@@ -356,12 +290,10 @@ export default class SandboxSlide extends CompositeLayer {
         },
       }),
       new IconHexTileLayer({
-        id: `SettlementIconsEpilogue`,
+        id: `SettlementIcons`,
         data: this.state.data0,
         loaders: [OBJLoader],
         mesh: 'assets/dam.obj',
-        raised: false,
-
         getColor: [255, 127, 206],
         sizeScale: 0.8 * 500,
         visible: displayLandUse,
@@ -380,12 +312,10 @@ export default class SandboxSlide extends CompositeLayer {
         },
       }),
       new IconHexTileLayer({
-        id: `ExhangeIconsEpilogue`,
+        id: `ExhangeIcons`,
         data: this.state.data1,
         loaders: [OBJLoader],
         mesh: 'assets/cow.obj',
-        raised: false,
-
         getColor: [255, 127, 206],
         sizeScale: 0.8 * 550,
         visible: displayLandUse,
@@ -404,12 +334,10 @@ export default class SandboxSlide extends CompositeLayer {
         },
       }),
       new IconHexTileLayer({
-        id: `ProjectIconsEpilogue`,
+        id: `ProjectIcons`,
         data: this.state.data2,
         loaders: [OBJLoader],
         mesh: 'assets/project.obj',
-        raised: false,
-
         getColor: [255, 127, 206],
         sizeScale: 0.8 * 180,
         visible: displayLandUse,
@@ -428,11 +356,10 @@ export default class SandboxSlide extends CompositeLayer {
         },
       }),
       new IconHexTileLayer({
-        id: `NonProjectIconsEpilogue`,
+        id: `NonProjectIcons`,
         data: this.state.data3,
         loaders: [OBJLoader],
         mesh: 'assets/nonproject.obj',
-        raised: false,
 
         getColor: [255, 127, 206],
         sizeScale: 0.8 * 140,
@@ -458,5 +385,4 @@ export default class SandboxSlide extends CompositeLayer {
 SandboxSlide.layerName = 'SandboxSlide';
 SandboxSlide.defaultProps = {
   ...CompositeLayer.defaultProps,
-  // autoHighlight: true,
 };

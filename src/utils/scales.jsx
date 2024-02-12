@@ -90,6 +90,8 @@ const w = d3
   .domain([-150, 0])
   .range(d3.range(1, -0.001, -1 / stepRes));
 
+const ww = d3.scaleLinear().domain([-150, 0]).range([1, 0]);
+
 const x = d3
   .scaleQuantize()
   .domain([0, 150])
@@ -121,7 +123,7 @@ export const colorInterpUnmetCont = (val) => [
   255,
 ];
 
-export const heightInterpUnmet = (val) => d3.scaleLinear([100, 4090])(w(val));
+export const heightInterpUnmet = (val) => d3.scaleLinear([100, 4090])(ww(val));
 
 export const colorInterpDemand = (val) => [
   ...saturate({
@@ -143,7 +145,7 @@ export const dateInterpIdx = d3
 
 export const resScale = d3
   .scaleLinear()
-  .domain([7, 10])
+  .domain([7, 12])
   .range([0, 1])
   .clamp(true);
 
@@ -199,3 +201,9 @@ export const colorDiffHigh = colorInterpDifference(
 export const colorDiffLow = colorInterpDifference(
   p.invertExtent(d3.scaleQuantize().domain([0, 1]).range(p.range())(0.25))[1]
 );
+
+export const getMIVal = d3
+  .scaleLinear()
+  .domain([-100, 0])
+  .range([0.1, 1])
+  .clamp(true);

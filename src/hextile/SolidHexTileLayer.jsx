@@ -63,10 +63,18 @@ export default class SolidHexTileLayer extends CompositeLayer {
     Object.keys(resHex).forEach((hexId, i) => {
       let properts = resHex[hexId];
 
+      const inner = this.props.getValue
+        ? d3
+            .scaleLinear()
+            .domain([0, 1])
+            .range([
+              this.props.thicknessRange[1],
+              this.props.thicknessRange[0],
+            ])(this.props.getValue({ properties: properts }))
+        : this.props.thicknessRange[0];
+
       let tilePolygon = calcPolyBorder(hexId, [
-        this.props.getValue
-          ? 1 - this.props.getValue({ properties: properts })
-          : this.props.thicknessRange[0],
+        inner,
         this.props.thicknessRange[1],
       ]);
 
@@ -108,6 +116,7 @@ export default class SolidHexTileLayer extends CompositeLayer {
 
     if (
       props.getElevation != oldProps.getElevation ||
+      props.getValue != oldProps.getValue ||
       changeFlags.viewportChanged
     ) {
       const curRes = d3.scaleQuantize().domain([0, 1]).range(resRange)(
@@ -116,6 +125,7 @@ export default class SolidHexTileLayer extends CompositeLayer {
 
       if (
         curRes != lastResolution ||
+        props.getValue != oldProps.getValue ||
         props.getElevation != oldProps.getElevation
       ) {
         this.setState({

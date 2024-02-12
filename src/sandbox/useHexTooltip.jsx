@@ -61,6 +61,12 @@ export default function useHexTooltip({
             : object.properties.LandUse
         ]
       }</div>
+      <div><b>Moran's I (UnmetDemandBaseline)</b></div>
+      <div>${
+        object.properties.MUnmetDemandBaseline
+          ? object.properties.MUnmetDemandBaseline[speedyCounter]
+          : 'N/A'
+      }</div>
   `,
         }
       );

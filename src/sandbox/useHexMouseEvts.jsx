@@ -2,9 +2,7 @@ import React from 'react';
 
 import { useCallback, useState } from 'react';
 import { temporalDataGeo } from 'src/utils/data';
-import { default as turfArea } from '@turf/area';
-import booleanIntersects from '@turf/boolean-intersects';
-import intersect from '@turf/intersect';
+import * as turf from '@turf/turf';
 import { h3ToFeature } from 'geojson2h3';
 
 export default function useHexMouseEvts() {
@@ -41,10 +39,13 @@ export default function useHexMouseEvts() {
         const hoveredHexFeature = h3ToFeature(object.hexId);
         const hovereds = {};
         temporalDataGeo.features.forEach((f) => {
-          const intersectionFeature = intersect(hoveredHexFeature, f.geometry);
+          const intersectionFeature = turf.intersect(
+            hoveredHexFeature,
+            f.geometry
+          );
           if (!intersectionFeature) return;
           hovereds[f.properties.DU_ID] =
-            turfArea(intersectionFeature) / turfArea(hoveredHexFeature);
+            turf.area(intersectionFeature) / turf.area(hoveredHexFeature);
         });
         setHoveredGeos(hovereds);
         setHoveredHex(object.hexId);
@@ -82,10 +83,13 @@ export default function useHexMouseEvts() {
       };
 
       temporalDataGeo.features.forEach((f) => {
-        const intersectionFeature = intersect(hoveredHexFeature, f.geometry);
+        const intersectionFeature = turf.intersect(
+          hoveredHexFeature,
+          f.geometry
+        );
         if (!intersectionFeature) return;
         const area =
-          turfArea(intersectionFeature) / turfArea(hoveredHexFeature);
+          turf.area(intersectionFeature) / turf.area(hoveredHexFeature);
         clickedJSON.features.push({
           ...intersectionFeature,
           properties: { ...f.properties, area },
@@ -102,6 +106,7 @@ export default function useHexMouseEvts() {
   );
 
   return {
+    hoveredHex,
     clickedHex,
     hoveredGeos,
     clickedGeoJSON,

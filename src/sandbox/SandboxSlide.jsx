@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { colorInterpUnmetCont, heightInterpUnmet } from 'src/utils/scales';
+import {
+  colorInterpUnmetCont,
+  getMIVal,
+  heightInterpUnmet,
+} from 'src/utils/scales';
 import { SCENARIOS } from 'src/utils/settings';
 
 import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
@@ -42,6 +46,7 @@ export default class SandboxSlide extends CompositeLayer {
       displayDemand,
       displayLandUse,
       displayDemAsRings,
+      hoveredHex,
       hoveredGeoActive,
       hoveredGeos,
       clickedHex,
@@ -103,7 +108,7 @@ export default class SandboxSlide extends CompositeLayer {
         },
         visible: !clickedHex,
         updateTriggers: {
-          getFillColor: [clickedHex, hoveredGeos],
+          getFillColor: [clickedHex, hoveredHex],
         },
       }),
       new GeoJsonLayer({
@@ -152,7 +157,7 @@ export default class SandboxSlide extends CompositeLayer {
         },
         getLineColor: [0, 0, 0],
         updateTriggers: {
-          getFillColor: [clickedGeos, hoveredGeoActive, curScenario],
+          getFillColor: [clickedHex, hoveredGeoActive, curScenario],
           getLineWidth: [hoveredGeoActive],
         },
       }),
@@ -200,18 +205,25 @@ export default class SandboxSlide extends CompositeLayer {
       new SolidHexTileLayer({
         id: `UnmetRings`,
         data,
-        thicknessRange: [0.5, 0.65],
+        thicknessRange: [0.4, 0.65],
         getFillColor: (d) =>
           colorInterpUnmet(
             curScenario > -1
               ? d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
               : d.properties.UnmetDemandBaseline[speedyCounter]
           ),
+        getValue: (d) =>
+          getMIVal(
+            curScenario > -1
+              ? 1
+              : d.properties.MUnmetDemandBaseline[speedyCounter]
+          ),
         visible: displayUnmet && displayDemAsRings,
         opacity: 1.0,
         ...(USE_TERRAIN_3D ? { extensions: [new TerrainExtension()] } : {}),
         updateTriggers: {
           getFillColor: [curScenario, speedyCounter],
+          getValue: [curScenario, speedyCounter],
         },
       }),
       new SolidHexTileLayer({

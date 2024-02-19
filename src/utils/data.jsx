@@ -1,4 +1,4 @@
-import { dataFilter } from 'src/utils/utils';
+import { arrGroupBy, dataFilter } from 'src/utils/utils';
 
 export const temporalDataHex = dataFilter(
   await (await fetch('/assets/hex_5_6.json')).json(),
@@ -9,3 +9,8 @@ export const averageData = await (await fetch('/assets/averages.json')).json();
 export const temporalDataGeo = await (
   await fetch('/assets/demand_geo.json')
 ).json();
+
+export const temporalDataGeoByDUID = arrGroupBy(
+  temporalDataGeo.features,
+  (t) => t.properties.DU_ID
+);

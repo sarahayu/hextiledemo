@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useCallback, useState } from 'react';
-import { temporalDataGeo } from 'src/utils/data';
+import { temporalDataGeoByDUID } from 'src/utils/data';
 import * as turf from '@turf/turf';
 import { h3ToFeature } from 'geojson2h3';
 
@@ -9,12 +9,13 @@ export default function useHexMouseEvts() {
   const [hoveredHex, setHoveredHex] = useState(null);
   const [hoveredGeos, setHoveredGeos] = useState({});
   const [hoveredGeoActive, setHoveredGeoActive] = useState([]);
-  const [clickedHex, setClickedHex] = useState(null);
-  const [clickedGeoJSON, setClickedGeoJSON] = useState({
+  const [clickedHexes, setClickedHexes] = useState(null);
+  const [selectedGeoJSON, setSelectedGeoJSON] = useState({
     type: 'FeatureCollection',
     features: [],
   });
-  const [clickedGeos, setClickedGeos] = useState({});
+  const [selectedGeos, setSelectedGeos] = useState({});
+  const [selectionFinalized, setSelectionFinalized] = useState(false);
 
   const onHover = useCallback(
     ({ object }) => {
@@ -26,93 +27,108 @@ export default function useHexMouseEvts() {
         return;
       }
 
-      // hover geos
-      if (clickedHex) {
+      if (selectionFinalized) {
+        // hover geos
         setHoveredHex(null);
         setHoveredGeos({});
         setHoveredGeoActive(object.properties.DU_ID);
-        return true;
-      }
-
-      if (hoveredHex != object.hexId) {
+      } else {
         // hover hexes
         const hoveredHexFeature = h3ToFeature(object.hexId);
         const hovereds = {};
-        temporalDataGeo.features.forEach((f) => {
+        for (const duid of object.properties.GeoRgs) {
+          const f = temporalDataGeoByDUID[duid];
           const intersectionFeature = turf.intersect(
             hoveredHexFeature,
             f.geometry
           );
-          if (!intersectionFeature) return;
           hovereds[f.properties.DU_ID] =
             turf.area(intersectionFeature) / turf.area(hoveredHexFeature);
-        });
+        }
         setHoveredGeos(hovereds);
         setHoveredHex(object.hexId);
-
-        return true;
       }
+
+      return true;
     },
-    [clickedHex]
+    [clickedHexes, selectionFinalized]
   );
 
   const onClick = useCallback(
-    ({ object }) => {
+    ({ object }, evt) => {
       // unclick
       if (object.properties.DU_ID == hoveredGeoActive) {
-        setClickedGeoJSON({
+        setSelectedGeoJSON({
           type: 'FeatureCollection',
           features: [],
         });
-        setClickedGeos({});
-        setClickedHex(null);
+        setSelectedGeos({});
+        setClickedHexes({});
+        setSelectionFinalized(false);
         return true;
       }
 
-      // a hex has already been clicked previously
-      if (clickedHex) return;
+      // clicking additional hexes
+      if (evt.srcEvent.ctrlKey) {
+        setClickedHexes((c) => ({
+          ...c,
+          [object.hexId]: object.properties.GeoRgs,
+        }));
+        return true;
+      }
 
-      setClickedHex(object.hexId);
+      setSelectionFinalized(true);
+      setHoveredHex(null);
       setHoveredGeos({});
+      setHoveredGeoActive(object.properties.DU_ID);
 
-      const hoveredHexFeature = h3ToFeature(object.hexId);
-      const clickeds = {};
-      const clickedJSON = {
+      // TODO change clickedHexes to ref...
+      setClickedHexes(null);
+      // TODO: ...because of this
+      const clickedHexesCurrent = {
+        ...clickedHexes,
+        [object.hexId]: object.properties.GeoRgs,
+      };
+
+      const selecteds = {};
+      const selectedsJSON = {
         type: 'FeatureCollection',
         features: [],
       };
 
-      temporalDataGeo.features.forEach((f) => {
-        const intersectionFeature = turf.intersect(
-          hoveredHexFeature,
-          f.geometry
-        );
-        if (!intersectionFeature) return;
-        const area =
-          turf.area(intersectionFeature) / turf.area(hoveredHexFeature);
-        clickedJSON.features.push({
-          ...intersectionFeature,
-          properties: { ...f.properties, area },
-        });
-        clickeds[f.properties.DU_ID] = { ...f.properties, area };
-      });
+      for (const hid in clickedHexesCurrent) {
+        for (const duid of clickedHexesCurrent[hid]) {
+          const feat = temporalDataGeoByDUID[duid];
+          const hoveredHexFeature = h3ToFeature(hid);
+          const intersectionFeature = turf.intersect(
+            hoveredHexFeature,
+            feat.geometry
+          );
+          selectedsJSON.features.push({
+            ...intersectionFeature,
+            properties: { ...feat.properties },
+          });
+          selecteds[feat.properties.DU_ID] = { ...feat.properties };
+        }
+      }
 
-      setClickedGeos(clickeds);
-      setClickedGeoJSON(clickedJSON);
+      setSelectedGeos(selecteds);
+      setSelectedGeoJSON(selectedsJSON);
 
       return true;
     },
-    [clickedHex, hoveredGeoActive]
+    [clickedHexes, hoveredGeoActive, selectionFinalized]
   );
 
   return {
     hoveredHex,
-    clickedHex,
+    // clickedHexes,
     hoveredGeos,
-    clickedGeoJSON,
-    clickedGeos,
+    selectedGeoJSON,
+    selectedGeos,
     hoveredGeoActive,
     onHover,
     onClick,
+    selectionFinalized,
   };
 }

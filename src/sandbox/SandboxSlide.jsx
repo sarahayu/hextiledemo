@@ -49,15 +49,15 @@ export default class SandboxSlide extends CompositeLayer {
       hoveredHex,
       hoveredGeoActive,
       hoveredGeos,
-      clickedHex,
-      clickedGeoJSON,
-      clickedGeos,
+      selectedGeoJSON,
+      selectedGeos,
+      selectionFinalized,
     } = this.props;
 
     return [
       new GeoJsonLayer({
         id: 'GeoJsonExt',
-        data: clickedGeoJSON,
+        data: selectedGeoJSON,
         opacity: 0.75,
         extruded: true,
         getElevation: (d) =>
@@ -92,7 +92,12 @@ export default class SandboxSlide extends CompositeLayer {
           return fill;
         },
         updateTriggers: {
-          getFillColor: [curScenario, speedyCounter, hoveredGeoActive],
+          getFillColor: [
+            curScenario,
+            speedyCounter,
+            hoveredGeoActive,
+            selectionFinalized,
+          ],
         },
       }),
       new GeoJsonLayer({
@@ -101,14 +106,14 @@ export default class SandboxSlide extends CompositeLayer {
         opacity: 0.3,
         stroked: false,
         getFillColor: (d) => {
-          if (!clickedHex && d.properties.DU_ID in hoveredGeos) {
+          if (!selectionFinalized && d.properties.DU_ID in hoveredGeos) {
             return [100, 100, 100, 205 * hoveredGeos[d.properties.DU_ID] + 50];
           }
           return [0, 0, 0, 0];
         },
-        visible: !clickedHex,
+        visible: !selectionFinalized,
         updateTriggers: {
-          getFillColor: [clickedHex, hoveredHex],
+          getFillColor: [hoveredHex, selectionFinalized],
         },
       }),
       new GeoJsonLayer({
@@ -116,7 +121,7 @@ export default class SandboxSlide extends CompositeLayer {
         data: {
           type: 'FeatureCollection',
           features: temporalDataGeo.features.filter(
-            (f) => f.properties.DU_ID in clickedGeos
+            (f) => f.properties.DU_ID in selectedGeos
           ),
         },
         opacity: 0.3,
@@ -128,10 +133,10 @@ export default class SandboxSlide extends CompositeLayer {
             const hlcol = [0 / 255, 0 / 255, 128 / 255, 128 / 255];
             const fill = colorInterpUnmetCont(
               curScenario > -1
-                ? clickedGeos[d.properties.DU_ID].UnmetDemand[
+                ? selectedGeos[d.properties.DU_ID].UnmetDemand[
                     SCENARIOS[curScenario]
                   ][speedyCounter]
-                : clickedGeos[d.properties.DU_ID].UnmetDemandBaseline[
+                : selectedGeos[d.properties.DU_ID].UnmetDemandBaseline[
                     speedyCounter
                   ]
             );
@@ -142,13 +147,13 @@ export default class SandboxSlide extends CompositeLayer {
               (hlcol[3] * hlcol[3] + (fill[3] / 255) * (1 - hlcol[3])) * 255,
             ];
           }
-          if (d.properties.DU_ID in clickedGeos) {
+          if (d.properties.DU_ID in selectedGeos) {
             return colorInterpUnmetCont(
               curScenario > -1
-                ? clickedGeos[d.properties.DU_ID].UnmetDemand[
+                ? selectedGeos[d.properties.DU_ID].UnmetDemand[
                     SCENARIOS[curScenario]
                   ][speedyCounter]
-                : clickedGeos[d.properties.DU_ID].UnmetDemandBaseline[
+                : selectedGeos[d.properties.DU_ID].UnmetDemandBaseline[
                     speedyCounter
                   ]
             );
@@ -157,7 +162,7 @@ export default class SandboxSlide extends CompositeLayer {
         },
         getLineColor: [0, 0, 0],
         updateTriggers: {
-          getFillColor: [clickedHex, hoveredGeoActive, curScenario],
+          getFillColor: [hoveredGeoActive, curScenario, selectionFinalized],
           getLineWidth: [hoveredGeoActive],
         },
       }),
@@ -167,8 +172,8 @@ export default class SandboxSlide extends CompositeLayer {
         thicknessRange: [0, 1],
         getFillColor: [0, 0, 0, 0],
         ...(USE_TERRAIN_3D ? { extensions: [new TerrainExtension()] } : {}),
-        pickable: !clickedHex,
-        autoHighlight: !clickedHex,
+        pickable: !selectionFinalized,
+        autoHighlight: !selectionFinalized,
       }),
       new SolidHexTileLayer({
         id: `Groundwater`,

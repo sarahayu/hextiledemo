@@ -203,7 +203,6 @@ export const colorDiffLow = colorInterpDifference(
 );
 
 export const getMIVal = d3
-  .scaleLinear()
-  .domain([-100, 0])
-  .range([0.1, 1])
-  .clamp(true);
+  .scaleQuantize()
+  .domain([0, 650])
+  .range(d3.range(1, 0.001, -1 / stepRes));

@@ -123,6 +123,14 @@ export function extent2D(arrOfArr) {
   return d3.extent(flatten(arrOfArr.map((arr) => d3.extent(arr))));
 }
 
+// https://stackoverflow.com/a/34890276
+export function arrGroupBy(xs, key) {
+  return xs.reduce(function (rv, x) {
+    rv[key(x)] = x;
+    return rv;
+  }, {});
+}
+
 // prettier-ignore
 export const FORMATIONS = [
     /* none         */[[0, 0, -1], [-0.67, 0, -1], [0.67, 0, -1], [-0.33, 0.58, -1], [0.33, 0.58, -1], [-0.33, -0.58, -1], [0.33, -0.58, -1]],

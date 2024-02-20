@@ -127,3 +127,53 @@ h1 {
   z-index: 10000 !important;
   background-color: rgba(41, 50, 60, 0.95);
 }
+
+.tooltips {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  top: 0px;
+  left: 0px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 1em;
+  margin: 1em;
+}
+
+.tooltip-wrapper {
+  color: rgb(41, 50, 60);
+  box-sizing: border-box;
+  /* transform: translate(1026px, 445.241px); */
+}
+
+.tooltip-container {
+  position: relative;
+  padding: 0.75em;
+  display: flex;
+  visibility: hidden;
+  flex-direction: column;
+  gap: 0.1em;
+}
+
+.tooltip-container::before {
+  content: '';
+  inset: 0;
+  z-index: -1;
+  position: absolute;
+  background-color: var(--bg-color, rgb(160, 167, 180));
+  border-radius: 0.5em;
+  opacity: 0.75;
+  mix-blend-mode: multiply;
+}
+
+.tooltip-container.active {
+  visibility: visible;
+}
+
+#main-tooltip {
+  --bg-color: hsl(231, 17%, 77%);
+}
+
+#secondary-tooltip {
+  --bg-color: hsl(231, 17%, 90%);
+}

@@ -9,7 +9,7 @@ export default function useHexMouseEvts() {
   const [hoveredHex, setHoveredHex] = useState(null);
   const [hoveredGeos, setHoveredGeos] = useState({});
   const [hoveredGeoActive, setHoveredGeoActive] = useState([]);
-  const [clickedHexes, setClickedHexes] = useState(null);
+  const [clickedHexes, setClickedHexes] = useState({});
   const [selectedGeoJSON, setSelectedGeoJSON] = useState({
     type: 'FeatureCollection',
     features: [],
@@ -69,7 +69,7 @@ export default function useHexMouseEvts() {
       }
 
       // clicking additional hexes
-      if (evt.srcEvent.ctrlKey) {
+      if (evt.srcEvent.shiftKey) {
         setClickedHexes((c) => ({
           ...c,
           [object.hexId]: object.properties.GeoRgs,
@@ -83,12 +83,13 @@ export default function useHexMouseEvts() {
       setHoveredGeoActive(object.properties.DU_ID);
 
       // TODO change clickedHexes to ref...
-      setClickedHexes(null);
+      setClickedHexes({});
       // TODO: ...because of this
       const clickedHexesCurrent = {
         ...clickedHexes,
         [object.hexId]: object.properties.GeoRgs,
       };
+      setClickedHexes(clickedHexesCurrent);
 
       const selecteds = {};
       const selectedsJSON = {
@@ -122,7 +123,7 @@ export default function useHexMouseEvts() {
 
   return {
     hoveredHex,
-    // clickedHexes,
+    clickedHexes,
     hoveredGeos,
     selectedGeoJSON,
     selectedGeos,

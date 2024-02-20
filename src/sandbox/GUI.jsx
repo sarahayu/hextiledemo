@@ -29,7 +29,7 @@ export default function GUI({
         style={{
           position: 'absolute',
           display: 'block',
-          bottom: '20px',
+          bottom: '40px',
           right: '50%',
           transform: 'translateX(50%)',
         }}
@@ -49,7 +49,7 @@ export default function GUI({
           width: '50vw',
           position: 'absolute',
           display: 'block',
-          bottom: '40px',
+          bottom: '20px',
           right: '50%',
           transform: 'translateX(50%)',
         }}
@@ -74,7 +74,7 @@ export default function GUI({
             checked={displayGW}
             onChange={() => setDisplayGW((d) => !d)}
           />
-          <label htmlFor="display1">Display Groundwater</label>
+          <label htmlFor="display1">Groundwater</label>
         </div>
         {curScenario != -1 && (
           <div>
@@ -84,7 +84,7 @@ export default function GUI({
               checked={displayDiff}
               onChange={() => setDisplayDiff((d) => !d)}
             />
-            <label htmlFor="display2">Display Difference to Baseline</label>
+            <label htmlFor="display2">Difference to Baseline</label>
           </div>
         )}
         <div>
@@ -94,7 +94,7 @@ export default function GUI({
             checked={displayUnmet}
             onChange={() => setDisplayUnmet((d) => !d)}
           />
-          <label htmlFor="display3">Display Unmet Demand</label>
+          <label htmlFor="display3">Unmet Demand</label>
         </div>
         <div>
           <input
@@ -103,7 +103,7 @@ export default function GUI({
             checked={displayDemand}
             onChange={() => setDisplayDemand((d) => !d)}
           />
-          <label htmlFor="display4">Display Demand</label>
+          <label htmlFor="display4">Demand</label>
         </div>
         <div>
           <input
@@ -112,7 +112,7 @@ export default function GUI({
             checked={displayLandUse}
             onChange={() => setDisplayLandUse((d) => !d)}
           />
-          <label htmlFor="display5">Display Land Use</label>
+          <label htmlFor="display5">Land Use</label>
         </div>
         <div>
           <input
@@ -121,7 +121,7 @@ export default function GUI({
             checked={displayDemAsRings}
             onChange={() => setDisplayDemAsRings((d) => !d)}
           />
-          <label htmlFor="displayRings">Display Demand as Rings</label>
+          <label htmlFor="displayRings">Demand as Rings</label>
         </div>
       </div>
       <div

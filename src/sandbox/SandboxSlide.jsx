@@ -7,7 +7,10 @@ import {
 } from 'src/utils/scales';
 import { SCENARIOS } from 'src/utils/settings';
 
-import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
+import {
+  _TerrainExtension as TerrainExtension,
+  PathStyleExtension,
+} from '@deck.gl/extensions';
 import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer, GeoJsonLayer } from 'deck.gl';
 import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
@@ -47,6 +50,7 @@ export default class SandboxSlide extends CompositeLayer {
       displayLandUse,
       displayDemAsRings,
       hoveredHex,
+      clickedHexes,
       hoveredGeoActive,
       hoveredGeos,
       selectedGeoJSON,
@@ -223,12 +227,23 @@ export default class SandboxSlide extends CompositeLayer {
               ? 1
               : d.properties.MUnmetDemandBaseline[speedyCounter]
           ),
+        raised: true,
+        getElevation: (d) => (d.hexId in clickedHexes ? 5000 : 0),
+        getLineWidth: (d) => (d.hexId in clickedHexes ? 100 : 0),
+        stroked: true,
+        extruded: false,
+        lineJointRounded: true,
+        getLineColor: [255, 255, 255, 200],
         visible: displayUnmet && displayDemAsRings,
+        getOffset: -0.5,
+        extensions: [new PathStyleExtension({ offset: true })],
         opacity: 1.0,
         ...(USE_TERRAIN_3D ? { extensions: [new TerrainExtension()] } : {}),
         updateTriggers: {
           getFillColor: [curScenario, speedyCounter],
           getValue: [curScenario, speedyCounter],
+          getElevation: [selectionFinalized],
+          getLineWidth: [selectionFinalized],
         },
       }),
       new SolidHexTileLayer({

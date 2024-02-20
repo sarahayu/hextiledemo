@@ -1,4 +1,4 @@
-import { CompositeLayer, SolidPolygonLayer } from 'deck.gl';
+import { CompositeLayer, SolidPolygonLayer, PolygonLayer } from 'deck.gl';
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';
 import { lerp } from '@math.gl/core';
@@ -85,7 +85,10 @@ export default class SolidHexTileLayer extends CompositeLayer {
               x,
               y,
               typeof this.props.getElevation === 'function'
-                ? this.props.getElevation({ properties: properts })
+                ? this.props.getElevation({
+                    hexId: hexId,
+                    properties: properts,
+                  })
                 : this.props.getElevation,
             ])
           ),
@@ -139,11 +142,12 @@ export default class SolidHexTileLayer extends CompositeLayer {
 
   renderLayers() {
     return [
-      new SolidPolygonLayer(
+      new PolygonLayer(
         this.getSubLayerProps({
           ...{
             data: this.props.data,
             filled: this.props.filled,
+            stroked: this.props.stroked,
             extruded: this.props.extruded,
             wireframe: this.props.wireframe,
             _normalize: this.props._normalize,
@@ -154,6 +158,7 @@ export default class SolidHexTileLayer extends CompositeLayer {
             getElevation: this.props.getElevation,
             getFillColor: this.props.getFillColor,
             getLineColor: this.props.getLineColor,
+            getLineWidth: this.props.getLineWidth,
             material: this.props.material,
             transitions: this.props.transitions,
             updateTriggers: this.props.updateTriggers,
@@ -163,6 +168,9 @@ export default class SolidHexTileLayer extends CompositeLayer {
           getPolygon: (d) => d.polygon,
           pickable: this.props.pickable,
           autoHighlight: this.props.autoHighlight,
+          extensions: this.props.extensions,
+          getOffset: this.props.getOffset,
+          lineJointRounded: this.props.lineJointRounded,
         })
       ),
     ];

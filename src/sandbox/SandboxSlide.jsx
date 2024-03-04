@@ -1,9 +1,9 @@
 import React from 'react';
 
 import {
-  colorInterpUnmetCont,
-  getMIVal,
-  heightInterpUnmet,
+  colorInterpUDem,
+  scaleStepUDemVar,
+  heightInterpUDem,
 } from 'src/utils/scales';
 import { SCENARIOS } from 'src/utils/settings';
 
@@ -15,14 +15,6 @@ import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer, GeoJsonLayer } from 'deck.gl';
 import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
-import {
-  colorInterpDemand,
-  colorInterpDifference,
-  colorInterpGW,
-  colorInterpUnmet,
-  valueInterpDemand,
-  valueInterpUnmet,
-} from 'src/utils/scales';
 import { USE_TERRAIN_3D } from 'src/utils/settings';
 import { dataFilter } from 'src/utils/utils';
 
@@ -65,7 +57,7 @@ export default class SandboxSlide extends CompositeLayer {
         opacity: 0.75,
         extruded: true,
         getElevation: (d) =>
-          heightInterpUnmet(
+          heightInterpUDem(
             curScenario > -1
               ? d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
               : d.properties.UnmetDemandBaseline[speedyCounter]
@@ -73,7 +65,7 @@ export default class SandboxSlide extends CompositeLayer {
         pickable: true,
         getLineWidth: 100,
         getFillColor: (d) => {
-          let fill = colorInterpUnmetCont(
+          let fill = colorInterpUDem(
             curScenario > -1
               ? d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
               : d.properties.UnmetDemandBaseline[speedyCounter]
@@ -102,6 +94,7 @@ export default class SandboxSlide extends CompositeLayer {
             hoveredGeoActive,
             selectionFinalized,
           ],
+          getElevation: [curScenario, speedyCounter],
         },
       }),
       new GeoJsonLayer({
@@ -135,7 +128,7 @@ export default class SandboxSlide extends CompositeLayer {
         getFillColor: (d) => {
           if (d.properties.DU_ID == hoveredGeoActive) {
             const hlcol = [0 / 255, 0 / 255, 128 / 255, 128 / 255];
-            const fill = colorInterpUnmetCont(
+            const fill = colorInterpUDem(
               curScenario > -1
                 ? selectedGeos[d.properties.DU_ID].UnmetDemand[
                     SCENARIOS[curScenario]
@@ -152,7 +145,7 @@ export default class SandboxSlide extends CompositeLayer {
             ];
           }
           if (d.properties.DU_ID in selectedGeos) {
-            return colorInterpUnmetCont(
+            return colorInterpUDem(
               curScenario > -1
                 ? selectedGeos[d.properties.DU_ID].UnmetDemand[
                     SCENARIOS[curScenario]
@@ -197,7 +190,7 @@ export default class SandboxSlide extends CompositeLayer {
         data,
         thicknessRange: [0.5, 0.65],
         getFillColor: (d) =>
-          colorInterpDifference(
+          colorInterpDemDiff(
             curScenario < 0
               ? 0
               : d.properties.UnmetDemand[SCENARIOS[curScenario]][
@@ -216,13 +209,13 @@ export default class SandboxSlide extends CompositeLayer {
         data,
         thicknessRange: [0.4, 0.65],
         getFillColor: (d) =>
-          colorInterpUnmet(
+          colorInterpUDem(
             curScenario > -1
               ? d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
               : d.properties.UnmetDemandBaseline[speedyCounter]
           ),
         getValue: (d) =>
-          getMIVal(
+          scaleStepUDemVar(
             curScenario > -1
               ? 1
               : d.properties.MUnmetDemandBaseline[speedyCounter]
@@ -251,7 +244,7 @@ export default class SandboxSlide extends CompositeLayer {
         data,
         thicknessRange: [0.5, 0.65],
         getFillColor: (d) =>
-          colorInterpDemand(
+          colorInterpDem(
             curScenario > -1
               ? d.properties.Demand[SCENARIOS[curScenario]][speedyCounter]
               : d.properties.DemandBaseline[speedyCounter]
@@ -271,7 +264,7 @@ export default class SandboxSlide extends CompositeLayer {
         raised: true,
         getColor: [255, 130, 35],
         getValue: (d) =>
-          valueInterpUnmet(
+          valueInterpUDem(
             curScenario > -1
               ? d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
               : d.properties.UnmetDemandBaseline[speedyCounter]
@@ -300,7 +293,7 @@ export default class SandboxSlide extends CompositeLayer {
         raised: true,
         getColor: [255, 130, 35],
         getValue: (d) =>
-          valueInterpDemand(
+          valueInterpDem(
             curScenario > -1
               ? d.properties.Demand[SCENARIOS[curScenario]][speedyCounter]
               : d.properties.DemandBaseline[speedyCounter]

@@ -1,27 +1,25 @@
 import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
 import { averageData } from './utils/data';
-import { colorDemandAverage, colorGW, dateInterpIdx } from 'src/utils/scales';
+import { colorDemAvg, colorGW, dateInterpIdx } from 'src/utils/scales';
 import { saturate } from 'src/utils/utils';
 
-const gwUnsat = saturate({
-  col: colorGW,
-  saturation: 0.5,
-});
-const gwSat = saturate({
-  col: colorGW,
-  saturation: 0.5,
-  brightness: 0.5,
-});
-const demandUnsat = saturate({
-  col: colorDemandAverage,
-  saturation: 0.5,
-});
-const demandSat = saturate({
-  col: colorDemandAverage,
-  saturation: 0.5,
-  brightness: 0.5,
-});
+const gwUnsat = saturate(colorGW, 0.5)
+  .replace(/[^\d,]/g, '')
+  .split(',')
+  .map((d) => Number(d));
+const gwSat = saturate(colorGW, 0.5, -0.5)
+  .replace(/[^\d,]/g, '')
+  .split(',')
+  .map((d) => Number(d));
+const demandUnsat = saturate(colorDemAvg, 0.5)
+  .replace(/[^\d,]/g, '')
+  .split(',')
+  .map((d) => Number(d));
+const demandSat = saturate(colorDemAvg, 0.5, -0.5)
+  .replace(/[^\d,]/g, '')
+  .split(',')
+  .map((d) => Number(d));
 
 export default function Clock({ counter, displayMonth, dataset }) {
   const monthIdx = ((counter + 9) % 12) + 1;

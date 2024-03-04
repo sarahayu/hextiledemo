@@ -79,24 +79,11 @@ function HSVtoRGB(color) {
   return [r, g, b];
 }
 
-export function saturate({ col, saturation, brightness }) {
-  saturation = saturation || 2;
-  brightness = brightness || 1;
-
-  const hsv = RGBtoHSV(col);
-  hsv[1] *= saturation;
-  const rgb = HSVtoRGB(hsv);
-
-  const newrgb = d3
-    .scaleLinear()
-    .domain([-1, 0, 1])
-    .range([[0, 0, 0], rgb, [255, 255, 255]])
-    .clamp(true)(
-    (1 - Math.exp(-2 * (brightness - 1))) /
-      (1 + Math.exp(-2 * (brightness - 1)))
-  );
-
-  return newrgb;
+export function saturate(color, k = 1, m = 1) {
+  if (typeof color == 'function') return (d) => saturate(color(d), k, m);
+  if (Array.isArray(color)) color = d3.rgb(...color).toString();
+  const { l, c, h } = d3.lch(color);
+  return d3.lch(l + 18 * m, c + 18 * k, h).toString();
 }
 
 export function dataFilter(data, cond, excludeRes) {

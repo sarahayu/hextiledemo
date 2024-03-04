@@ -1,7 +1,7 @@
 import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
 import { CompositeLayer } from 'deck.gl';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
-import { colorInterpDiffDemand, colorInterpGW } from 'src/utils/scales';
+import { colorInterpContDemDiffAlpha, colorInterpGW } from 'src/utils/scales';
 import { inRange, USE_TERRAIN_3D } from 'src/utils/settings';
 
 export default class SlideDeliveries extends CompositeLayer {
@@ -34,7 +34,7 @@ export default class SlideDeliveries extends CompositeLayer {
         extruded: false,
         raised: false,
         getFillColor: (d) =>
-          colorInterpDiffDemand(
+          colorInterpContDemDiffAlpha(
             d.properties.DemandBaselineAverage +
               d.properties.UnmetDemandBaselineAverage
           ),

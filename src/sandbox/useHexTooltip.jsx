@@ -8,6 +8,7 @@ const isGeo = (o) => !!(o.properties || {}).DU_ID;
 
 export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
   const mainTooltipElem = useRef();
+  const mainTooltipContent = useRef();
   const secondaryTooltipElem = useRef();
   const lastObject = useRef({});
 
@@ -39,6 +40,8 @@ export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
 
       const date = dateInterpIdx(speedyCounter);
       if (isGeo(object)) {
+        mainTooltipElem.current.classList.add('active');
+        mainTooltipElem.current.innerHTML = mainTooltipContent.current;
         secondaryTooltipElem.current.classList.add('active');
         secondaryTooltipElem.current.innerHTML = `\
       ${
@@ -94,7 +97,7 @@ export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
   `;
       } else {
         mainTooltipElem.current.classList.add('active');
-        mainTooltipElem.current.innerHTML = `\
+        mainTooltipElem.current.innerHTML = mainTooltipContent.current = `\
         <div><i>${date.toLocaleString('default', {
           month: 'long',
         })} ${date.toLocaleString('default', { year: 'numeric' })}</i></div>
@@ -141,8 +144,8 @@ export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
         ]
       }</div>
       ${
-        object.properties.MUnmetDemandBaseline
-          ? `<div><b>Variance (UnmetDemandBaseline)</b> ${object.properties.MUnmetDemandBaseline[speedyCounter]}
+        object.properties.UnmetDemandBaselineVar
+          ? `<div><b>Variance (UnmetDemandBaseline)</b> ${object.properties.UnmetDemandBaselineVar[speedyCounter]}
       </div>`
           : ''
       }

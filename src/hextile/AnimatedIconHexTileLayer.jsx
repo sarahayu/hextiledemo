@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { CompositeLayer, SimpleMeshLayer } from 'deck.gl';
 import * as h3 from 'h3-js';
-import { resScale, valueInterpDemand } from 'src/utils/scales';
+import { valueInterpResolution, valueInterpDem } from 'src/utils/scales';
 import { FORMATIONS, INTERIM_FORMATIONS } from 'src/utils/utils';
 
 const formationInterp = d3
@@ -52,7 +52,7 @@ export default class AnimatedIconHexTileLayer extends CompositeLayer {
     let data = [];
 
     const curRes = d3.scaleQuantize().domain([0, 1]).range(resRange)(
-      resScale(zoom)
+      valueInterpResolution(zoom)
     );
 
     let resHex = hextiles[curRes];

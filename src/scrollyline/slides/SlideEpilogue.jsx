@@ -4,10 +4,10 @@ import { CompositeLayer } from 'deck.gl';
 import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import {
-  colorInterpDifference,
+  colorInterpDemDiff,
   colorInterpGW,
-  valueInterpDemand,
-  valueInterpUnmet,
+  valueInterpDem,
+  valueInterpUDem,
 } from 'src/utils/scales';
 import { SCENARIOS, USE_TERRAIN_3D } from 'src/utils/settings';
 import { dataFilter } from 'src/utils/utils';
@@ -77,7 +77,7 @@ export default class SlideEpilogue extends CompositeLayer {
         extruded: false,
         raised: false,
         getFillColor: (d) =>
-          colorInterpDifference(
+          colorInterpDemDiff(
             d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter] -
               d.properties.UnmetDemandBaseline[speedyCounter]
           ),
@@ -98,7 +98,7 @@ export default class SlideEpilogue extends CompositeLayer {
 
         getColor: [255, 130, 35],
         getValue: (d) =>
-          valueInterpUnmet(
+          valueInterpUDem(
             d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
           ),
         sizeScale: 3000,
@@ -127,7 +127,7 @@ export default class SlideEpilogue extends CompositeLayer {
 
         getColor: [255, 130, 35],
         getValue: (d) =>
-          valueInterpDemand(
+          valueInterpDem(
             d.properties.Demand[SCENARIOS[curScenario]][speedyCounter]
           ),
         sizeScale: 3000,

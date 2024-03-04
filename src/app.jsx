@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Scrollyline from './scrollyline/Scrollyline';
 import Sandbox from './sandbox/Sandbox';
+import CentralValleyWater from './sandbox/CentralValleyWater';
 
 const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     path: '/sandbox',
     element: <Sandbox />,
+  },
+  {
+    path: '/centralvalleywater',
+    element: <CentralValleyWater />,
   },
 ]);
 

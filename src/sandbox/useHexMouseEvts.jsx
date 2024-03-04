@@ -36,7 +36,7 @@ export default function useHexMouseEvts() {
         // hover hexes
         const hoveredHexFeature = h3ToFeature(object.hexId);
         const hovereds = {};
-        for (const duid of object.properties.GeoRgs) {
+        for (const duid of object.properties.DURgs) {
           const f = temporalDataGeoByDUID[duid];
           const intersectionFeature = turf.intersect(
             hoveredHexFeature,
@@ -72,7 +72,7 @@ export default function useHexMouseEvts() {
       if (evt.srcEvent.shiftKey) {
         setClickedHexes((c) => ({
           ...c,
-          [object.hexId]: object.properties.GeoRgs,
+          [object.hexId]: object.properties.DURgs,
         }));
         return true;
       }
@@ -87,7 +87,7 @@ export default function useHexMouseEvts() {
       // TODO: ...because of this
       const clickedHexesCurrent = {
         ...clickedHexes,
-        [object.hexId]: object.properties.GeoRgs,
+        [object.hexId]: object.properties.DURgs,
       };
       setClickedHexes(clickedHexesCurrent);
 

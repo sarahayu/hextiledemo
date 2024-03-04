@@ -2,7 +2,7 @@ import { CompositeLayer, SolidPolygonLayer, PolygonLayer } from 'deck.gl';
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';
 import { lerp } from '@math.gl/core';
-import { resScale } from 'src/utils/scales';
+import { valueInterpResolution } from 'src/utils/scales';
 
 function scaleBounds(hexId, paths, value = 1) {
   // if(!outside) return
@@ -40,7 +40,7 @@ export default class SolidHexTileLayer extends CompositeLayer {
 
     const resRange = Object.keys(this.props.data).map((d) => parseInt(d));
     const lastResolution = d3.scaleQuantize().domain([0, 1]).range(resRange)(
-      resScale(this.context.viewport.zoom)
+      valueInterpResolution(this.context.viewport.zoom)
     );
 
     this.setState({
@@ -123,7 +123,7 @@ export default class SolidHexTileLayer extends CompositeLayer {
       changeFlags.viewportChanged
     ) {
       const curRes = d3.scaleQuantize().domain([0, 1]).range(resRange)(
-        resScale(context.viewport.zoom)
+        valueInterpResolution(context.viewport.zoom)
       );
 
       if (
@@ -163,7 +163,7 @@ export default class SolidHexTileLayer extends CompositeLayer {
             transitions: this.props.transitions,
             updateTriggers: this.props.updateTriggers,
           },
-          id: `${this.props.id}SolidHexTileLayer`,
+          id: `SolidHexTileLayer`,
           data: this.state.polygons,
           getPolygon: (d) => d.polygon,
           pickable: this.props.pickable,
@@ -180,7 +180,7 @@ export default class SolidHexTileLayer extends CompositeLayer {
 SolidHexTileLayer.layerName = 'SolidHexTileLayer';
 SolidHexTileLayer.defaultProps = {
   ...CompositeLayer.defaultProps,
-  ...SolidPolygonLayer.defaultProps,
+  ...PolygonLayer.defaultProps,
   thicknessRange: [0.7, 0.9],
   getValue: undefined,
   raised: false,

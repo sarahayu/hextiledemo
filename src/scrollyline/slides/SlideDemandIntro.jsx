@@ -2,7 +2,7 @@ import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
 import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer } from 'deck.gl';
 import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
-import { valueInterpDemand } from 'src/utils/scales';
+import { valueInterpDem } from 'src/utils/scales';
 import { USE_TERRAIN_3D } from 'src/utils/settings';
 
 export default class SlideDemandIntro extends CompositeLayer {
@@ -19,8 +19,7 @@ export default class SlideDemandIntro extends CompositeLayer {
         extruded: false,
 
         getColor: [255, 130, 35],
-        getValue: (d) =>
-          valueInterpDemand(d.properties.DemandBaseline[counter]),
+        getValue: (d) => valueInterpDem(d.properties.DemandBaseline[counter]),
         sizeScale: 3000,
         visible: slide == 1,
         opacity: 1,

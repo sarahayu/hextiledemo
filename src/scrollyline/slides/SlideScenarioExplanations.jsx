@@ -4,9 +4,9 @@ import { CompositeLayer } from 'deck.gl';
 import AnimatedIconHexTileLayer from 'src/hextile/AnimatedIconHexTileLayer';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import {
-  colorInterpDifference,
+  colorInterpDemDiff,
   colorInterpGW,
-  valueInterpUnmet,
+  valueInterpUDem,
 } from 'src/utils/scales';
 import { inRange, SCENARIOS, USE_TERRAIN_3D } from 'src/utils/settings';
 
@@ -53,9 +53,9 @@ export default class SlideScenarioExplanations extends CompositeLayer {
           slide == 13
             ? (d) => 0
             : slide == 14
-            ? (d) => valueInterpUnmet(d.properties.UnmetDemandBaseline[1026])
+            ? (d) => valueInterpUDem(d.properties.UnmetDemandBaseline[1026])
             : (d) =>
-                valueInterpUnmet(
+                valueInterpUDem(
                   d.properties.UnmetDemand[SCENARIOS[curScenario]][1026]
                 ),
         sizeScale: 3000,
@@ -83,7 +83,7 @@ export default class SlideScenarioExplanations extends CompositeLayer {
         extruded: false,
         raised: false,
         getFillColor: (d) =>
-          colorInterpDifference(
+          colorInterpDemDiff(
             d.properties.UnmetDemand[SCENARIOS[curScenario]][1026] -
               d.properties.UnmetDemandBaseline[1026]
           ),
@@ -107,7 +107,7 @@ export default class SlideScenarioExplanations extends CompositeLayer {
 
         getColor: (d) => /* colorUnmet */ [255, 130, 35],
         getValue: (d) =>
-          valueInterpUnmet(
+          valueInterpUDem(
             d.properties.UnmetDemand[SCENARIOS[cycler % 3]][1197]
           ),
         sizeScale: 3000,
@@ -135,7 +135,7 @@ export default class SlideScenarioExplanations extends CompositeLayer {
         extruded: false,
         raised: false,
         getFillColor: (d) =>
-          colorInterpDifference(
+          colorInterpDemDiff(
             d.properties.UnmetDemand[SCENARIOS[cycler % 3]][1197] -
               d.properties.UnmetDemandBaseline[1197]
           ),

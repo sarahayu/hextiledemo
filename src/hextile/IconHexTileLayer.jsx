@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { CompositeLayer, SimpleMeshLayer } from 'deck.gl';
 import * as h3 from 'h3-js';
-import { resScale } from 'src/utils/scales';
+import { valueInterpResolution } from 'src/utils/scales';
 import { FORMATIONS } from 'src/utils/utils';
 
 const formationInterp = d3
@@ -20,7 +20,7 @@ export default class IconHexTileLayer extends CompositeLayer {
     const resRange = Object.keys(this.props.data).map((d) => parseInt(d));
 
     const curRes = d3.scaleQuantize().domain([0, 1]).range(resRange)(
-      resScale(zoom)
+      valueInterpResolution(zoom)
     );
 
     this.setState({
@@ -88,7 +88,7 @@ export default class IconHexTileLayer extends CompositeLayer {
       changeFlags.viewportChanged
     ) {
       const curRes = d3.scaleQuantize().domain([0, 1]).range(resRange)(
-        resScale(context.viewport.zoom)
+        valueInterpResolution(context.viewport.zoom)
       );
 
       if (

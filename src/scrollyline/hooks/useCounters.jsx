@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { inRange } from 'src/utils/settings';
 
 export default function useCounters({ slide }) {
-  const [counter, setCounter] = useState(1026);
-  const [speedyCounter, setSpeedyCounter] = useState(1026);
+  const [counter, setCounter] = useState(1027);
+  const [speedyCounter, setSpeedyCounter] = useState(1027);
   const [playing, setPlaying] = useState(false);
   const [cycler, setCycler] = useState(0);
   const [counting, setCounting] = useState(false);

@@ -5,8 +5,8 @@ import AnimatedIconHexTileLayer from 'src/hextile/AnimatedIconHexTileLayer';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import {
   colorInterpGW,
-  valueInterpDemand,
-  valueInterpUnmet,
+  valueInterpDem,
+  valueInterpUDem,
 } from 'src/utils/scales';
 import { inRange, USE_TERRAIN_3D } from 'src/utils/settings';
 
@@ -52,8 +52,8 @@ export default class SlideDemandVsUnmet extends CompositeLayer {
           slide == 2 || slide == 5
             ? (d) => 0
             : slide == 3
-            ? (d) => valueInterpDemand(d.properties.DemandBaseline[1026])
-            : (d) => valueInterpUnmet(d.properties.UnmetDemandBaseline[1026]),
+            ? (d) => valueInterpDem(d.properties.DemandBaseline[1026])
+            : (d) => valueInterpUDem(d.properties.UnmetDemandBaseline[1026]),
         sizeScale: 3000,
         visible: inRange(slide, 2, 5),
         opacity: 1,
@@ -80,8 +80,8 @@ export default class SlideDemandVsUnmet extends CompositeLayer {
           slide == 4 || slide == 7
             ? (d) => 0
             : slide == 5
-            ? (d) => valueInterpDemand(d.properties.DemandBaseline[1197])
-            : (d) => valueInterpUnmet(d.properties.UnmetDemandBaseline[1197]),
+            ? (d) => valueInterpDem(d.properties.DemandBaseline[1197])
+            : (d) => valueInterpUDem(d.properties.UnmetDemandBaseline[1197]),
         sizeScale: 3000,
         visible: inRange(slide, 4, 7),
         opacity: 1,

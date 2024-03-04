@@ -3,7 +3,7 @@ import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer } from 'deck.gl';
 import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
-import { colorInterpDifference, valueInterpUnmet } from 'src/utils/scales';
+import { colorInterpDemDiff, valueInterpUDem } from 'src/utils/scales';
 import { inRange, SCENARIOS, USE_TERRAIN_3D } from 'src/utils/settings';
 
 export default class SlideEndRandomized extends CompositeLayer {
@@ -21,7 +21,7 @@ export default class SlideEndRandomized extends CompositeLayer {
 
         getColor: (d) => /* colorUnmet */ [255, 130, 35],
         getValue: (d) =>
-          valueInterpUnmet(
+          valueInterpUDem(
             d.properties.UnmetDemand[SCENARIOS[cycler % 3]][
               ((Math.floor(cycler / 3) * 67) % 1199) + 1
             ]
@@ -51,7 +51,7 @@ export default class SlideEndRandomized extends CompositeLayer {
         extruded: false,
         raised: false,
         getFillColor: (d) =>
-          colorInterpDifference(
+          colorInterpDemDiff(
             d.properties.UnmetDemand[SCENARIOS[cycler % 3]][
               ((Math.floor(cycler / 3) * 67) % 1199) + 1
             ] -

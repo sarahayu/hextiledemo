@@ -12,11 +12,11 @@ const gwSat = saturate(colorGW, 0.5, -0.5)
   .replace(/[^\d,]/g, '')
   .split(',')
   .map((d) => Number(d));
-const demandUnsat = saturate(colorDemAvg, 0.5)
+const demandUnsat = saturate('rgb(100, 100, 100)', 0.5)
   .replace(/[^\d,]/g, '')
   .split(',')
   .map((d) => Number(d));
-const demandSat = saturate(colorDemAvg, 0.5, -0.5)
+const demandSat = saturate('rgb(100, 100, 100)', 0.5, -0.5)
   .replace(/[^\d,]/g, '')
   .split(',')
   .map((d) => Number(d));

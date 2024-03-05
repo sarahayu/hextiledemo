@@ -9,16 +9,16 @@ import CentralValleyWater from './sandbox/CentralValleyWater';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Scrollyline />,
-  },
-  {
-    path: '/sandbox',
-    element: <Sandbox />,
-  },
-  {
-    path: '/centralvalleywater',
     element: <CentralValleyWater />,
   },
+  // {
+  //   path: '/sandbox',
+  //   element: <Sandbox />,
+  // },
+  // {
+  //   path: '/centralvalleywater',
+  //   element: <CentralValleyWater />,
+  // },
 ]);
 
 export function renderToDOM(container) {

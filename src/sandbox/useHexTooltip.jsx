@@ -3,10 +3,16 @@ import React, { useEffect, useRef } from 'react';
 import { useCallback } from 'react';
 import { dateInterpIdx } from 'src/utils/scales';
 import { HOLDERS, SCENARIOS, SCENARIO_LABELS } from 'src/utils/settings';
+import { indepVariance } from 'src/utils/utils';
 
 const isGeo = (o) => !!(o.properties || {}).DU_ID;
 
-export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
+export default function useHexTooltip({
+  slide,
+  curScenario,
+  speedyCounter,
+  curOption,
+}) {
   const mainTooltipElem = useRef();
   const mainTooltipContent = useRef();
   const secondaryTooltipElem = useRef();
@@ -29,6 +35,11 @@ export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
           }
           lastObject.current = object;
         }
+
+        if (curOption > 1) {
+          secondaryTooltipElem.current.classList.remove('active');
+          mainTooltipElem.current.classList.remove('active');
+        }
         return;
       }
 
@@ -39,7 +50,7 @@ export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
       }
 
       const date = dateInterpIdx(speedyCounter);
-      if (isGeo(object)) {
+      if (curOption <= 1 && isGeo(object)) {
         mainTooltipElem.current.classList.add('active');
         mainTooltipElem.current.innerHTML = mainTooltipContent.current;
         secondaryTooltipElem.current.classList.add('active');
@@ -49,30 +60,22 @@ export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
           ? `<div><b>Region ID</b> ${object.properties.DU_ID}</div>`
           : ''
       }
-      <div><b>Demand</b> ${
+      <div><b>Scenario Demand</b> ${
         curScenario > -1
           ? object.properties.Demand[SCENARIOS[curScenario]][speedyCounter]
           : object.properties.DemandBaseline[speedyCounter]
       }</div>
-      <div><b>Supply</b> ${
-        curScenario > -1
-          ? object.properties.Demand[SCENARIOS[curScenario]][speedyCounter] +
-            object.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
-          : object.properties.DemandBaseline[speedyCounter] +
-            object.properties.UnmetDemandBaseline[speedyCounter]
-      }</div>
-      <div><b>Unmet Demand</b> ${
+      <div><b>Scen. Unmet Demand</b> ${
         curScenario > -1
           ? -object.properties.UnmetDemand[SCENARIOS[curScenario]][
               speedyCounter
             ]
           : -object.properties.UnmetDemandBaseline[speedyCounter]
       }</div>
-      ${
-        object.properties.Groundwater
-          ? `<div><b>Groundwater</b> ${object.properties.Groundwater[speedyCounter]}</div>`
-          : ''
-      }
+      <div><b>Difference in Unmet Demand</b> ${
+        object.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter] -
+        object.properties.UnmetDemandBaseline[speedyCounter]
+      }</div>
       <div><b>Land Holder</b> ${
         // TODO refactor?
         HOLDERS[
@@ -81,23 +84,61 @@ export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
             : object.properties.LandUse
         ]
       }</div>
-      ${
-        object.properties.MUnmetDemandBaseline
-          ? `<div><b>Variance (UnmetDemandBaseline)</b> ${object.properties.MUnmetDemandBaseline[speedyCounter]}
-      </div>`
-          : ''
-      }
-      ${
-        object.properties.GeoRgs
-          ? `<div><b>Demand Regions</b> ${object.properties.GeoRgs.join(
-              ', '
-            )}</div>`
-          : ''
-      }
   `;
       } else {
         mainTooltipElem.current.classList.add('active');
-        mainTooltipElem.current.innerHTML = mainTooltipContent.current = `\
+        if (object.properties.GroundwaterVar == undefined) {
+          mainTooltipElem.current.innerHTML = mainTooltipContent.current = `\
+        <div><i>${date.toLocaleString('default', {
+          month: 'long',
+        })} ${date.toLocaleString('default', { year: 'numeric' })}</i></div>
+        <div><i>${
+          object.properties.DU_ID
+            ? curScenario > -1
+              ? SCENARIO_LABELS[curScenario]
+              : 'Historical Baseline'
+            : ''
+        }</i></div>
+        ${
+          object.properties.DU_ID
+            ? `<b>Region ID</b> ${object.properties.DU_ID}</div>`
+            : ''
+        }
+        ${
+          object.properties.elem_id
+            ? `<b>Elem ID</b> ${object.properties.elem_id}</div>`
+            : ''
+        }
+        ${
+          object.properties.Groundwater
+            ? `<div><b>Groundwater</b> ${object.properties.Groundwater[speedyCounter]}</div>`
+            : ''
+        }
+        ${
+          object.properties.DU_ID
+            ? `
+          <div><b>Scenario Demand</b> ${
+            curScenario > -1
+              ? object.properties.Demand[SCENARIOS[curScenario]][speedyCounter]
+              : object.properties.DemandBaseline[speedyCounter]
+          }</div>
+          <div><b>Scen. Unmet Demand</b> ${
+            curScenario > -1
+              ? -object.properties.UnmetDemand[SCENARIOS[curScenario]][
+                  speedyCounter
+                ]
+              : -object.properties.UnmetDemandBaseline[speedyCounter]
+          }</div>
+          <div><b>Difference in Unmet Demand</b> ${
+            object.properties.UnmetDemand[SCENARIOS[curScenario]][
+              speedyCounter
+            ] - object.properties.UnmetDemandBaseline[speedyCounter]
+          }</div>`
+            : ''
+        }
+      `;
+        } else {
+          mainTooltipElem.current.innerHTML = mainTooltipContent.current = `\
         <div><i>${date.toLocaleString('default', {
           month: 'long',
         })} ${date.toLocaleString('default', { year: 'numeric' })}</i></div>
@@ -111,30 +152,27 @@ export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
           ? `<b>Region ID</b> ${object.properties.DU_ID}</div>`
           : ''
       }
-      <div><b>Demand</b> ${
+      ${
+        object.properties.Groundwater
+          ? `<div><b>Groundwater</b> ${object.properties.Groundwater[speedyCounter]}</div>`
+          : ''
+      }
+      <div><b>Scenario Demand</b> ${
         curScenario > -1
           ? object.properties.Demand[SCENARIOS[curScenario]][speedyCounter]
           : object.properties.DemandBaseline[speedyCounter]
       }</div>
-      <div><b>Supply</b> ${
-        curScenario > -1
-          ? object.properties.Demand[SCENARIOS[curScenario]][speedyCounter] +
-            object.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
-          : object.properties.DemandBaseline[speedyCounter] +
-            object.properties.UnmetDemandBaseline[speedyCounter]
-      }</div>
-      <div><b>Unmet Demand</b> ${
+      <div><b>Scen. Unmet Demand</b> ${
         curScenario > -1
           ? -object.properties.UnmetDemand[SCENARIOS[curScenario]][
               speedyCounter
             ]
           : -object.properties.UnmetDemandBaseline[speedyCounter]
       }</div>
-      ${
-        object.properties.Groundwater
-          ? `<div><b>Groundwater</b> ${object.properties.Groundwater[speedyCounter]}</div>`
-          : ''
-      }
+      <div><b>Difference in Unmet Demand</b> ${
+        object.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter] -
+        object.properties.UnmetDemandBaseline[speedyCounter]
+      }</div>
       <div><b>Land Holder</b> ${
         // TODO refactor?
         HOLDERS[
@@ -144,23 +182,50 @@ export default function useHexTooltip({ slide, curScenario, speedyCounter }) {
         ]
       }</div>
       ${
-        object.properties.UnmetDemandBaselineVar
-          ? `<div><b>Variance (UnmetDemandBaseline)</b> ${object.properties.UnmetDemandBaselineVar[speedyCounter]}
+        object.properties.GroundwaterVar
+          ? `<div><b>Variance (GW)</b> ${object.properties.GroundwaterVar[speedyCounter]}
       </div>`
           : ''
       }
       ${
-        object.properties.GeoRgs
-          ? `<div><b>Demand Regions</b> ${object.properties.GeoRgs.join(
+        object.properties.UnmetDemandVar
+          ? `<div><b>Var. (Scen. UnmetDem)</b> ${
+              object.properties.UnmetDemandVar[SCENARIOS[curScenario]][
+                speedyCounter
+              ]
+            }
+      </div>`
+          : ''
+      }
+      ${
+        object.properties.UnmetDemandVar
+          ? `<div><b>Var. (Difference)</b> ${indepVariance(
+              object.properties.UnmetDemandBaselineVar[speedyCounter],
+              object.properties.UnmetDemandVar[SCENARIOS[curScenario]][
+                speedyCounter
+              ]
+            )}
+      </div>`
+          : ''
+      }
+      ${
+        object.properties.DURgs
+          ? `<div><b>Demand Regions</b> ${object.properties.DURgs.join(
               ', '
             )}</div>`
           : ''
       }
+      ${
+        object.properties.GWRgs
+          ? `<div><b>GW Regions</b> ${object.properties.GWRgs.join(', ')}</div>`
+          : ''
+      }
   `;
+        }
       }
       lastObject.current = object;
     },
-    [slide, speedyCounter, curScenario]
+    [slide, speedyCounter, curScenario, curOption]
   );
 
   return { getTooltip };

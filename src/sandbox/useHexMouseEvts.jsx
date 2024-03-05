@@ -5,7 +5,7 @@ import { temporalDataGeoByDUID } from 'src/utils/data';
 import * as turf from '@turf/turf';
 import { h3ToFeature } from 'geojson2h3';
 
-export default function useHexMouseEvts() {
+export default function useHexMouseEvts({ curOption }) {
   const [hoveredHex, setHoveredHex] = useState(null);
   const [hoveredGeos, setHoveredGeos] = useState({});
   const [hoveredGeoActive, setHoveredGeoActive] = useState([]);
@@ -26,6 +26,8 @@ export default function useHexMouseEvts() {
         setHoveredGeoActive([]);
         return;
       }
+
+      if (curOption > 1) return;
 
       if (selectionFinalized) {
         // hover geos
@@ -51,7 +53,7 @@ export default function useHexMouseEvts() {
 
       return true;
     },
-    [clickedHexes, selectionFinalized]
+    [clickedHexes, selectionFinalized, curOption]
   );
 
   const onClick = useCallback(
@@ -68,6 +70,7 @@ export default function useHexMouseEvts() {
         return true;
       }
 
+      if (object.properties.GroundwaterVar == undefined) return;
       // clicking additional hexes
       if (evt.srcEvent.shiftKey) {
         setClickedHexes((c) => ({

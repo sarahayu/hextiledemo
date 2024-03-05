@@ -1,5 +1,10 @@
 import * as d3 from 'd3';
-import { CompositeLayer, IconLayer, SimpleMeshLayer } from 'deck.gl';
+import {
+  CompositeLayer,
+  IconLayer,
+  LayerExtension,
+  SimpleMeshLayer,
+} from 'deck.gl';
 import * as h3 from 'h3-js';
 import { valueInterpResolution } from 'src/utils/scales';
 import { FORMATIONS } from 'src/utils/utils';
@@ -10,6 +15,65 @@ const formationInterp = d3
   .range(d3.range(0, FORMATIONS.length));
 
 const START_FORM = FORMATIONS[0];
+
+class ColorFilter extends LayerExtension {
+  initializeState(context, extension) {
+    if (!extension.isEnabled(this)) {
+      return;
+    }
+
+    const attributeManager = this.getAttributeManager();
+
+    if (extension.opts.pattern) {
+      attributeManager.add({
+        colorFrames: {
+          size: 4,
+          accessor: 'getColor',
+          shaderAttributes: {
+            colorFrames: {
+              divisor: 0,
+            },
+            instanceColorFrames: {
+              divisor: 1,
+            },
+          },
+        },
+      });
+    }
+  }
+
+  getShaders() {
+    return {
+      inject: {
+        // Declare custom uniform
+        'fs:#decl': 'uniform vec4 tint;',
+        // Standard injection hook - see "Writing Shaders"
+        'fs:DECKGL_FILTER_COLOR': `
+          color *= tint;
+        `,
+      },
+      getUniforms: function (opts, uniforms) {
+        if (!opts) {
+          return {};
+        }
+      },
+    };
+  }
+
+  updateState(params) {
+    const { tint = [1, 0, 0, 1] } = params.props;
+    for (const model of this.getModels()) {
+      model.setUniforms({ tint });
+    }
+  }
+
+  getSubLayerProps() {
+    const { tint = [1, 0, 0, 1] } = params.props;
+    return {
+      tint,
+    };
+  }
+}
 
 export default class BillboardIconHexTileLayer extends CompositeLayer {
   initializeState() {
@@ -150,6 +214,7 @@ export default class BillboardIconHexTileLayer extends CompositeLayer {
           getIcon: (d) => 'marker',
           getPosition: (d) => d.position,
           sizeScale: 4000 * iconScale,
+          extensions: [new ColorFilter()],
           // billboard: true,
           // TODO: optimize this by only updating getTranslation fn on getValue change (similarly, cache getValue fn higher up)
           // getTranslation: [10000, 0, 1000000],

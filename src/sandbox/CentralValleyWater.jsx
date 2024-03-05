@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 
+import * as vsup from 'vsup';
+import * as d3 from 'd3';
 import DeckGL from '@deck.gl/react';
 import maplibregl from 'maplibre-gl';
 import { Map } from 'react-map-gl';
@@ -8,7 +10,7 @@ import { LIGHTING } from 'src/utils/settings';
 
 import { useState } from 'react';
 
-import { temporalDataHex } from 'src/utils/data';
+import { temporalDataGeoGW, temporalDataHex } from 'src/utils/data';
 
 import useCamera from 'src/scrollyline/hooks/useCamera';
 import useCounters from 'src/scrollyline/hooks/useCounters';
@@ -33,6 +35,13 @@ import {
   valueInterpUDem,
   scaleContDemDiffVar,
   scaleContUDemVar,
+  colorInterpUDemVar,
+  colorScaleVsupGW,
+  colorScaleDemDiffNorm,
+  colorScaleUDemNorm,
+  colorScaleUDemVarNorm,
+  colorScaleVsupDemDiff,
+  colorScaleGWNorm,
 } from 'src/utils/scales';
 import { SCENARIOS } from 'src/utils/settings';
 
@@ -45,14 +54,15 @@ import { CompositeLayer, GeoJsonLayer } from 'deck.gl';
 import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import { USE_TERRAIN_3D } from 'src/utils/settings';
-import { dataFilter } from 'src/utils/utils';
+import { dataFilter, indepVariance } from 'src/utils/utils';
 
 import { temporalDataGeo } from 'src/utils/data';
 import BillboardIconHexTileLayer from 'src/hextile/BillboardIconHexTileLayer';
 
 export default function CentralValleyWater() {
   const [curOption, setCurOption] = useState(1);
-  const hexMouseEvts = useHexMouseEvts();
+  const legendArea = useRef();
+  const hexMouseEvts = useHexMouseEvts({ curOption });
 
   const curState = {
     data: temporalDataHex,
@@ -76,9 +86,45 @@ export default function CentralValleyWater() {
     transitioning,
   };
 
+  useLayoutEffect(() => {
+    const height = 500;
+    const width = 400;
+    d3.select(legendArea.current)
+      .attr('width', width)
+      .attr('height', height)
+      .call(function (a) {
+        a.append('g').call(
+          vsup.legend
+            .arcmapLegend()
+            .vtitle('Groundwater')
+            .utitle('Variance')
+            .scale(colorScaleVsupGW)
+            .size(150)
+            .x(width - 180)
+            .y(height - 300)
+        );
+      })
+      .call(function (a) {
+        a.append('g').call(
+          vsup.legend
+            .simpleLegend()
+            .title('Difference w/ Baseline')
+            .size(250)
+            .height(20)
+            .scale(colorScaleDemDiffNorm)
+            .x(width - 280)
+            .y(height - 100)
+        );
+      });
+  }, []);
+
   const layers = [
     new SlideTerrain(params),
     new CentralValleyWaterSlide({
+      ...params,
+      ...centralValleyWaterGUI,
+    }),
+    new ControlMap({
       ...params,
       ...centralValleyWaterGUI,
     }),
@@ -106,6 +152,7 @@ export default function CentralValleyWater() {
         dataset="averageDemandBaseline"
       />
       <GUI {...{ ...params, ...centralValleyWaterGUI }} />
+      <svg className="legend-area" ref={legendArea}></svg>
     </>
   );
 }
@@ -135,18 +182,115 @@ class CentralValleyWaterSlide extends CompositeLayer {
     } = this.props;
 
     return [
+      new SolidHexTileLayer({
+        id: `Groundwater`,
+        data,
+        thicknessRange: [0, 1],
+        getFillColor: (d) =>
+          colorInterpVsupGW(
+            d.properties.Groundwater[speedyCounter],
+            d.properties.GroundwaterVar[speedyCounter]
+          ),
+        opacity: 1,
+        visible: curOption == 0 || curOption == 1,
+        updateTriggers: {
+          getFillColor: [speedyCounter],
+        },
+      }),
+      new SolidHexTileLayer({
+        id: `DiffRings`,
+        data,
+        thicknessRange: [0.4, 0.65],
+        getFillColor: (d) =>
+          curOption == 0
+            ? colorInterpVsupDemDiff(
+                d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter] -
+                  d.properties.UnmetDemandBaseline[speedyCounter],
+                indepVariance(
+                  d.properties.UnmetDemandBaselineVar[speedyCounter],
+                  d.properties.UnmetDemandVar[SCENARIOS[0]][speedyCounter]
+                ),
+                true
+              )
+            : colorInterpDemDiff(
+                d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter] -
+                  d.properties.UnmetDemandBaseline[speedyCounter],
+                true
+              ),
+        getValue: (d) =>
+          curOption == 0
+            ? 1
+            : scaleStepUDemVar(
+                indepVariance(
+                  d.properties.UnmetDemandBaselineVar[speedyCounter],
+                  d.properties.UnmetDemandVar[SCENARIOS[0]][speedyCounter]
+                )
+              ),
+        raised: true,
+        visible: curOption == 0 || curOption == 1,
+        getElevation: (d) => (d.hexId in clickedHexes ? 5000 : 0),
+        getLineWidth: (d) => (d.hexId in clickedHexes ? 100 : 0),
+        stroked: true,
+        extruded: false,
+        lineJointRounded: true,
+        getLineColor: [255, 255, 255, 200],
+        getOffset: -0.5,
+        extensions: [new PathStyleExtension({ offset: true })],
+        opacity: 1.0,
+        updateTriggers: {
+          getFillColor: [curOption, speedyCounter],
+          getValue: [curOption, speedyCounter],
+          getElevation: [selectionFinalized],
+          getLineWidth: [selectionFinalized],
+        },
+      }),
+      new IconHexTileLayer({
+        id: `ScenarioUnmet`,
+        data,
+        loaders: [OBJLoader],
+        mesh: 'assets/drop.obj',
+        raised: true,
+        getColor: /* (d) =>
+          colorInterpUDemVar(
+            d.properties.UnmetDemandBaselineVar[speedyCounter]
+          )  */ (d) => [
+          255,
+          130,
+          35,
+          (1 -
+            scaleContDemDiffVar(
+              d.properties.UnmetDemandBaselineVar[speedyCounter]
+            )) *
+            200 +
+            55,
+        ] /* (d) =>
+          colorInterpUDem(d.properties.UnmetDemandBaseline[speedyCounter]) */,
+        getValue: (d) =>
+          valueInterpUDem(
+            d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter]
+          ),
+        visible: curOption == 0 || curOption == 1,
+        sizeScale: 3000,
+        opacity: 1,
+        updateTriggers: {
+          getTranslation: [speedyCounter],
+        },
+      }),
       new GeoJsonLayer({
         id: 'GeoJsonExt',
         data: selectedGeoJSON,
         opacity: 0.75,
         extruded: true,
         getElevation: (d) =>
-          heightInterpUDem(d.properties.UnmetDemandBaseline[speedyCounter]),
+          heightInterpUDem(
+            d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter]
+          ),
+        visible: curOption == 0 || curOption == 1,
         pickable: true,
         getLineWidth: 100,
         getFillColor: (d) => {
           let fill = colorInterpUDem(
-            d.properties.UnmetDemandBaseline[speedyCounter]
+            d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter]
           );
 
           if (fill[3] == 0) {
@@ -186,7 +330,7 @@ class CentralValleyWaterSlide extends CompositeLayer {
           }
           return [0, 0, 0, 0];
         },
-        visible: !selectionFinalized,
+        visible: (!selectionFinalized && curOption == 0) || curOption == 1,
         updateTriggers: {
           getFillColor: [hoveredHex, selectionFinalized],
         },
@@ -201,6 +345,7 @@ class CentralValleyWaterSlide extends CompositeLayer {
         },
         opacity: 0.3,
         pickable: true,
+        visible: curOption == 0 || curOption == 1,
         getLineWidth: (d) =>
           d.properties.DU_ID == hoveredGeoActive ? 100 : 20,
         getFillColor: (d) => {
@@ -248,111 +393,7 @@ class CentralValleyWaterSlide extends CompositeLayer {
         getFillColor: [0, 0, 0, 0],
         pickable: !selectionFinalized,
         autoHighlight: !selectionFinalized,
-      }),
-      new SolidHexTileLayer({
-        id: `Groundwater`,
-        data,
-        thicknessRange: [0, 1],
-        getFillColor: (d) =>
-          colorInterpVsupGW(
-            d.properties.Groundwater[speedyCounter],
-            d.properties.GroundwaterVar[speedyCounter]
-          ),
-        opacity: 0.2,
-        updateTriggers: {
-          getFillColor: [speedyCounter],
-        },
-      }),
-      new SolidHexTileLayer({
-        id: `DiffRings`,
-        data,
-        thicknessRange: [0.4, 0.65],
-        getFillColor: (d) =>
-          curOption == 0
-            ? colorInterpVsupDemDiff(
-                d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter] -
-                  d.properties.UnmetDemandBaseline[speedyCounter],
-                d.properties.UnmetDemandBaselineVar[speedyCounter],
-                true
-              )
-            : colorInterpDemDiff(
-                d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter] -
-                  d.properties.UnmetDemandBaseline[speedyCounter],
-                true
-              ),
-        getValue: (d) =>
-          curOption == 0
-            ? 1
-            : scaleStepUDemVar(
-                d.properties.UnmetDemandBaselineVar[speedyCounter]
-              ),
-        raised: true,
-        getElevation: (d) => (d.hexId in clickedHexes ? 5000 : 0),
-        getLineWidth: (d) => (d.hexId in clickedHexes ? 100 : 0),
-        stroked: true,
-        extruded: false,
-        lineJointRounded: true,
-        getLineColor: [255, 255, 255, 200],
-        getOffset: -0.5,
-        extensions: [new PathStyleExtension({ offset: true })],
-        opacity: 1.0,
-        updateTriggers: {
-          getFillColor: [curOption, speedyCounter],
-          getValue: [curOption, speedyCounter],
-          getElevation: [selectionFinalized],
-          getLineWidth: [selectionFinalized],
-        },
-      }),
-      // new IconHexTileLayer({
-      //   id: `ScenarioUnmet`,
-      //   data,
-      //   loaders: [OBJLoader],
-      //   mesh: 'assets/drop.obj',
-      //   raised: true,
-      //   getColor: (d) => [
-      //     255,
-      //     130,
-      //     35,
-      //     scaleContDemDiffVar(
-      //       d.properties.UnmetDemandBaselineVar[speedyCounter]
-      //     ) * 255,
-      //   ] /* (d) =>
-      //     colorInterpUDem(d.properties.UnmetDemandBaseline[speedyCounter]) */,
-      //   getValue: (d) =>
-      //     valueInterpUDem(
-      //       d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter]
-      //     ),
-      //   sizeScale: 3000,
-      //   opacity: 1,
-      //   updateTriggers: {
-      //     getTranslation: [speedyCounter],
-      //   },
-      // }),
-
-      new BillboardIconHexTileLayer({
-        id: `ScenarioUnmet`,
-        data,
-        loaders: [OBJLoader],
-        iconAtlas: 'assets/drop.png',
-        raised: true,
-        getColor: (d) => [
-          255,
-          130,
-          35,
-          scaleContUDemVar(d.properties.UnmetDemandBaselineVar[speedyCounter]) *
-            215 +
-            40,
-        ] /* (d) =>
-          colorInterpUDem(d.properties.UnmetDemandBaseline[speedyCounter]) */,
-        getValue: (d) =>
-          valueInterpUDem(
-            d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter]
-          ),
-        sizeScale: 3000,
-        opacity: 1,
-        updateTriggers: {
-          getValue: [speedyCounter],
-        },
+        visible: curOption == 0 || curOption == 1,
       }),
     ];
   }
@@ -378,42 +419,46 @@ function GUI({
 }) {
   return (
     <>
-      <button
-        onClick={() => {
-          setPlaying((p) => !p);
-        }}
-        style={{
-          position: 'absolute',
-          display: 'block',
-          bottom: '40px',
-          right: '50%',
-          transform: 'translateX(50%)',
-        }}
-      >
-        {playing ? 'Pause' : 'Play'}
-      </button>
-      <input
-        onChange={function (e) {
-          setPlaying(false);
-          setSpeedyCounter(parseInt(e.target.value));
-        }}
-        onInput={function (e) {
-          setSpeedyCounter(parseInt(e.target.value));
-        }}
-        value={speedyCounter}
-        style={{
-          width: '50vw',
-          position: 'absolute',
-          display: 'block',
-          bottom: '20px',
-          right: '50%',
-          transform: 'translateX(50%)',
-        }}
-        type="range"
-        min="0"
-        max="1199"
-        id="myRange"
-      />
+      <div className="styled-input">
+        <button
+          onClick={() => {
+            setPlaying((p) => !p);
+          }}
+        >
+          {playing ? 'Pause' : 'Play'}
+        </button>
+        <div>
+          <input
+            style={{
+              width: '10ch',
+              display: 'block',
+            }}
+            type="number"
+            value={speedyCounter}
+            onChange={function (e) {
+              setSpeedyCounter(parseInt(e.target.value));
+            }}
+          />
+          <input
+            onChange={function (e) {
+              setPlaying(false);
+              setSpeedyCounter(parseInt(e.target.value));
+            }}
+            onInput={function (e) {
+              setSpeedyCounter(parseInt(e.target.value));
+            }}
+            value={speedyCounter}
+            style={{
+              width: '40vw',
+              display: 'block',
+            }}
+            type="range"
+            min="0"
+            max="1199"
+            id="myRange"
+          />
+        </div>
+      </div>
       <div
         onChange={function (e) {
           setCurOption(e.target.value);
@@ -421,7 +466,7 @@ function GUI({
         style={{
           position: 'absolute',
           display: 'block',
-          bottom: '50%',
+          bottom: '60%',
           right: '0',
           transform: 'translateY(50%)',
         }}
@@ -445,7 +490,128 @@ function GUI({
           />
           <label htmlFor="option2">Option 2</label>
         </div>
+        <div>
+          <input
+            type="radio"
+            name="option"
+            value="2"
+            checked={curOption == 2}
+          />
+          <label htmlFor="option2">GW</label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            name="option"
+            value="3"
+            checked={curOption == 3}
+          />
+          <label htmlFor="option2">Scenario Unmet Dem</label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            name="option"
+            value="4"
+            checked={curOption == 4}
+          />
+          <label htmlFor="option2">Difference</label>
+        </div>
       </div>
     </>
   );
 }
+
+class ControlMap extends CompositeLayer {
+  initializeState() {
+    super.initializeState();
+  }
+  renderLayers() {
+    const {
+      data,
+      curOption,
+      speedyCounter,
+      hoveredHex,
+      clickedHexes,
+      hoveredGeoActive,
+      hoveredGeos,
+      selectedGeoJSON,
+      selectedGeos,
+      selectionFinalized,
+    } = this.props;
+
+    return [
+      new GeoJsonLayer({
+        id: 'GroundwaterGeo',
+        data: temporalDataGeoGW,
+        opacity: 1,
+        stroked: false,
+        filled: true,
+        getFillColor: (d) =>
+          Object.values({
+            ...d3.color(
+              colorScaleGWNorm(d.properties.Groundwater[speedyCounter])
+            ),
+            opacity: 255,
+          }),
+        visible: curOption == 2,
+        updateTriggers: {
+          getFillColor: [speedyCounter],
+        },
+        pickable: true,
+        autoHighlight: true,
+      }),
+      new GeoJsonLayer({
+        id: 'UDemGeo',
+        data: temporalDataGeo,
+        opacity: 1,
+        stroked: false,
+        filled: true,
+        getFillColor: (d) =>
+          Object.values({
+            ...d3.color(
+              colorScaleUDemNorm(
+                d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter]
+              )
+            ),
+            opacity: 255,
+          }),
+        visible: curOption == 3,
+        updateTriggers: {
+          getFillColor: [speedyCounter],
+        },
+        pickable: true,
+        autoHighlight: true,
+      }),
+      new GeoJsonLayer({
+        id: 'DemDiffGeo',
+        data: temporalDataGeo,
+        opacity: 1,
+        stroked: false,
+        filled: true,
+        getFillColor: (d) =>
+          Object.values({
+            ...d3.color(
+              colorScaleDemDiffNorm(
+                d.properties.UnmetDemand[SCENARIOS[0]][speedyCounter] -
+                  d.properties.UnmetDemandBaseline[speedyCounter]
+              )
+            ),
+            opacity: 255,
+          }),
+        visible: curOption == 4,
+        updateTriggers: {
+          getFillColor: [speedyCounter],
+        },
+        pickable: true,
+        autoHighlight: true,
+      }),
+    ];
+  }
+}
+
+ControlMap.layerName = 'ControlMap';
+ControlMap.defaultProps = {
+  ...CompositeLayer.defaultProps,
+  autoHighlight: true,
+};

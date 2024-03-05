@@ -79,6 +79,14 @@ function HSVtoRGB(color) {
   return [r, g, b];
 }
 
+export function percentile(arr, p = 0.95) {
+  return [d3.quantile(arr, (1 - p) / 2), d3.quantile(arr, 1 - (1 - p) / 2)];
+}
+
+export function indepVariance(v1, v2) {
+  return v1 + v2;
+}
+
 export function saturate(color, k = 1, m = 1) {
   if (typeof color == 'function') return (d) => saturate(color(d), k, m);
   if (Array.isArray(color)) color = d3.rgb(...color).toString();

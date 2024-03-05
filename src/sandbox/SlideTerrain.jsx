@@ -11,12 +11,13 @@ export default class SlideTerrain extends CompositeLayer {
       ...(!USE_TERRAIN_3D
         ? [
             new TileLayer({
-              data: 'https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}.png',
+              // data: 'https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}.png',
+              data: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
 
               minZoom: 7,
               maxZoom: 11,
               tileSize: 256,
-              zoomOffset: -1,
+              // zoomOffset: -1,
 
               renderSubLayers: (props) => {
                 const {

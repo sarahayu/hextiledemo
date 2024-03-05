@@ -14,3 +14,7 @@ export const temporalDataGeoByDUID = arrGroupBy(
   temporalDataGeo.features,
   (t) => t.properties.DU_ID
 );
+
+export const temporalDataGeoGW = await (
+  await fetch('/assets/groundwater_geo.json')
+).json();

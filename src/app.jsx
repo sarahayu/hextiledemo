@@ -6,25 +6,27 @@ import Scrollyline from './scrollyline/Scrollyline';
 import Sandbox from './sandbox/Sandbox';
 import CentralValleyWater from './sandbox/CentralValleyWater';
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <CentralValleyWater />,
-  },
-  // {
-  //   path: '/sandbox',
-  //   element: <Sandbox />,
-  // },
-  // {
-  //   path: '/centralvalleywater',
-  //   element: <CentralValleyWater />,
-  // },
-]);
+// const router = createBrowserRouter([
+//   {
+//     path: '/',
+//     element: <CentralValleyWater />,
+//   },
+//   {
+//     path: '/sandbox',
+//     element: <Sandbox />,
+//   },
+//   {
+//     path: '/centralvalleywater',
+//     element: <CentralValleyWater />,
+//   },
+// ]);
 
 export function renderToDOM(container) {
   createRoot(container).render(
+    <CentralValleyWater />
+    /* 
     <React.StrictMode>
       <RouterProvider router={router} />
-    </React.StrictMode>
+    </React.StrictMode> */
   );
 }

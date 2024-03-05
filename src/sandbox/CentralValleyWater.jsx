@@ -248,7 +248,7 @@ class CentralValleyWaterSlide extends CompositeLayer {
         id: `ScenarioUnmet`,
         data,
         loaders: [OBJLoader],
-        mesh: 'assets/drop.obj',
+        mesh: './assets/drop.obj',
         raised: true,
         getColor: /* (d) =>
           colorInterpUDemVar(

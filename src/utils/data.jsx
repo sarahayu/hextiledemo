@@ -1,13 +1,13 @@
 import { arrGroupBy, dataFilter } from 'src/utils/utils';
 
 export const temporalDataHex = dataFilter(
-  await (await fetch('/assets/hex_5_6.json')).json(),
+  await (await fetch('./assets/hex_5_6.json')).json(),
   (d) => d.DemandBaseline
 );
 
-export const averageData = await (await fetch('/assets/averages.json')).json();
+export const averageData = await (await fetch('./assets/averages.json')).json();
 export const temporalDataGeo = await (
-  await fetch('/assets/demand_geo.json')
+  await fetch('./assets/demand_geo.json')
 ).json();
 
 export const temporalDataGeoByDUID = arrGroupBy(
@@ -16,5 +16,5 @@ export const temporalDataGeoByDUID = arrGroupBy(
 );
 
 export const temporalDataGeoGW = await (
-  await fetch('/assets/groundwater_geo.json')
+  await fetch('./assets/groundwater_geo.json')
 ).json();

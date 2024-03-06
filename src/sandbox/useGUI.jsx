@@ -1,26 +1,28 @@
-import React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function useGUI() {
-  const [displayGW, setDisplayGW] = useState(true);
-  const [displayDiff, setDisplayDiff] = useState(true);
-  const [displayUnmet, setDisplayUnmet] = useState(true);
-  const [displayDemand, setDisplayDemand] = useState(false);
-  const [displayLandUse, setDisplayLandUse] = useState(false);
-  const [displayDemAsRings, setDisplayDemAsRings] = useState(false);
+  const [speedyCounter, setSpeedyCounter] = useState(1027);
+  const [playing, setPlaying] = useState(false);
+  const [curOption, setCurOption] = useState(1);
+
+  useEffect(() => {
+    if (playing) {
+      let timer = setTimeout(
+        () => setSpeedyCounter((c) => (c % 1199) + 1),
+        1000 / 30
+      );
+      return function () {
+        clearTimeout(timer);
+      };
+    }
+  }, [speedyCounter, playing]);
 
   return {
-    displayGW,
-    setDisplayGW,
-    displayDiff,
-    setDisplayDiff,
-    displayUnmet,
-    setDisplayUnmet,
-    displayDemand,
-    setDisplayDemand,
-    displayLandUse,
-    setDisplayLandUse,
-    displayDemAsRings,
-    setDisplayDemAsRings,
+    speedyCounter,
+    setSpeedyCounter,
+    playing,
+    setPlaying,
+    curOption,
+    setCurOption,
   };
 }

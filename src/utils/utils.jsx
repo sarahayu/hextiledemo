@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { HOLDERS } from './settings';
 
 function RGBtoHSV(color) {
   let r, g, b, h, s, v;
@@ -125,6 +126,26 @@ export function arrGroupBy(xs, key) {
     return rv;
   }, {});
 }
+
+export const isGeo = (o) => !!(o.properties || {}).DU_ID;
+export const isHex = (o) => !isGeo(o);
+
+export const formatMonthYear = (date) => {
+  return (
+    date.toLocaleString('default', {
+      month: 'long',
+    }) +
+    ' ' +
+    date.toLocaleString('default', { year: 'numeric' })
+  );
+};
+
+export const getHolderStr = (object) =>
+  HOLDERS[
+    object.properties.LandUse.constructor === Array
+      ? object.properties.LandUse[0]
+      : object.properties.LandUse
+  ];
 
 // prettier-ignore
 export const FORMATIONS = [

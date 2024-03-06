@@ -1,137 +1,70 @@
 import React from 'react';
-
+import Clock from 'src/Clock';
+import Legend from './Legend';
 export default function GUI({
-  curScenario,
-  setCurScenario,
+  curOption,
+  setCurOption,
   speedyCounter,
   setSpeedyCounter,
   playing,
   setPlaying,
-  displayGW,
-  setDisplayGW,
-  displayDiff,
-  setDisplayDiff,
-  displayUnmet,
-  setDisplayUnmet,
-  displayDemand,
-  setDisplayDemand,
-  displayLandUse,
-  setDisplayLandUse,
-  displayDemAsRings,
-  setDisplayDemAsRings,
 }) {
   return (
     <>
-      <button
-        onClick={() => {
-          setPlaying((p) => !p);
-        }}
-        style={{
-          position: 'absolute',
-          display: 'block',
-          bottom: '40px',
-          right: '50%',
-          transform: 'translateX(50%)',
-        }}
-      >
-        {playing ? 'Pause' : 'Play'}
-      </button>
-      <input
-        onChange={function (e) {
-          setPlaying(false);
-          setSpeedyCounter(parseInt(e.target.value));
-        }}
-        onInput={function (e) {
-          setSpeedyCounter(parseInt(e.target.value));
-        }}
-        value={speedyCounter}
-        style={{
-          width: '50vw',
-          position: 'absolute',
-          display: 'block',
-          bottom: '20px',
-          right: '50%',
-          transform: 'translateX(50%)',
-        }}
-        type="range"
-        min="0"
-        max="1199"
-        id="myRange"
+      <Clock
+        counter={speedyCounter}
+        displayMonth={false}
+        dataset="averageDemandBaseline"
       />
-      <div
-        style={{
-          position: 'absolute',
-          display: 'block',
-          bottom: '20%',
-          right: '0',
-          transform: 'translateY(50%)',
-        }}
-      >
+      <Legend />
+      <div className="styled-input">
+        <button
+          onClick={() => {
+            setPlaying((p) => !p);
+          }}
+        >
+          {playing ? 'Pause' : 'Play'}
+        </button>
         <div>
           <input
-            type="checkbox"
-            value="display1"
-            checked={displayGW}
-            onChange={() => setDisplayGW((d) => !d)}
+            style={{
+              width: '10ch',
+              display: 'block',
+            }}
+            type="number"
+            value={speedyCounter}
+            onChange={function (e) {
+              setSpeedyCounter(parseInt(e.target.value));
+            }}
           />
-          <label htmlFor="display1">Groundwater</label>
-        </div>
-        {curScenario != -1 && (
-          <div>
-            <input
-              type="checkbox"
-              value="display2"
-              checked={displayDiff}
-              onChange={() => setDisplayDiff((d) => !d)}
-            />
-            <label htmlFor="display2">Difference to Baseline</label>
-          </div>
-        )}
-        <div>
           <input
-            type="checkbox"
-            value="display3"
-            checked={displayUnmet}
-            onChange={() => setDisplayUnmet((d) => !d)}
+            onChange={function (e) {
+              setPlaying(false);
+              setSpeedyCounter(parseInt(e.target.value));
+            }}
+            onInput={function (e) {
+              setSpeedyCounter(parseInt(e.target.value));
+            }}
+            value={speedyCounter}
+            style={{
+              width: '40vw',
+              display: 'block',
+            }}
+            type="range"
+            min="0"
+            max="1199"
+            id="myRange"
           />
-          <label htmlFor="display3">Unmet Demand</label>
-        </div>
-        <div>
-          <input
-            type="checkbox"
-            value="display4"
-            checked={displayDemand}
-            onChange={() => setDisplayDemand((d) => !d)}
-          />
-          <label htmlFor="display4">Demand</label>
-        </div>
-        <div>
-          <input
-            type="checkbox"
-            value="display5"
-            checked={displayLandUse}
-            onChange={() => setDisplayLandUse((d) => !d)}
-          />
-          <label htmlFor="display5">Land Use</label>
-        </div>
-        <div>
-          <input
-            type="checkbox"
-            value="displayRings"
-            checked={displayDemAsRings}
-            onChange={() => setDisplayDemAsRings((d) => !d)}
-          />
-          <label htmlFor="displayRings">Demand as Rings</label>
         </div>
       </div>
       <div
         onChange={function (e) {
-          setCurScenario(e.target.value);
+          setCurOption(e.target.value);
         }}
         style={{
           position: 'absolute',
           display: 'block',
-          bottom: '50%',
+          bottom: '60%',
           right: '0',
           transform: 'translateY(50%)',
         }}
@@ -139,40 +72,48 @@ export default function GUI({
         <div>
           <input
             type="radio"
-            name="scenario"
-            value="-1"
-            checked={curScenario == -1}
-          />
-          <label htmlFor="scenario0">Original</label>
-        </div>
-        <div>
-          <input
-            type="radio"
-            name="scenario"
+            name="option"
             value="0"
-            checked={curScenario == 0}
+            checked={curOption == 0}
           />
-          <label htmlFor="scenario1">Scenario 1</label>
+          <label htmlFor="option1">Option 1</label>
         </div>
 
         <div>
           <input
             type="radio"
-            name="scenario"
+            name="option"
             value="1"
-            checked={curScenario == 1}
+            checked={curOption == 1}
           />
-          <label htmlFor="scenario2">Scenario 2</label>
+          <label htmlFor="option2">Option 2</label>
         </div>
-
         <div>
           <input
             type="radio"
-            name="scenario"
+            name="option"
             value="2"
-            checked={curScenario == 2}
+            checked={curOption == 2}
           />
-          <label htmlFor="scenario3">Scenario 3</label>
+          <label htmlFor="option2">GW</label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            name="option"
+            value="3"
+            checked={curOption == 3}
+          />
+          <label htmlFor="option2">Scenario Unmet Dem</label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            name="option"
+            value="4"
+            checked={curOption == 4}
+          />
+          <label htmlFor="option2">Difference</label>
         </div>
       </div>
     </>

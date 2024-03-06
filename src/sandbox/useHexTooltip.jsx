@@ -2,19 +2,19 @@ import React, { useEffect, useRef } from 'react';
 
 import { useCallback } from 'react';
 import { dateInterpIdx } from 'src/utils/scales';
-import { HOLDERS, SCENARIOS, SCENARIO_LABELS } from 'src/utils/settings';
-import { indepVariance } from 'src/utils/utils';
+import { SCENARIOS, SCENARIO_LABELS } from 'src/utils/settings';
+import {
+  formatMonthYear,
+  getHolderStr,
+  indepVariance,
+  isGeo,
+  isHex,
+} from 'src/utils/utils';
 
-const isGeo = (o) => !!(o.properties || {}).DU_ID;
+const curScenario = 0;
 
-export default function useHexTooltip({
-  slide,
-  curScenario,
-  speedyCounter,
-  curOption,
-}) {
+export default function useHexTooltip({ speedyCounter, curOption }) {
   const mainTooltipElem = useRef();
-  const mainTooltipContent = useRef();
   const secondaryTooltipElem = useRef();
   const lastObject = useRef({});
 
@@ -23,16 +23,114 @@ export default function useHexTooltip({
     secondaryTooltipElem.current = document.querySelector('#secondary-tooltip');
   }, []);
 
+  const handleExtrudedGeo = useCallback(
+    (object) => {
+      const scenDem =
+        object.properties.Demand[SCENARIOS[curScenario]][speedyCounter];
+      const scenUDem =
+        -object.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter];
+      const diffDem =
+        -scenUDem - object.properties.UnmetDemandBaseline[speedyCounter];
+
+      mainTooltipElem.current.classList.add('active');
+      secondaryTooltipElem.current.classList.add('active');
+
+      secondaryTooltipElem.current.innerHTML = `\
+        <div><b>Region ID</b> ${object.properties.DU_ID}</div>
+        <div><b>Scenario Demand</b> ${scenDem}</div>
+        <div><b>Scen. Unmet Demand</b> ${scenUDem}</div>
+        <div><b>Difference in Unmet Demand</b> ${diffDem}</div>
+        <div><b>Land Holder</b> ${getHolderStr(object)}</div>
+      `;
+    },
+    [speedyCounter]
+  );
+
+  const handleBasicGeo = useCallback(
+    (object) => {
+      secondaryTooltipElem.current.classList.remove('active');
+      mainTooltipElem.current.classList.add('active');
+      mainTooltipElem.current.innerHTML = `\
+        <div><i>${formatMonthYear(dateInterpIdx(speedyCounter))}</i></div>
+      `;
+
+      if (object.properties.DU_ID) {
+        const scenDem =
+          object.properties.Demand[SCENARIOS[curScenario]][speedyCounter];
+        const scenUDem =
+          -object.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter];
+        const diffDem =
+          -scenUDem - object.properties.UnmetDemandBaseline[speedyCounter];
+
+        mainTooltipElem.current.innerHTML += `\        
+          <div><i>${SCENARIO_LABELS[curScenario]}</i></div>
+          <div><b>Region ID</b> ${object.properties.DU_ID}</div>
+          <div><b>Scenario Demand</b> ${scenDem}</div>
+          <div><b>Scen. Unmet Demand</b> ${scenUDem}</div>
+          <div><b>Difference in Unmet Demand</b> ${diffDem}</div>
+          <div><b>Land Holder</b> ${getHolderStr(object)}</div>
+        `;
+      } else {
+        const gw = object.properties.Groundwater[speedyCounter];
+
+        mainTooltipElem.current.innerHTML += `\     
+          <div><b>Elem ID</b> ${object.properties.elem_id}</div>
+          <div><b>Groundwater</b> ${gw}</div>
+      `;
+      }
+    },
+    [speedyCounter]
+  );
+
+  const handleHex = useCallback(
+    (object) => {
+      const scenDem =
+        object.properties.Demand[SCENARIOS[curScenario]][speedyCounter];
+      const scenUDem =
+        -object.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter];
+      const diffDem =
+        -scenUDem - object.properties.UnmetDemandBaseline[speedyCounter];
+      const gw = object.properties.Groundwater[speedyCounter];
+      const gwVar = object.properties.GroundwaterVar[speedyCounter];
+      const UDemVar =
+        object.properties.UnmetDemandVar[SCENARIOS[curScenario]][speedyCounter];
+      const diffVar = indepVariance(
+        object.properties.UnmetDemandBaselineVar[speedyCounter],
+        UDemVar
+      );
+      const drgs = object.properties.DURgs.join(', ');
+      const gwrgs = object.properties.GWRgs.join(', ');
+
+      secondaryTooltipElem.current.classList.remove('active');
+      mainTooltipElem.current.classList.add('active');
+      mainTooltipElem.current.innerHTML = `\
+        <div><i>${formatMonthYear(dateInterpIdx(speedyCounter))}</i></div>
+        <div><i>${SCENARIO_LABELS[curScenario]}</i></div>
+        <div><b>Groundwater</b> ${gw}</div>
+        <div><b>Scenario Demand</b> ${scenDem}</div>
+        <div><b>Scen. Unmet Demand</b> ${scenUDem}</div>
+        <div><b>Difference in Unmet Demand</b> ${diffDem}</div>
+        <div><b>Land Holder</b> ${getHolderStr(object)}</div>
+        <div><b>Variance (GW)</b> ${gwVar}</div>
+        <div><b>Var. (Scen. UnmetDem)</b> ${UDemVar}</div>
+        <div><b>Var. (Difference)</b> ${diffVar}</div>
+        <div><b>Demand Regions</b> ${drgs}</div>
+        <div><b>GW Regions</b> ${gwrgs}</div>
+      `;
+    },
+    [speedyCounter]
+  );
+
   const getTooltip = useCallback(
     ({ object }) => {
       if (!object) {
         if (lastObject.current) {
-          if (isGeo(lastObject.current)) {
-            secondaryTooltipElem.current.classList.remove('active');
-          } else {
-            secondaryTooltipElem.current.classList.remove('active');
+          secondaryTooltipElem.current.classList.remove('active');
+
+          if (isHex(lastObject.current)) {
             mainTooltipElem.current.classList.remove('active');
           }
+
           lastObject.current = object;
         }
 
@@ -43,189 +141,17 @@ export default function useHexTooltip({
         return;
       }
 
-      if (lastObject.current) {
-        if (isGeo(lastObject.current)) {
-          secondaryTooltipElem.current.classList.remove('active');
-        }
+      if (curOption <= 1 && isHex(object)) {
+        handleHex(object);
+      } else if (curOption <= 1 && isGeo(object)) {
+        handleExtrudedGeo(object);
+      } else {
+        handleBasicGeo(object);
       }
 
-      const date = dateInterpIdx(speedyCounter);
-      if (curOption <= 1 && isGeo(object)) {
-        mainTooltipElem.current.classList.add('active');
-        mainTooltipElem.current.innerHTML = mainTooltipContent.current;
-        secondaryTooltipElem.current.classList.add('active');
-        secondaryTooltipElem.current.innerHTML = `\
-      ${
-        object.properties.DU_ID
-          ? `<div><b>Region ID</b> ${object.properties.DU_ID}</div>`
-          : ''
-      }
-      <div><b>Scenario Demand</b> ${
-        curScenario > -1
-          ? object.properties.Demand[SCENARIOS[curScenario]][speedyCounter]
-          : object.properties.DemandBaseline[speedyCounter]
-      }</div>
-      <div><b>Scen. Unmet Demand</b> ${
-        curScenario > -1
-          ? -object.properties.UnmetDemand[SCENARIOS[curScenario]][
-              speedyCounter
-            ]
-          : -object.properties.UnmetDemandBaseline[speedyCounter]
-      }</div>
-      <div><b>Difference in Unmet Demand</b> ${
-        object.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter] -
-        object.properties.UnmetDemandBaseline[speedyCounter]
-      }</div>
-      <div><b>Land Holder</b> ${
-        // TODO refactor?
-        HOLDERS[
-          object.properties.LandUse.constructor === Array
-            ? object.properties.LandUse[0]
-            : object.properties.LandUse
-        ]
-      }</div>
-  `;
-      } else {
-        mainTooltipElem.current.classList.add('active');
-        if (object.properties.GroundwaterVar == undefined) {
-          mainTooltipElem.current.innerHTML = mainTooltipContent.current = `\
-        <div><i>${date.toLocaleString('default', {
-          month: 'long',
-        })} ${date.toLocaleString('default', { year: 'numeric' })}</i></div>
-        <div><i>${
-          object.properties.DU_ID
-            ? curScenario > -1
-              ? SCENARIO_LABELS[curScenario]
-              : 'Historical Baseline'
-            : ''
-        }</i></div>
-        ${
-          object.properties.DU_ID
-            ? `<b>Region ID</b> ${object.properties.DU_ID}</div>`
-            : ''
-        }
-        ${
-          object.properties.elem_id
-            ? `<b>Elem ID</b> ${object.properties.elem_id}</div>`
-            : ''
-        }
-        ${
-          object.properties.Groundwater
-            ? `<div><b>Groundwater</b> ${object.properties.Groundwater[speedyCounter]}</div>`
-            : ''
-        }
-        ${
-          object.properties.DU_ID
-            ? `
-          <div><b>Scenario Demand</b> ${
-            curScenario > -1
-              ? object.properties.Demand[SCENARIOS[curScenario]][speedyCounter]
-              : object.properties.DemandBaseline[speedyCounter]
-          }</div>
-          <div><b>Scen. Unmet Demand</b> ${
-            curScenario > -1
-              ? -object.properties.UnmetDemand[SCENARIOS[curScenario]][
-                  speedyCounter
-                ]
-              : -object.properties.UnmetDemandBaseline[speedyCounter]
-          }</div>
-          <div><b>Difference in Unmet Demand</b> ${
-            object.properties.UnmetDemand[SCENARIOS[curScenario]][
-              speedyCounter
-            ] - object.properties.UnmetDemandBaseline[speedyCounter]
-          }</div>`
-            : ''
-        }
-      `;
-        } else {
-          mainTooltipElem.current.innerHTML = mainTooltipContent.current = `\
-        <div><i>${date.toLocaleString('default', {
-          month: 'long',
-        })} ${date.toLocaleString('default', { year: 'numeric' })}</i></div>
-        <div><i>${
-          curScenario > -1
-            ? SCENARIO_LABELS[curScenario]
-            : 'Historical Baseline'
-        }</i></div>
-      ${
-        object.properties.DU_ID
-          ? `<b>Region ID</b> ${object.properties.DU_ID}</div>`
-          : ''
-      }
-      ${
-        object.properties.Groundwater
-          ? `<div><b>Groundwater</b> ${object.properties.Groundwater[speedyCounter]}</div>`
-          : ''
-      }
-      <div><b>Scenario Demand</b> ${
-        curScenario > -1
-          ? object.properties.Demand[SCENARIOS[curScenario]][speedyCounter]
-          : object.properties.DemandBaseline[speedyCounter]
-      }</div>
-      <div><b>Scen. Unmet Demand</b> ${
-        curScenario > -1
-          ? -object.properties.UnmetDemand[SCENARIOS[curScenario]][
-              speedyCounter
-            ]
-          : -object.properties.UnmetDemandBaseline[speedyCounter]
-      }</div>
-      <div><b>Difference in Unmet Demand</b> ${
-        object.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter] -
-        object.properties.UnmetDemandBaseline[speedyCounter]
-      }</div>
-      <div><b>Land Holder</b> ${
-        // TODO refactor?
-        HOLDERS[
-          object.properties.LandUse.constructor === Array
-            ? object.properties.LandUse[0]
-            : object.properties.LandUse
-        ]
-      }</div>
-      ${
-        object.properties.GroundwaterVar
-          ? `<div><b>Variance (GW)</b> ${object.properties.GroundwaterVar[speedyCounter]}
-      </div>`
-          : ''
-      }
-      ${
-        object.properties.UnmetDemandVar
-          ? `<div><b>Var. (Scen. UnmetDem)</b> ${
-              object.properties.UnmetDemandVar[SCENARIOS[curScenario]][
-                speedyCounter
-              ]
-            }
-      </div>`
-          : ''
-      }
-      ${
-        object.properties.UnmetDemandVar
-          ? `<div><b>Var. (Difference)</b> ${indepVariance(
-              object.properties.UnmetDemandBaselineVar[speedyCounter],
-              object.properties.UnmetDemandVar[SCENARIOS[curScenario]][
-                speedyCounter
-              ]
-            )}
-      </div>`
-          : ''
-      }
-      ${
-        object.properties.DURgs
-          ? `<div><b>Demand Regions</b> ${object.properties.DURgs.join(
-              ', '
-            )}</div>`
-          : ''
-      }
-      ${
-        object.properties.GWRgs
-          ? `<div><b>GW Regions</b> ${object.properties.GWRgs.join(', ')}</div>`
-          : ''
-      }
-  `;
-        }
-      }
       lastObject.current = object;
     },
-    [slide, speedyCounter, curScenario, curOption]
+    [speedyCounter, curOption]
   );
 
   return { getTooltip };

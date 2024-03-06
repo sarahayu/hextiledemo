@@ -18,7 +18,7 @@ import useCounters from 'src/scrollyline/hooks/useCounters';
 import Clock from 'src/Clock';
 
 import GUI from './GUI';
-import SlideTerrain from './SlideTerrain';
+import BaseTerrainLayer from './BaseTerrainLayer';
 import useGUI from './useGUI';
 import useHexMouseEvts from './useHexMouseEvts';
 import useHexTooltip from './useHexTooltip';
@@ -49,7 +49,7 @@ export default function Sandbox() {
   };
 
   const layers = [
-    new SlideTerrain(params),
+    new BaseTerrainLayer(params),
     new SandboxSlide({
       ...params,
       ...sandboxGUI,

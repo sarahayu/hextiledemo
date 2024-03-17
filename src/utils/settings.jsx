@@ -1,5 +1,7 @@
+import * as d3 from 'd3';
 import { AmbientLight, _SunLight as SunLight } from '@deck.gl/core';
 import { FlyToInterpolator, LightingEffect } from 'deck.gl';
+import { saturate } from './utils';
 
 export const INITIAL_VIEW_STATE = {
   longitude: -121.046040643251,
@@ -124,3 +126,76 @@ export const LIGHTING = new LightingEffect({
   ambientLight: AMBIENT_LIGHT,
   dirLight: DIR_LIGHT,
 });
+
+export const INITIAL_FIRE_VIEW_STATE = {
+  longitude: -119.99582643167989,
+  latitude: 37.88453894208306,
+  zoom: 10.364947995424346,
+  pitch: 49.903969287830776,
+  bearing: 28.126875,
+};
+
+export const fireScales = {
+  power: {
+    value: {
+      domain: [0, 300],
+    },
+    variance: {
+      domain: [0, 100],
+      range: [0, 1],
+    },
+  },
+  personnel: {
+    value: {
+      domain: [0, 100],
+    },
+    variance: {
+      domain: [0, 1],
+    },
+  },
+};
+
+export const waterScales = {
+  groundwater: {
+    value: {
+      domain: [-300, 700],
+      color: saturate(
+        (d) => d3.interpolateBlues(d3.scaleLinear([0.75, 1.0])(d)),
+        -0.5,
+        0.5
+      ),
+    },
+    variance: {
+      domain: [0, 10000],
+    },
+  },
+  demand: {
+    value: {
+      domain: [0, 150],
+      color: saturate(d3.interpolateOranges, 1, 1),
+    },
+    variance: {
+      domain: [0, 650],
+    },
+  },
+  unmetDemand: {
+    value: {
+      domain: [-150, 0],
+      range: [1, 0],
+      color: saturate(d3.interpolateGreys, 0, 0),
+    },
+    variance: {
+      domain: [0, 650],
+    },
+  },
+  difference: {
+    value: {
+      domain: [-30, 30],
+      color: saturate(d3.interpolateRdYlGn, 0, 0),
+      zero: 0.5,
+    },
+    variance: {
+      domain: [0, 650],
+    },
+  },
+};

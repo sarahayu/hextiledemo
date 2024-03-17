@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import * as vsup from 'vsup';
 import { HOLDERS } from './settings';
 
 function RGBtoHSV(color) {
@@ -146,6 +147,157 @@ export const getHolderStr = (object) =>
       ? object.properties.LandUse[0]
       : object.properties.LandUse
   ];
+
+export const rgbStrToArr = (s) =>
+  s
+    .replace(/[^\d,]/g, '')
+    .split(',')
+    .map((d) => Number(d));
+
+const NUM_STEPS = 10;
+
+const noneIfSuperSmall = (val, zeroVal = 0) =>
+  Math.abs(val - zeroVal) < 1 / NUM_STEPS ? 0 : 1;
+
+export const createScales = (dataSettings, hexData) => {
+  const scaleNames = Object.keys(dataSettings);
+
+  for (const name of scaleNames) {
+    const curScaleObj = dataSettings[name];
+
+    const rangeValue = curScaleObj['value']['range'] || [0, 1];
+    const rangeVariance = curScaleObj['variance']['range'] || [1, 0];
+    const colorsValue = curScaleObj['value']['color'] || d3.interpolateReds;
+    const colorsVariance =
+      curScaleObj['variance']['color'] || d3.interpolateReds;
+
+    if (typeof curScaleObj['value']['domain'] === 'function') {
+      // get highest resolution hexes
+      const highestResHexes = Object.values(hexData).slice(-1)[0];
+
+      curScaleObj['value']['domain'] = d3.extent(
+        Object.values(highestResHexes).map(curScaleObj['value']['domain'])
+      );
+    }
+
+    if (typeof curScaleObj['value']['domain'] === 'string') {
+      // get highest resolution hexes
+      const highestResHexes = Object.values(hexData).slice(-1)[0];
+
+      curScaleObj['value']['domain'] = d3.extent(
+        Object.values(highestResHexes).map(
+          (d) => d[curScaleObj['value']['domain']]
+        )
+      );
+    }
+
+    const scaleValue = d3
+      .scaleLinear()
+      .domain(curScaleObj['value']['domain'])
+      .range(rangeValue);
+    const scaleVariance = d3
+      .scaleLinear()
+      .domain(curScaleObj['variance']['domain'])
+      .range(rangeVariance);
+
+    // create step and continuous scales for value and variance
+    curScaleObj['scaleLinear'] = scaleValue.copy().clamp(true);
+    curScaleObj['scaleStepped'] = d3
+      .scaleQuantize()
+      .domain(curScaleObj['value']['domain'])
+      .range(d3.ticks(rangeValue[0], rangeValue[1], NUM_STEPS));
+    curScaleObj['scaleLinearVar'] = scaleVariance.copy().clamp(true);
+    curScaleObj['scaleSteppedVar'] = d3
+      .scaleQuantize()
+      .domain(curScaleObj['variance']['domain'])
+      .range(d3.ticks(rangeVariance[0], rangeVariance[1], NUM_STEPS));
+
+    // create colorScales
+    curScaleObj['colorsLinear'] = (d) => colorsValue(scaleValue(d));
+    curScaleObj['colorsStepped'] = d3
+      .scaleQuantize()
+      .domain(curScaleObj['value']['domain'])
+      .range(
+        d3.quantize(
+          (d) => colorsValue(d3.scaleLinear([0, 1]).range(rangeValue)(d)),
+          NUM_STEPS
+        )
+      );
+    curScaleObj['colorsLinearVar'] = (d) => colorsVariance(scaleVariance(d));
+    curScaleObj['colorsSteppedVar'] = d3
+      .scaleQuantize()
+      .domain(curScaleObj['variance']['domain'])
+      .range(
+        d3.quantize(
+          (d) => colorsVariance(d3.scaleLinear([0, 1]).range(rangeVariance)(d)),
+          NUM_STEPS
+        )
+      );
+
+    // create vsupScales
+    // TODO factor in scaleValue and scaleVariance into this somehow
+    curScaleObj['vsup'] = vsup
+      .scale()
+      .quantize(
+        vsup
+          .quantization()
+          .branching(2)
+          .layers(4)
+          .valueDomain(curScaleObj['value']['domain'])
+          .uncertaintyDomain(curScaleObj['variance']['domain'])
+      )
+      .range(colorsValue);
+
+    // create colorInterpolators
+    curScaleObj['interpColor'] = (d, useAlpha = false, useStep = true) => {
+      return [
+        ...rgbStrToArr(
+          (useStep
+            ? curScaleObj['colorsStepped']
+            : curScaleObj['colorsLinear'])(d)
+        ),
+        ...(useAlpha
+          ? [
+              noneIfSuperSmall(
+                curScaleObj['scaleStepped'](d),
+                curScaleObj['value']['zero'] || 0
+              ) * 255,
+            ]
+          : []),
+      ];
+    };
+    curScaleObj['interpColorVar'] = (d, useAlpha = false, useStep = true) => [
+      ...rgbStrToArr(
+        (useStep
+          ? curScaleObj['colorsSteppedVar']
+          : curScaleObj['colorsLinearVar'])(d)
+      ),
+      ...(useAlpha
+        ? [
+            noneIfSuperSmall(
+              curScaleObj['scaleSteppedVar'](d),
+              curScaleObj['variance']['zero'] || 0
+            ) * 255,
+          ]
+        : []),
+    ];
+
+    // create vsupInterpolators
+    curScaleObj['interpVsup'] = (d, u, useAlpha = false) => [
+      ...rgbStrToArr(curScaleObj['vsup'](d, u)),
+      ...(useAlpha
+        ? [
+            noneIfSuperSmall(
+              curScaleObj['scaleStepped'](d),
+              curScaleObj['value']['zero'] || 0
+            ) * 255,
+          ]
+        : []),
+    ];
+  }
+
+  return dataSettings;
+};
 
 // prettier-ignore
 export const FORMATIONS = [

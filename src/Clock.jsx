@@ -1,14 +1,14 @@
 import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
 import { averageData } from './utils/data';
-import { colorDemAvg, colorGW, dateInterpIdx } from 'src/utils/scales';
+import { dateInterpIdx } from 'src/utils/scales';
 import { saturate } from 'src/utils/utils';
 
-const gwUnsat = saturate(colorGW, 0.5)
+const gwUnsat = saturate('rgb(100, 100, 100)', 0.5)
   .replace(/[^\d,]/g, '')
   .split(',')
   .map((d) => Number(d));
-const gwSat = saturate(colorGW, 0.5, -0.5)
+const gwSat = saturate('rgb(100, 100, 100)', 0.5, -0.5)
   .replace(/[^\d,]/g, '')
   .split(',')
   .map((d) => Number(d));

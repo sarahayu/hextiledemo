@@ -1,11 +1,3 @@
-import {
-  colorInterpDemDiff,
-  colorInterpVsupDemDiff,
-  colorInterpVsupGW,
-  scaleContDemDiffVar,
-  scaleStepUDemVar,
-  valueInterpUDem,
-} from 'src/utils/scales';
 import { SCENARIOS } from 'src/utils/settings';
 
 import { PathStyleExtension } from '@deck.gl/extensions';
@@ -16,6 +8,7 @@ import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import { indepVariance } from 'src/utils/utils';
 
 import DeaggregatedLayer from './DeaggregateLayer';
+import { WATER_INTERPS } from 'src/utils/scales';
 
 const curScenario = 0;
 
@@ -36,7 +29,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         data,
         thicknessRange: [0, 1],
         getFillColor: (d) =>
-          colorInterpVsupGW(
+          WATER_INTERPS.groundwater.interpVsup(
             d.properties.Groundwater[speedyCounter],
             d.properties.GroundwaterVar[speedyCounter]
           ),
@@ -52,7 +45,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         thicknessRange: [0.4, 0.65],
         getFillColor: (d) =>
           curOption == 0
-            ? colorInterpVsupDemDiff(
+            ? WATER_INTERPS.difference.interpVsup(
                 d.properties.UnmetDemand[SCENARIOS[curScenario]][
                   speedyCounter
                 ] - d.properties.UnmetDemandBaseline[speedyCounter],
@@ -64,7 +57,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
                 ),
                 true
               )
-            : colorInterpDemDiff(
+            : WATER_INTERPS.difference.interpColor(
                 d.properties.UnmetDemand[SCENARIOS[curScenario]][
                   speedyCounter
                 ] - d.properties.UnmetDemandBaseline[speedyCounter],
@@ -73,14 +66,16 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         getValue: (d) =>
           curOption == 0
             ? 1
-            : scaleStepUDemVar(
+            : WATER_INTERPS.difference.scaleLinearVar(
                 indepVariance(
                   d.properties.UnmetDemandBaselineVar[speedyCounter],
                   d.properties.UnmetDemandVar[SCENARIOS[curScenario]][
                     speedyCounter
                   ]
                 )
-              ),
+              ) *
+                0.5 +
+              0.4,
         raised: true,
         visible,
         getElevation: (d) => (d.hexId in clickedHexes ? 5000 : 0),
@@ -109,15 +104,14 @@ export default class MultivariableHextileLayer extends CompositeLayer {
           255,
           130,
           35,
-          (1 -
-            scaleContDemDiffVar(
-              d.properties.UnmetDemandBaselineVar[speedyCounter]
-            )) *
+          WATER_INTERPS.unmetDemand.scaleLinearVar(
+            d.properties.UnmetDemandVar[SCENARIOS[curScenario]][speedyCounter]
+          ) *
             200 +
             55,
         ],
         getValue: (d) =>
-          valueInterpUDem(
+          WATER_INTERPS.unmetDemand.scaleLinear(
             d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
           ),
         visible,

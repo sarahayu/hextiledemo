@@ -1,10 +1,10 @@
-import { colorInterpUDem, heightInterpUDem } from 'src/utils/scales';
 import { SCENARIOS } from 'src/utils/settings';
 
 import { CompositeLayer, GeoJsonLayer } from 'deck.gl';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 
 import { temporalDataGeo } from 'src/utils/data';
+import { WATER_INTERPS, heightInterpUDem } from 'src/utils/scales';
 
 const curScenario = 0;
 
@@ -38,9 +38,14 @@ export default class DeaggregatedLayer extends CompositeLayer {
         pickable: true,
         getLineWidth: 100,
         getFillColor: (d) => {
-          let fill = colorInterpUDem(
-            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
-          );
+          let fill = [
+            ...WATER_INTERPS.unmetDemand.interpColor(
+              d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter],
+              false,
+              false
+            ),
+            255,
+          ];
 
           if (fill[3] == 0) {
             fill = [255, 255, 255, 255];
@@ -102,11 +107,16 @@ export default class DeaggregatedLayer extends CompositeLayer {
         getFillColor: (d) => {
           if (d.properties.DU_ID == hoveredGeoActive) {
             const hlcol = [0 / 255, 0 / 255, 128 / 255, 128 / 255];
-            const fill = colorInterpUDem(
-              selectedGeos[d.properties.DU_ID].UnmetDemand[
-                SCENARIOS[curScenario]
-              ][speedyCounter]
-            );
+            const fill = [
+              ...WATER_INTERPS.unmetDemand.interpColor(
+                selectedGeos[d.properties.DU_ID].UnmetDemand[
+                  SCENARIOS[curScenario]
+                ][speedyCounter],
+                false,
+                false
+              ),
+              255,
+            ];
             return [
               (hlcol[curScenario] * hlcol[3] +
                 (fill[curScenario] / 255) * (1 - hlcol[3])) *
@@ -117,11 +127,16 @@ export default class DeaggregatedLayer extends CompositeLayer {
             ];
           }
           if (d.properties.DU_ID in selectedGeos) {
-            return colorInterpUDem(
-              selectedGeos[d.properties.DU_ID].UnmetDemand[
-                SCENARIOS[curScenario]
-              ][speedyCounter]
-            );
+            return [
+              ...WATER_INTERPS.unmetDemand.interpColor(
+                selectedGeos[d.properties.DU_ID].UnmetDemand[
+                  SCENARIOS[curScenario]
+                ][speedyCounter],
+                false,
+                false
+              ),
+              255,
+            ];
           }
           return [0, 0, 0, 0];
         },

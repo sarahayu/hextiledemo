@@ -18,3 +18,7 @@ export const temporalDataGeoByDUID = arrGroupBy(
 export const temporalDataGeoGW = await (
   await fetch('./assets/groundwater_geo.json')
 ).json();
+
+export const fireDataHex = await (
+  await fetch('./assets/fire_hex_7_9.json')
+).json();

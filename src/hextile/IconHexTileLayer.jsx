@@ -49,6 +49,9 @@ export default class IconHexTileLayer extends CompositeLayer {
       const [lat, lon] = h3.cellToLatLng(hexID);
 
       let polyIdx = 0;
+      const iconScale =
+        h3.getHexagonEdgeLengthAvg(lastResolution, h3.UNITS.km) /
+        h3.getHexagonEdgeLengthAvg(5, h3.UNITS.km);
 
       for (let [dx, dy, dz] of this.props.getValue ? START_FORM : [[0, 0, 0]]) {
         data.push({
@@ -60,7 +63,7 @@ export default class IconHexTileLayer extends CompositeLayer {
             (typeof this.props.getElevation === 'function'
               ? this.props.getElevation({ properties })
               : this.props.getElevation) +
-              dz * 10000,
+              dz * 100000 * iconScale,
           ],
           properties,
           polyIdx: polyIdx++,
@@ -158,7 +161,7 @@ export default class IconHexTileLayer extends CompositeLayer {
                   return [
                     (curForm[0] - baseForm[0]) * edgeLen,
                     (curForm[1] - baseForm[1]) * edgeLen,
-                    (curForm[2] - baseForm[2]) * 10000,
+                    (curForm[2] - baseForm[2]) * 100000 * iconScale,
                   ];
                 },
         })

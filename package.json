@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
+  "homepage": "https://github.com/sarahayu/hextiledemo",
   "scripts": {
     "start": "vite --host",
     "start-local": "vite --config ../../vite.config.local.mjs",

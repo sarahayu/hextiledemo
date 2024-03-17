@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { useCallback, useState } from 'react';
-import { temporalDataGeoByDUID } from 'src/utils/data';
 import * as turf from '@turf/turf';
 import { h3ToFeature } from 'geojson2h3';
+import { arrGroupBy } from 'src/utils/utils';
 
-export default function useHexMouseEvts({ curOption }) {
+export default function useHexMouseEvts({
+  dataDeag,
+  disabled = false,
+  deagKey,
+}) {
+  const { current: deagGeoById } = useRef(
+    arrGroupBy(dataDeag.features, (t) => t.properties.id)
+  );
   const [hoveredHex, setHoveredHex] = useState(null);
   const [hoveredGeos, setHoveredGeos] = useState({});
   const [hoveredGeoActive, setHoveredGeoActive] = useState([]);
@@ -27,24 +34,24 @@ export default function useHexMouseEvts({ curOption }) {
         return;
       }
 
-      if (curOption > 1) return;
+      if (disabled) return;
 
       if (selectionFinalized) {
         // hover geos
         setHoveredHex(null);
         setHoveredGeos({});
-        setHoveredGeoActive(object.properties.DU_ID);
+        setHoveredGeoActive(object.properties.id);
       } else {
         // hover hexes
         const hoveredHexFeature = h3ToFeature(object.hexId);
         const hovereds = {};
-        for (const duid of object.properties.DURgs) {
-          const f = temporalDataGeoByDUID[duid];
+        for (const id of object.properties[deagKey]) {
+          const f = deagGeoById[id];
           const intersectionFeature = turf.intersect(
             hoveredHexFeature,
             f.geometry
           );
-          hovereds[f.properties.DU_ID] =
+          hovereds[f.properties.id] =
             turf.area(intersectionFeature) / turf.area(hoveredHexFeature);
         }
         setHoveredGeos(hovereds);
@@ -53,13 +60,13 @@ export default function useHexMouseEvts({ curOption }) {
 
       return true;
     },
-    [clickedHexes, selectionFinalized, curOption]
+    [clickedHexes, selectionFinalized, disabled, deagKey]
   );
 
   const onClick = useCallback(
     ({ object }, evt) => {
       // unclick
-      if (object.properties.DU_ID == hoveredGeoActive) {
+      if (object.properties.id == hoveredGeoActive) {
         setSelectedGeoJSON({
           type: 'FeatureCollection',
           features: [],
@@ -70,12 +77,12 @@ export default function useHexMouseEvts({ curOption }) {
         return true;
       }
 
-      if (object.properties.GroundwaterVar == undefined) return;
+      if (object.properties[deagKey] == undefined) return;
       // clicking additional hexes
       if (evt.srcEvent.shiftKey) {
         setClickedHexes((c) => ({
           ...c,
-          [object.hexId]: object.properties.DURgs,
+          [object.hexId]: object.properties[deagKey],
         }));
         return true;
       }
@@ -83,14 +90,14 @@ export default function useHexMouseEvts({ curOption }) {
       setSelectionFinalized(true);
       setHoveredHex(null);
       setHoveredGeos({});
-      setHoveredGeoActive(object.properties.DU_ID);
+      setHoveredGeoActive(object.properties.id);
 
       // TODO change clickedHexes to ref...
       setClickedHexes({});
       // TODO: ...because of this
       const clickedHexesCurrent = {
         ...clickedHexes,
-        [object.hexId]: object.properties.DURgs,
+        [object.hexId]: object.properties[deagKey],
       };
       setClickedHexes(clickedHexesCurrent);
 
@@ -100,10 +107,10 @@ export default function useHexMouseEvts({ curOption }) {
         features: [],
       };
 
-      for (const hid in clickedHexesCurrent) {
-        for (const duid of clickedHexesCurrent[hid]) {
-          const feat = temporalDataGeoByDUID[duid];
-          const hoveredHexFeature = h3ToFeature(hid);
+      for (const hexId in clickedHexesCurrent) {
+        for (const id of clickedHexesCurrent[hexId]) {
+          const feat = deagGeoById[id];
+          const hoveredHexFeature = h3ToFeature(hexId);
           const intersectionFeature = turf.intersect(
             hoveredHexFeature,
             feat.geometry
@@ -112,7 +119,7 @@ export default function useHexMouseEvts({ curOption }) {
             ...intersectionFeature,
             properties: { ...feat.properties },
           });
-          selecteds[feat.properties.DU_ID] = { ...feat.properties };
+          selecteds[feat.properties.id] = { ...feat.properties };
         }
       }
 
@@ -121,7 +128,7 @@ export default function useHexMouseEvts({ curOption }) {
 
       return true;
     },
-    [clickedHexes, hoveredGeoActive, selectionFinalized]
+    [clickedHexes, hoveredGeoActive, selectionFinalized, deagKey]
   );
 
   return {

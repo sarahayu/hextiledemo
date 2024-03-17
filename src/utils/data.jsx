@@ -10,10 +10,10 @@ export const temporalDataGeo = await (
   await fetch('./assets/demand_geo.json')
 ).json();
 
-export const temporalDataGeoByDUID = arrGroupBy(
-  temporalDataGeo.features,
-  (t) => t.properties.DU_ID
-);
+// export const temporalDataGeoByDUID = arrGroupBy(
+//   temporalDataGeo.features,
+//   (t) => t.properties.id
+// );
 
 export const temporalDataGeoGW = await (
   await fetch('./assets/groundwater_geo.json')

@@ -6,7 +6,6 @@ import {
   SimpleMeshLayer,
 } from 'deck.gl';
 import * as h3 from 'h3-js';
-import { valueInterpResolution } from 'src/utils/scales';
 import { FORMATIONS } from 'src/utils/utils';
 
 const formationInterp = d3
@@ -82,7 +81,11 @@ export default class BillboardIconHexTileLayer extends CompositeLayer {
     const { zoom } = this.context.viewport;
 
     const resRange = Object.keys(this.props.data).map((d) => parseInt(d));
-
+    const valueInterpResolution = d3
+      .scaleLinear()
+      .domain(this.props.zoomRange)
+      .range([0, 1])
+      .clamp(true);
     const curRes = d3.scaleQuantize().domain([0, 1]).range(resRange)(
       valueInterpResolution(zoom)
     );
@@ -91,6 +94,7 @@ export default class BillboardIconHexTileLayer extends CompositeLayer {
       hextiles: this.props.data,
       resRange,
       lastResolution: curRes,
+      valueInterpResolution,
     });
 
     this.createPolygons();
@@ -147,7 +151,7 @@ export default class BillboardIconHexTileLayer extends CompositeLayer {
   }
 
   updateState(params) {
-    const { resRange, lastResolution } = this.state;
+    const { resRange, lastResolution, valueInterpResolution } = this.state;
     const { props, oldProps, changeFlags, context } = params;
 
     if (
@@ -252,4 +256,5 @@ BillboardIconHexTileLayer.defaultProps = {
   getValue: null,
   getElevation: () => 0,
   offset: [0, 0],
+  zoomRange: [7, 9],
 };

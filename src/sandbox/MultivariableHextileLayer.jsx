@@ -7,8 +7,9 @@ import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import { indepVariance } from 'src/utils/utils';
 
-import DeaggregatedLayer from './DeaggregateLayer';
+import DeagHexTileLayer from '../hextile/DeagHexTileLayer';
 import { WATER_INTERPS } from 'src/utils/scales';
+import { temporalDataGeo } from 'src/utils/data';
 
 const curScenario = 0;
 
@@ -21,6 +22,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
       clickedHexes,
       selectionFinalized,
       visible,
+      zoomRange,
     } = this.props;
 
     return [
@@ -38,6 +40,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         updateTriggers: {
           getFillColor: [speedyCounter],
         },
+        zoomRange,
       }),
       new SolidHexTileLayer({
         id: `DiffRings`,
@@ -93,6 +96,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
           getElevation: [selectionFinalized],
           getLineWidth: [selectionFinalized],
         },
+        zoomRange,
       }),
       new IconHexTileLayer({
         id: `ScenarioUnmet`,
@@ -120,11 +124,20 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         updateTriggers: {
           getTranslation: [speedyCounter],
         },
+        zoomRange,
       }),
-      new DeaggregatedLayer({
+      new DeagHexTileLayer({
         ...this.props,
         id: 'DeagLayer',
         data,
+        deagData: temporalDataGeo,
+        getFillColor: (d) => {
+          return WATER_INTERPS.unmetDemand.interpColor(
+            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter],
+            false,
+            false
+          );
+        },
       }),
     ];
   }

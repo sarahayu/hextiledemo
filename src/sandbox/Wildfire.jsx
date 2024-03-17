@@ -129,6 +129,7 @@ function _Wildfire({ curInput }) {
             id: 'slide-fire',
             ...curState,
             visible: curInput.curOption == 0 || curInput.curOption == 1,
+            zoomRange: [9, 14],
             // beforeId: 'waterway_label',
           }),
         ],
@@ -144,7 +145,7 @@ function _Wildfire({ curInput }) {
 
 class WildfireLayer extends CompositeLayer {
   renderLayers() {
-    const { data, visible } = this.props;
+    const { data, visible, zoomRange } = this.props;
 
     return [
       new SolidHexTileLayer({
@@ -168,6 +169,7 @@ class WildfireLayer extends CompositeLayer {
         getValue: (d) =>
           FIRE_INTERPS.power.scaleLinearVar(d['properties']['confidence']),
         visible,
+        zoomRange,
       }),
       new IconHexTileLayer({
         id: `ScenarioUnmet`,
@@ -186,6 +188,7 @@ class WildfireLayer extends CompositeLayer {
           FIRE_INTERPS.personnel.scaleLinear(d['properties']['personnel']),
         visible,
         sizeScale: 400,
+        zoomRange,
       }),
       new DeaggregatedLayer({
         ...this.props,
@@ -204,7 +207,7 @@ WildfireLayer.defaultProps = {
 
 class DeaggregatedLayer extends CompositeLayer {
   renderLayers() {
-    const { data, visible, selectionFinalized = false } = this.props;
+    const { data, visible, zoomRange, selectionFinalized = false } = this.props;
 
     return [
       new SolidHexTileLayer({
@@ -216,6 +219,7 @@ class DeaggregatedLayer extends CompositeLayer {
         pickable: !selectionFinalized,
         autoHighlight: !selectionFinalized,
         visible,
+        zoomRange,
       }),
     ];
   }

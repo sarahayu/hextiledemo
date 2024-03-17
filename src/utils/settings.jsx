@@ -182,7 +182,7 @@ export const waterScales = {
     value: {
       domain: [-150, 0],
       range: [1, 0],
-      color: saturate(d3.interpolateGreys, 0, 0),
+      color: saturate(d3.interpolateOranges, 0, 0),
     },
     variance: {
       domain: [0, 650],

@@ -2,7 +2,6 @@ import { CompositeLayer, SolidPolygonLayer, PolygonLayer } from 'deck.gl';
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';
 import { lerp } from '@math.gl/core';
-import { valueInterpResolution } from 'src/utils/scales';
 
 function scaleBounds(hexId, paths, value = 1) {
   // if(!outside) return
@@ -39,6 +38,11 @@ export default class SolidHexTileLayer extends CompositeLayer {
     super.initializeState();
 
     const resRange = Object.keys(this.props.data).map((d) => parseInt(d));
+    const valueInterpResolution = d3
+      .scaleLinear()
+      .domain(this.props.zoomRange)
+      .range([0, 1])
+      .clamp(true);
     const lastResolution = d3.scaleQuantize().domain([0, 1]).range(resRange)(
       valueInterpResolution(this.context.viewport.zoom)
     );
@@ -47,6 +51,7 @@ export default class SolidHexTileLayer extends CompositeLayer {
       ...this.state,
       resRange,
       lastResolution,
+      valueInterpResolution,
     });
 
     this.createPolygons();
@@ -114,7 +119,7 @@ export default class SolidHexTileLayer extends CompositeLayer {
   }
 
   updateState(params) {
-    const { resRange, lastResolution } = this.state;
+    const { resRange, lastResolution, valueInterpResolution } = this.state;
     const { props, oldProps, changeFlags, context } = params;
 
     if (
@@ -184,4 +189,5 @@ SolidHexTileLayer.defaultProps = {
   thicknessRange: [0.7, 0.9],
   getValue: undefined,
   raised: false,
+  zoomRange: [7, 9],
 };

@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 import { CompositeLayer, SimpleMeshLayer } from 'deck.gl';
 import * as h3 from 'h3-js';
-import { valueInterpResolution, valueInterpDem } from 'src/utils/scales';
 import { FORMATIONS, INTERIM_FORMATIONS } from 'src/utils/utils';
 
 const formationInterp = d3
@@ -12,16 +11,28 @@ const formationInterp = d3
 export default class AnimatedIconHexTileLayer extends CompositeLayer {
   initializeState() {
     super.initializeState();
+    const valueInterpResolution = d3
+      .scaleLinear()
+      .domain(this.props.zoomRange)
+      .range([0, 1])
+      .clamp(true);
     this.setState({
       hextiles: this.props.data,
       resRange: Object.keys(this.props.data).map((d) => parseInt(d)),
       transitioning: false,
       prevGetValueFn: null,
+      valueInterpResolution,
     });
   }
 
   renderLayers() {
-    let { hextiles, transitioning, prevGetValueFn, resRange } = this.state;
+    let {
+      hextiles,
+      transitioning,
+      prevGetValueFn,
+      resRange,
+      valueInterpResolution,
+    } = this.state;
     const { zoom } = this.context.viewport;
 
     if (prevGetValueFn === null) {
@@ -144,4 +155,5 @@ AnimatedIconHexTileLayer.defaultProps = {
       easing: d3.easeBackOut.overshoot(2),
     },
   },
+  zoomRange: [7, 9],
 };

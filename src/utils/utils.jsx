@@ -128,7 +128,7 @@ export function arrGroupBy(xs, key) {
   }, {});
 }
 
-export const isGeo = (o) => !!(o.properties || {}).DU_ID;
+export const isGeo = (o) => !!(o.properties || {}).id;
 export const isHex = (o) => !isGeo(o);
 
 export const formatMonthYear = (date) => {

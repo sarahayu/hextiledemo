@@ -36,7 +36,7 @@ export default function useHexTooltip({ speedyCounter, curOption }) {
       secondaryTooltipElem.current.classList.add('active');
 
       secondaryTooltipElem.current.innerHTML = `\
-        <div><b>Region ID</b> ${object.properties.DU_ID}</div>
+        <div><b>Region ID</b> ${object.properties.id}</div>
         <div><b>Scenario Demand</b> ${scenDem}</div>
         <div><b>Scen. Unmet Demand</b> ${scenUDem}</div>
         <div><b>Difference in Unmet Demand</b> ${diffDem}</div>
@@ -54,7 +54,7 @@ export default function useHexTooltip({ speedyCounter, curOption }) {
         <div><i>${formatMonthYear(dateInterpIdx(speedyCounter))}</i></div>
       `;
 
-      if (object.properties.DU_ID) {
+      if (object.properties.Demand) {
         const scenDem =
           object.properties.Demand[SCENARIOS[curScenario]][speedyCounter];
         const scenUDem =
@@ -64,7 +64,7 @@ export default function useHexTooltip({ speedyCounter, curOption }) {
 
         mainTooltipElem.current.innerHTML += `\        
           <div><i>${SCENARIO_LABELS[curScenario]}</i></div>
-          <div><b>Region ID</b> ${object.properties.DU_ID}</div>
+          <div><b>Region ID</b> ${object.properties.id}</div>
           <div><b>Scenario Demand</b> ${scenDem}</div>
           <div><b>Scen. Unmet Demand</b> ${scenUDem}</div>
           <div><b>Difference in Unmet Demand</b> ${diffDem}</div>
@@ -74,7 +74,7 @@ export default function useHexTooltip({ speedyCounter, curOption }) {
         const gw = object.properties.Groundwater[speedyCounter];
 
         mainTooltipElem.current.innerHTML += `\     
-          <div><b>Elem ID</b> ${object.properties.elem_id}</div>
+          <div><b>Elem ID</b> ${object.properties.id}</div>
           <div><b>Groundwater</b> ${gw}</div>
       `;
       }

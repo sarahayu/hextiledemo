@@ -135,6 +135,47 @@ export const INITIAL_FIRE_VIEW_STATE = {
   bearing: 28.126875,
 };
 
+export const precinctScales = {
+  party: {
+    value: {
+      domain: [-100, 100],
+      color: d3.interpolateRgbBasis(['red', 'purple', 'blue']),
+    },
+    variance: {
+      domain: [0, 1],
+    },
+  },
+  votes: {
+    value: {
+      domain: 'votes_per_sqkm',
+    },
+    variance: {
+      domain: [0, 1],
+    },
+  },
+};
+
+export const countyScales = {
+  population: {
+    value: {
+      domain: 'PopDen',
+      color: d3.interpolateOranges,
+    },
+    variance: {
+      domain: [0, 1],
+    },
+  },
+  white: {
+    value: {
+      domain: [0, 1],
+      color: d3.interpolateRgbBasis(['orange', 'white']),
+    },
+    variance: {
+      domain: [0, 1],
+    },
+  },
+};
+
 export const fireScales = {
   power: {
     value: {

@@ -41,7 +41,7 @@ export default function useHexMouseEvts({
         setHoveredHex(null);
         setHoveredGeos({});
         setHoveredGeoActive(object.properties.id);
-      } else {
+      } else if (object.properties[deagKey]) {
         // hover hexes
         const hoveredHexFeature = h3ToFeature(object.hexId);
         const hovereds = {};

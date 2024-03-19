@@ -1,8 +1,13 @@
 import * as d3 from 'd3';
-import { temporalDataHex } from 'src/utils/data';
+import { countyGeo, precinctGeo, temporalDataHex } from 'src/utils/data';
 import { createScales, percentile, saturate } from 'src/utils/utils';
 import * as vsup from 'vsup';
-import { fireScales, waterScales } from './settings';
+import {
+  countyScales,
+  fireScales,
+  precinctScales,
+  waterScales,
+} from './settings';
 
 // /////////////////// extents /////////////////////////
 
@@ -336,6 +341,12 @@ import { fireScales, waterScales } from './settings';
 //   .clamp(true);
 
 export const WATER_INTERPS = createScales(waterScales, temporalDataHex);
+export const PRECINCT_INTERPS = createScales(
+  precinctScales,
+  precinctGeo,
+  false
+);
+export const COUNTY_INTERPS = createScales(countyScales, countyGeo, false);
 export const FIRE_INTERPS = createScales(fireScales, {});
 
 /////////////////// other interpolators /////////////////////////

@@ -28,7 +28,6 @@ function calcPolyBorder(hexId, [thicknessMin, thicknessMax]) {
   // scale bounds and create polygons
   let scaledBoundsOuter = scaleBounds(hexId, bounds, thicknessMax);
   let scaledBoundsInner = scaleBounds(hexId, bounds, thicknessMin);
-  // let borderPolygons = createBorderPolygons(scaledBoundsOuter, scaledBoundsInner)
 
   return [scaledBoundsOuter, scaledBoundsInner];
 }

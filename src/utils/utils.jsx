@@ -159,7 +159,7 @@ const NUM_STEPS = 10;
 const noneIfSuperSmall = (val, zeroVal = 0) =>
   Math.abs(val - zeroVal) < 1 / NUM_STEPS ? 0 : 1;
 
-export const createScales = (dataSettings, hexData) => {
+export const createScales = (dataSettings, data, isHexData = true) => {
   const scaleNames = Object.keys(dataSettings);
 
   for (const name of scaleNames) {
@@ -172,23 +172,35 @@ export const createScales = (dataSettings, hexData) => {
       curScaleObj['variance']['color'] || d3.interpolateReds;
 
     if (typeof curScaleObj['value']['domain'] === 'function') {
-      // get highest resolution hexes
-      const highestResHexes = Object.values(hexData).slice(-1)[0];
+      if (isHexData) {
+        // get highest resolution hexes
+        const highestResHexes = Object.values(data).slice(-1)[0];
 
-      curScaleObj['value']['domain'] = d3.extent(
-        Object.values(highestResHexes).map(curScaleObj['value']['domain'])
-      );
+        curScaleObj['value']['domain'] = d3.extent(
+          Object.values(highestResHexes).map(curScaleObj['value']['domain'])
+        );
+      } else {
+        curScaleObj['value']['domain'] = d3.extent(
+          data.features.map(curScaleObj['value']['domain'])
+        );
+      }
     }
 
     if (typeof curScaleObj['value']['domain'] === 'string') {
-      // get highest resolution hexes
-      const highestResHexes = Object.values(hexData).slice(-1)[0];
+      if (isHexData) {
+        // get highest resolution hexes
+        const highestResHexes = Object.values(data).slice(-1)[0];
 
-      curScaleObj['value']['domain'] = d3.extent(
-        Object.values(highestResHexes).map(
-          (d) => d[curScaleObj['value']['domain']]
-        )
-      );
+        curScaleObj['value']['domain'] = d3.extent(
+          Object.values(highestResHexes).map(
+            (d) => d[curScaleObj['value']['domain']]
+          )
+        );
+      } else {
+        curScaleObj['value']['domain'] = d3.extent(
+          data.features.map((d) => d.properties[curScaleObj['value']['domain']])
+        );
+      }
     }
 
     const scaleValue = d3

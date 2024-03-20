@@ -31,7 +31,7 @@ export default function GUI({
             value="1"
             checked={curOption == 1}
           />
-          <label htmlFor="option2">HexTile (unimplemented)</label>
+          <label htmlFor="option2">HexTile</label>
         </div>
         <div>
           <input

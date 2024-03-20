@@ -7,7 +7,7 @@ export default class BaseTerrainLayer extends CompositeLayer {
     return [
       new TileLayer({
         data: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
-        minZoom: 7,
+        minZoom: 2,
         maxZoom: 11,
         tileSize: 256,
         // zoomOffset: -1,

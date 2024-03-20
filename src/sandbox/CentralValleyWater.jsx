@@ -54,9 +54,8 @@ export default function CentralValleyWater() {
           id="slide-waters"
           {...curState}
           zoomRange={[7, 9]}
-          visible={curInput.curOption == 0 || curInput.curOption == 1}
+          visible
         />
-        <BasicGeoLayer id="slide-basic" {...curState} />
       </DeckGL>
       <GUI {...curState} />
     </>

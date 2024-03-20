@@ -1,7 +1,7 @@
 import { countyGeo, precinctGeo } from 'src/utils/data';
 
 import { CompositeLayer, GeoJsonLayer } from 'deck.gl';
-import { COUNTY_INTERPS, PRECINCT_INTERPS } from 'src/utils/scales';
+import { ELECTION_INTERPS } from 'src/utils/scales';
 
 export default class BasicGeoLayer extends CompositeLayer {
   renderLayers() {
@@ -17,10 +17,10 @@ export default class BasicGeoLayer extends CompositeLayer {
         filled: true,
         extruded: true,
         getElevation: (d) =>
-          PRECINCT_INTERPS.votes.scaleLinear(d.properties.votes_per_sqkm) *
+          ELECTION_INTERPS.votes.scaleLinear(d.properties.votes_per_sqkm) *
           300000,
         getFillColor: (d) =>
-          PRECINCT_INTERPS.party.interpColor(
+          ELECTION_INTERPS.party.interpColor(
             d.properties.pct_dem_lead,
             false,
             false
@@ -38,11 +38,13 @@ export default class BasicGeoLayer extends CompositeLayer {
         filled: true,
         extruded: true,
         getElevation: (d) =>
-          COUNTY_INTERPS.population.scaleLinear(d.properties['PopDen'] || 0) *
-          300000,
+          ELECTION_INTERPS.population.scaleLinear(
+            d.properties['county_subdivision_dec_Total population'] /
+              (d.properties['area'] / 1e6) || 0
+          ) * 30000,
         getFillColor: (d) =>
-          COUNTY_INTERPS.white.interpColor(
-            d.properties['PercWhite'] || 1,
+          ELECTION_INTERPS.poc.interpColor(
+            100 - (d.properties['county_subdivision_dec_Percent White'] || 100),
             false,
             false
           ),

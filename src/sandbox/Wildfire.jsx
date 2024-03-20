@@ -128,7 +128,6 @@ function _Wildfire({ curInput }) {
           new WildfireLayer({
             id: 'slide-fire',
             ...curState,
-            visible: curInput.curOption == 0 || curInput.curOption == 1,
             zoomRange: [9, 14],
             // beforeId: 'waterway_label',
           }),

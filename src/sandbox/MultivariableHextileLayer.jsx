@@ -77,8 +77,8 @@ export default class MultivariableHextileLayer extends CompositeLayer {
                   ]
                 )
               ) *
-                0.5 +
-              0.4,
+                0.8 +
+              0.2,
         raised: true,
         visible,
         getElevation: (d) => (d.hexId in clickedHexes ? 5000 : 0),
@@ -137,6 +137,9 @@ export default class MultivariableHextileLayer extends CompositeLayer {
             false,
             false
           );
+        },
+        updateTriggers: {
+          getFillColor: [speedyCounter],
         },
       }),
     ];

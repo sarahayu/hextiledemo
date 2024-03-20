@@ -23,12 +23,28 @@ export default function useHexTooltip({ curOption }) {
     secondaryTooltipElem.current = document.querySelector('#secondary-tooltip');
   }, []);
 
+  const handleExtrudedGeo = useCallback((object) => {
+    mainTooltipElem.current.classList.add('active');
+    secondaryTooltipElem.current.classList.add('active');
+    secondaryTooltipElem.current.innerHTML = `\        
+          <div>${JSON.stringify(object.properties)}</div>
+        `;
+  }, []);
+
   const handleBasicGeo = useCallback((object) => {
     secondaryTooltipElem.current.classList.remove('active');
     mainTooltipElem.current.classList.add('active');
     mainTooltipElem.current.innerHTML = `\        
         <div>${JSON.stringify(object.properties)}</div>
       `;
+  }, []);
+
+  const handleHex = useCallback((object) => {
+    secondaryTooltipElem.current.classList.remove('active');
+    mainTooltipElem.current.classList.add('active');
+    mainTooltipElem.current.innerHTML = `\        
+          <div>${JSON.stringify(object.properties)}</div>
+        `;
   }, []);
 
   const getTooltip = useCallback(

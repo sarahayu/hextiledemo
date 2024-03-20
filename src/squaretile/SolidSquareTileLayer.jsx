@@ -223,7 +223,7 @@ SolidSquareTileLayer.layerName = 'SolidHexTileLayer';
 SolidSquareTileLayer.defaultProps = {
   ...CompositeLayer.defaultProps,
   ...PolygonLayer.defaultProps,
-  thicknessRange: [0.7, 0.9],
+  thicknessRange: [0, 1],
   getValue: undefined,
   raised: false,
   zoomRange: [7, 9],

@@ -8,8 +8,8 @@ import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 import { indepVariance } from 'src/utils/utils';
 
 import DeagHexTileLayer from '../hextile/DeagHexTileLayer';
-import { WATER_INTERPS } from 'src/utils/scales';
-import { temporalDataGeo } from 'src/utils/data';
+import { ELECTION_INTERPS } from 'src/utils/scales';
+import { electionPrecinctGeo } from 'src/utils/data';
 
 const curScenario = 0;
 
@@ -27,13 +27,13 @@ export default class MultivariableHextileLayer extends CompositeLayer {
 
     return [
       new SolidHexTileLayer({
-        id: `Groundwater`,
+        id: `Party`,
         data,
         thicknessRange: [0, 1],
         getFillColor: (d) =>
-          WATER_INTERPS.groundwater.interpVsup(
-            d.properties.Groundwater[speedyCounter],
-            d.properties.GroundwaterVar[speedyCounter]
+          ELECTION_INTERPS.party.interpVsup(
+            d.properties['DemLead'] || 0,
+            d.properties['VotesPerSqKm'] || 0
           ),
         opacity: 1,
         visible,
@@ -43,42 +43,20 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         zoomRange,
       }),
       new SolidHexTileLayer({
-        id: `DiffRings`,
+        id: `White`,
         data,
         thicknessRange: [0.4, 0.65],
         getFillColor: (d) =>
-          curOption == 0
-            ? WATER_INTERPS.difference.interpVsup(
-                d.properties.UnmetDemand[SCENARIOS[curScenario]][
-                  speedyCounter
-                ] - d.properties.UnmetDemandBaseline[speedyCounter],
-                indepVariance(
-                  d.properties.UnmetDemandBaselineVar[speedyCounter],
-                  d.properties.UnmetDemandVar[SCENARIOS[curScenario]][
-                    speedyCounter
-                  ]
-                ),
-                true
-              )
-            : WATER_INTERPS.difference.interpColor(
-                d.properties.UnmetDemand[SCENARIOS[curScenario]][
-                  speedyCounter
-                ] - d.properties.UnmetDemandBaseline[speedyCounter],
-                true
-              ),
+          ELECTION_INTERPS.poc.interpColor(
+            100 - d.properties['PercWhite'],
+            true,
+            true,
+            0.4
+          ),
         getValue: (d) =>
-          curOption == 0
-            ? 1
-            : WATER_INTERPS.difference.scaleLinearVar(
-                indepVariance(
-                  d.properties.UnmetDemandBaselineVar[speedyCounter],
-                  d.properties.UnmetDemandVar[SCENARIOS[curScenario]][
-                    speedyCounter
-                  ]
-                )
-              ) *
-                0.5 +
-              0.4,
+          ELECTION_INTERPS.poc.scaleLinearVar(d.properties['PercWhiteVar']) *
+            0.8 +
+          0.2,
         raised: true,
         visible,
         getElevation: (d) => (d.hexId in clickedHexes ? 5000 : 0),
@@ -99,27 +77,25 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         zoomRange,
       }),
       new IconHexTileLayer({
-        id: `ScenarioUnmet`,
+        id: `Population`,
         data,
         loaders: [OBJLoader],
-        mesh: './assets/drop.obj',
+        mesh: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/humanoid_quad.obj',
         raised: true,
         getColor: (d) => [
           255,
-          130,
-          35,
-          WATER_INTERPS.unmetDemand.scaleLinearVar(
-            d.properties.UnmetDemandVar[SCENARIOS[curScenario]][speedyCounter]
+          255,
+          7,
+          ELECTION_INTERPS.population.scaleLinearVar(
+            d.properties['TurnoutPerSqKm']
           ) *
             200 +
             55,
         ],
         getValue: (d) =>
-          WATER_INTERPS.unmetDemand.scaleLinear(
-            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
-          ),
+          ELECTION_INTERPS.population.scaleLinear(d.properties['PopSqKm']),
         visible,
-        sizeScale: 3000,
+        sizeScale: 400,
         opacity: 1,
         updateTriggers: {
           getTranslation: [speedyCounter],
@@ -130,10 +106,10 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         ...this.props,
         id: 'DeagLayer',
         data,
-        deagData: temporalDataGeo,
+        deagData: electionPrecinctGeo,
         getFillColor: (d) => {
-          return WATER_INTERPS.unmetDemand.interpColor(
-            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter],
+          return ELECTION_INTERPS.party.interpColor(
+            d.properties['pct_dem_lead'],
             false,
             false
           );

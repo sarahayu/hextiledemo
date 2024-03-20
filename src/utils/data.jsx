@@ -15,6 +15,18 @@ export const temporalDataGeo = await (
   await fetch('./assets/demand_geo.json')
 ).json();
 
+export const electionDataHex = await (
+  await fetch('./assets/election_hex_3_4.json')
+).json();
+
+export const electionDataSquare = await (
+  await fetch('./assets/election_square_3_4.json')
+).json();
+
+export const electionPrecinctGeo = await (
+  await fetch('./assets/precinct_geo.json')
+).json();
+
 // export const temporalDataGeoByDUID = arrGroupBy(
 //   temporalDataGeo.features,
 //   (t) => t.properties.id
@@ -29,9 +41,7 @@ export const fireDataHex = await (
 ).json();
 
 export const precinctGeo = await (
-  await fetch('./assets/precinct_geo_simple.json')
+  await fetch('./assets/precinct_geo.json')
 ).json();
 
-export const countyGeo = await (
-  await fetch('./assets/county_geo_simple.json')
-).json();
+export const countyGeo = await (await fetch('./assets/county_geo.json')).json();

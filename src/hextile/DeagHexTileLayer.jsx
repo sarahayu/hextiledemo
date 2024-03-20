@@ -120,7 +120,12 @@ export default class DeagHexTileLayer extends CompositeLayer {
         },
         getLineColor: [0, 0, 0],
         updateTriggers: {
-          getFillColor: [hoveredGeoActive, curOption, selectionFinalized],
+          getFillColor: [
+            ...(this.props.updateTriggers.getFillColor || []),
+            hoveredGeoActive,
+            curOption,
+            selectionFinalized,
+          ],
           getLineWidth: [hoveredGeoActive, curOption, selectionFinalized],
         },
       }),

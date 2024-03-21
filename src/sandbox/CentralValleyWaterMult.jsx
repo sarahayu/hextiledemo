@@ -260,7 +260,7 @@ function Legend({}) {
         a.append('g').call(
           vsup.legend
             .simpleLegend()
-            .title('Unmet Demand')
+            .title('Scenario Unmet Demand')
             .size(250)
             .height(20)
             .scale(WATER_INTERPS.unmetDemand.colorsStepped)

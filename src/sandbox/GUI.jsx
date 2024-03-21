@@ -1,6 +1,7 @@
 import React from 'react';
 import Clock from 'src/Clock';
 import Legend from './Legend';
+
 export default function GUI({
   curOption,
   setCurOption,
@@ -8,6 +9,7 @@ export default function GUI({
   setSpeedyCounter,
   playing,
   setPlaying,
+  res,
 }) {
   return (
     <>
@@ -16,7 +18,7 @@ export default function GUI({
         displayMonth={false}
         dataset="averageDemandBaseline"
       />
-      <Legend />
+      <Legend res={res} />
       <div className="styled-input">
         <button
           onClick={() => {

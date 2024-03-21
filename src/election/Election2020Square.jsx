@@ -95,7 +95,7 @@ class MultivariableSquareTileLayer extends CompositeLayer {
       new SolidSquareTileLayer({
         id: `PoC`,
         data,
-        getFillColor: (d) => ELECTION_INTERPS.poc.interpColor(30),
+        getFillColor: [0, 121, 42],
         getValue: (d) =>
           ELECTION_INTERPS.poc.scaleLinear(100 - d.properties['PercWhite']),
         visible,
@@ -107,7 +107,7 @@ class MultivariableSquareTileLayer extends CompositeLayer {
       new SolidSquareTileLayer({
         id: `Dem`,
         data,
-        getFillColor: (d) => ELECTION_INTERPS.party.interpColor(90),
+        getFillColor: [72, 30, 197],
         getValue: (d) =>
           ELECTION_INTERPS.party.scaleLinear(d.properties['DemLead']),
         visible,
@@ -119,9 +119,9 @@ class MultivariableSquareTileLayer extends CompositeLayer {
       new SolidSquareTileLayer({
         id: `Pop`,
         data,
-        getFillColor: [27, 132, 63],
+        getFillColor: [156, 156, 156],
         getValue: (d) =>
-          ELECTION_INTERPS.population.scaleLinear(d.properties['VotesPerSqKm']),
+          ELECTION_INTERPS.population.scaleLinear(d.properties['PopSqKm']),
         visible,
         extruded: false,
         opacity: 1.0,

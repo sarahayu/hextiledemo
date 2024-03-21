@@ -148,6 +148,115 @@ export const getHolderStr = (object) =>
       : object.properties.LandUse
   ];
 
+const epsilon = 1e-9;
+
+function treeQuantization(branchingFactor, treeLayers) {
+  let branch = branchingFactor || 2;
+  let layers = treeLayers || 2;
+  const uscale = d3.scaleLinear();
+  const vscale = d3.scaleLinear();
+  let tree = makeTree();
+
+  function quantization(value, uncertainty) {
+    var u = uncertainty != undefined ? uncertainty : value.u;
+    var v = uncertainty != undefined ? value : value.v;
+    let i = 0;
+
+    // find the right layer of the tree, based on uncertainty
+    while (i < tree.length - 1 && uscale(u) < 1 - (i + 1) / layers - epsilon) {
+      i++;
+    }
+
+    // find right leaf of tree, based on value
+    const vgap = tree[i].length > 1 ? (tree[i][1].v - tree[i][0].v) / 2 : 0;
+
+    let j = 0;
+
+    while (j < tree[i].length - 1 && v > tree[i][j].v + vgap) {
+      j++;
+    }
+
+    return tree[i][j];
+  }
+
+  function makeTree() {
+    // Our tree should be "squarish" - it should have about
+    // as many layers as leaves.
+    const tree = [];
+
+    let n;
+
+    vscale.nice(Math.pow(branch, layers - 1));
+    uscale.nice(layers);
+
+    tree[0] = [];
+    tree[0].push({
+      u: uscale.invert((layers - 1) / layers),
+      v: vscale.invert(0.5),
+    });
+
+    for (let i = 1; i <= layers; i++) {
+      tree[i - 1] = [];
+      n = 2 * Math.pow(branch, i);
+      for (let j = 1; j < n; j += 2) {
+        tree[i - 1].push({
+          u: uscale.invert(1 - i / layers),
+          v: vscale.invert(j / n),
+        });
+      }
+    }
+    return tree;
+  }
+
+  quantization.range = () => [].concat.apply([], tree);
+
+  quantization.tree = () => tree;
+
+  quantization.data = quantization.tree;
+
+  quantization.branching = function (newbranch) {
+    if (!arguments.length) {
+      return branch;
+    } else {
+      branch = Math.max(1, newbranch);
+      tree = makeTree();
+      return quantization;
+    }
+  };
+
+  quantization.layers = function (newlayers) {
+    if (!arguments.length) {
+      return layers;
+    } else {
+      layers = Math.max(1, newlayers);
+      tree = makeTree();
+      return quantization;
+    }
+  };
+
+  quantization.uncertaintyDomain = function (uDom) {
+    if (!arguments.length) {
+      return uscale.domain();
+    } else {
+      uscale.domain(uDom);
+      tree = makeTree();
+      return quantization;
+    }
+  };
+
+  quantization.valueDomain = function (vDom) {
+    if (!arguments.length) {
+      return vscale.domain();
+    } else {
+      vscale.domain(vDom);
+      tree = makeTree();
+      return quantization;
+    }
+  };
+
+  return quantization;
+}
+
 export const rgbStrToArr = (s) =>
   s
     .replace(/[^\d,]/g, '')
@@ -156,8 +265,8 @@ export const rgbStrToArr = (s) =>
 
 const NUM_STEPS = 10;
 
-const noneIfSuperSmall = (val, zeroVal = 0) =>
-  Math.abs(val - zeroVal) < 1 / NUM_STEPS ? 0 : 1;
+const noneIfSuperSmall = (val, zeroVal = 0, alphaThreshold = 1 / NUM_STEPS) =>
+  Math.abs(val - zeroVal) < alphaThreshold ? 0 : 1;
 
 export const createScales = (dataSettings, data, isHexData = true) => {
   const scaleNames = Object.keys(dataSettings);
@@ -251,17 +360,21 @@ export const createScales = (dataSettings, data, isHexData = true) => {
     curScaleObj['vsup'] = vsup
       .scale()
       .quantize(
-        vsup
-          .quantization()
+        treeQuantization()
           .branching(2)
-          .layers(4)
+          .layers(3)
           .valueDomain(curScaleObj['value']['domain'])
           .uncertaintyDomain(curScaleObj['variance']['domain'])
       )
       .range(colorsValue);
 
     // create colorInterpolators
-    curScaleObj['interpColor'] = (d, useAlpha = false, useStep = true) => {
+    curScaleObj['interpColor'] = (
+      d,
+      useAlpha = false,
+      useStep = true,
+      alphaThreshold = 1 / NUM_STEPS
+    ) => {
       return [
         ...rgbStrToArr(
           (useStep
@@ -272,13 +385,19 @@ export const createScales = (dataSettings, data, isHexData = true) => {
           ? [
               noneIfSuperSmall(
                 curScaleObj['scaleStepped'](d),
-                curScaleObj['value']['zero'] || 0
+                curScaleObj['value']['zero'] || 0,
+                alphaThreshold
               ) * 255,
             ]
           : []),
       ];
     };
-    curScaleObj['interpColorVar'] = (d, useAlpha = false, useStep = true) => [
+    curScaleObj['interpColorVar'] = (
+      d,
+      useAlpha = false,
+      useStep = true,
+      alphaThreshold = 1 / NUM_STEPS
+    ) => [
       ...rgbStrToArr(
         (useStep
           ? curScaleObj['colorsSteppedVar']
@@ -288,20 +407,27 @@ export const createScales = (dataSettings, data, isHexData = true) => {
         ? [
             noneIfSuperSmall(
               curScaleObj['scaleSteppedVar'](d),
-              curScaleObj['variance']['zero'] || 0
+              curScaleObj['variance']['zero'] || 0,
+              alphaThreshold
             ) * 255,
           ]
         : []),
     ];
 
     // create vsupInterpolators
-    curScaleObj['interpVsup'] = (d, u, useAlpha = false) => [
+    curScaleObj['interpVsup'] = (
+      d,
+      u,
+      useAlpha = false,
+      alphaThreshold = 1 / NUM_STEPS
+    ) => [
       ...rgbStrToArr(curScaleObj['vsup'](d, u)),
       ...(useAlpha
         ? [
             noneIfSuperSmall(
               curScaleObj['scaleStepped'](d),
-              curScaleObj['value']['zero'] || 0
+              curScaleObj['value']['zero'] || 0,
+              alphaThreshold
             ) * 255,
           ]
         : []),
@@ -309,6 +435,31 @@ export const createScales = (dataSettings, data, isHexData = true) => {
   }
 
   return dataSettings;
+};
+
+// https://codepen.io/Elf/details/rOrRaw
+export const hexagonShape = (x, y, size, color) => {
+  const _s32 = Math.sqrt(3) / 2;
+  const A = size;
+  const xDiff = x;
+  const yDiff = y;
+  const pointData = [
+    [A + xDiff, 0 + yDiff],
+    [A / 2 + xDiff, A * _s32 + yDiff],
+    [-A / 2 + xDiff, A * _s32 + yDiff],
+    [-A + xDiff, 0 + yDiff],
+    [-A / 2 + xDiff, -A * _s32 + yDiff],
+    [A / 2 + xDiff, -A * _s32 + yDiff],
+  ];
+  return function (svgContainer) {
+    svgContainer
+      .selectAll('path.area')
+      .data([pointData])
+      .enter()
+      .append('path')
+      .attr('d', d3.line())
+      .attr('fill', color);
+  };
 };
 
 // prettier-ignore

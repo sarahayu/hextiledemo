@@ -50,8 +50,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
           ELECTION_INTERPS.poc.interpColor(
             100 - d.properties['PercWhite'],
             true,
-            true,
-            0.4
+            true
           ),
         getValue: (d) =>
           ELECTION_INTERPS.poc.scaleLinearVar(d.properties['PercWhiteVar']) *

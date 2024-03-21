@@ -89,7 +89,7 @@ export default class DeagHexTileLayer extends CompositeLayer {
       new GeoJsonLayer({
         id: 'GeoJsonColor',
         data: deagData,
-        opacity: 0.3,
+        opacity: 1,
         pickable: true,
         visible,
         getLineWidth: (d) => {

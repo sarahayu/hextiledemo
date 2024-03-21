@@ -7,8 +7,17 @@ body {
   overflow: hidden;
 }
 
-#view-default-view {
+[id^='view-'] {
   z-index: 1000;
+}
+
+.toc-link {
+  display: block;
+  margin-left: 20%;
+}
+
+.toc-link:first-child {
+  margin-top: 10%;
 }
 
 #clockContainer::before {
@@ -185,6 +194,7 @@ h1 {
   pointer-events: none;
   color: #333333;
   fill: #333333;
+  /* background-color: gray; */
 }
 
 .legend-area > g > g > path,

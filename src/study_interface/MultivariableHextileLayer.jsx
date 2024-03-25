@@ -13,7 +13,7 @@ import { electionPrecinctGeo } from 'src/utils/data';
 
 const curScenario = 0;
 
-export default class MultivariableHextileLayer extends CompositeLayer {
+export default class UserHexLayer extends CompositeLayer {
   renderLayers() {
     const {
       data,
@@ -24,14 +24,23 @@ export default class MultivariableHextileLayer extends CompositeLayer {
       visible,
       zoomRange,
       useVsup,
+      highlighted = null,
     } = this.props;
 
     return [
       new SolidHexTileLayer({
-        id: `Party`,
+        id: `HexParty`,
         data,
         thicknessRange: [0, 1],
         getFillColor: (d) => {
+          // console.log(d.properties['DemLead']);
+          // console.log(d.properties['DemLeadVar']);
+          // console.log(
+          //   ELECTION_INTERPS.party.interpVsup(
+          //     d.properties['DemLead'] || 0,
+          //     d.properties['DemLeadVar'] || 0
+          //   )
+          // );
           if (useVsup)
             return ELECTION_INTERPS.party.interpVsup(
               d.properties['DemLead'] || 0,
@@ -49,7 +58,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         zoomRange,
       }),
       new SolidHexTileLayer({
-        id: `White`,
+        id: `HexWhite`,
         data,
         thicknessRange: [0.4, 0.65],
         getFillColor: (d) =>
@@ -64,10 +73,10 @@ export default class MultivariableHextileLayer extends CompositeLayer {
             );
           return 1;
         },
-        raised: true,
+        // raised: true,
         visible,
-        getElevation: (d) => (d.hexId in clickedHexes ? 5000 : 0),
-        getLineWidth: (d) => (d.hexId in clickedHexes ? 100 : 0),
+        // getElevation: (d) => (d.hexId in clickedHexes ? 5000 : 0),
+        // getLineWidth: (d) => (d.hexId in clickedHexes ? 100 : 0),
         stroked: true,
         extruded: false,
         lineJointRounded: true,
@@ -84,11 +93,11 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         zoomRange,
       }),
       new IconHexTileLayer({
-        id: `Population`,
+        id: `HexPopulation`,
         data,
         loaders: [OBJLoader],
         mesh: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/humanoid_quad.obj',
-        raised: true,
+        // raised: true,
         getColor: (d) => [
           255,
           255,
@@ -112,25 +121,31 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         },
         zoomRange,
       }),
-      new DeagHexTileLayer({
-        ...this.props,
-        id: 'DeagLayer',
+      new SolidHexTileLayer({
+        id: `HexHoveringTiles`,
         data,
-        deagData: electionPrecinctGeo,
-        getFillColor: (d) => {
-          return ELECTION_INTERPS.party.interpColor(
-            d.properties['pct_dem_lead'],
-            false,
-            false
-          );
+        thicknessRange: [0, 1],
+        getFillColor: [0, 0, 0, 0],
+        pickable: this.props.pickable,
+        autoHighlight: this.props.autoHighlight,
+        stroked: true,
+        getLineWidth: (d) => {
+          return d.hexId == highlighted ? 5 : 0;
+        },
+        lineWidthUnits: 'pixels',
+        visible,
+        zoomRange,
+        updateTriggers: {
+          getLineWidth: [highlighted],
         },
       }),
     ];
   }
 }
 
-MultivariableHextileLayer.layerName = 'MultivariableHextileLayer';
-MultivariableHextileLayer.defaultProps = {
+UserHexLayer.layerName = 'MultivariableHextileLayer';
+UserHexLayer.defaultProps = {
   ...CompositeLayer.defaultProps,
   autoHighlight: true,
+  pickable: true,
 };

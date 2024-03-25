@@ -341,7 +341,12 @@ import { electionScales, fireScales, waterScales } from './settings';
 //   .clamp(true);
 
 export const WATER_INTERPS = createScales(waterScales, temporalDataHex);
-export const ELECTION_INTERPS = createScales(electionScales, electionDataHex);
+export const ELECTION_INTERPS = createScales(
+  electionScales,
+  electionDataHex,
+  true,
+  false
+);
 export const FIRE_INTERPS = createScales(fireScales, {});
 
 /////////////////// other interpolators /////////////////////////

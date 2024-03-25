@@ -190,6 +190,7 @@ export default class SolidSquareTileLayer extends CompositeLayer {
             data: this.props.data,
             filled: this.props.filled,
             stroked: this.props.stroked,
+            lineWidthUnits: this.props.lineWidthUnits,
             extruded: this.props.extruded,
             wireframe: this.props.wireframe,
             _normalize: this.props._normalize,
@@ -204,8 +205,9 @@ export default class SolidSquareTileLayer extends CompositeLayer {
             material: this.props.material,
             transitions: this.props.transitions,
             updateTriggers: this.props.updateTriggers,
+            onClick: this.props.onClick,
           },
-          id: `SolidHexTileLayer`,
+          id: `SolidSquareTileLayer`,
           data: this.state.polygons,
           getPolygon: (d) => d.polygon,
           pickable: this.props.pickable,
@@ -219,7 +221,7 @@ export default class SolidSquareTileLayer extends CompositeLayer {
   }
 }
 
-SolidSquareTileLayer.layerName = 'SolidHexTileLayer';
+SolidSquareTileLayer.layerName = 'SolidSquareTileLayer';
 SolidSquareTileLayer.defaultProps = {
   ...CompositeLayer.defaultProps,
   ...PolygonLayer.defaultProps,

@@ -15,9 +15,13 @@ export const temporalDataGeo = await (
   await fetch('./assets/demand_geo.json')
 ).json();
 
-export const electionDataHex = await (
-  await fetch('./assets/election_hex_3_4.json')
-).json();
+export const electionDataHex = await (async () => {
+  let d = await (await fetch('./assets/election_hex_3_4.json')).json();
+
+  delete d['3'];
+
+  return d;
+})();
 
 export const electionDataSquare = await (
   await fetch('./assets/election_square_3_4.json')

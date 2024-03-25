@@ -127,7 +127,7 @@ class MultivariableHextileLayer extends CompositeLayer {
         data,
         thicknessRange: [0.4, 0.65],
         getFillColor: (d) =>
-          ELECTION_INTERPS.poc.interpColor(d.properties['PoC'], true),
+          ELECTION_INTERPS.poc.interpColor(d.properties['White'], true),
         getValue: (d) => 1,
         raised: true,
         visible,
@@ -156,7 +156,7 @@ class MultivariableHextileLayer extends CompositeLayer {
         raised: true,
         getColor: (d) => [255, 255, 7, 255],
         getValue: (d) =>
-          ELECTION_INTERPS.population.scaleLinear(d.properties['PopSqKm']),
+          ELECTION_INTERPS.population.scaleLinear(d.properties['Pop']),
         visible,
         sizeScale: 400,
         opacity: 1,

@@ -11,12 +11,14 @@ import Election2020Square from './election/Election2020Square';
 import Election2020Mult from './election/Election2020Mult';
 import Election2020NoVsup from './election/Election2020NoVsup';
 import CentralValleyWaterNoVsup from './sandbox/CentralValleyWaterNoVsup';
+import StudyInterface from './study_interface/StudyInterface';
 
 export function renderToDOM(container) {
   createRoot(container).render(
     <HashRouter>
       <Routes>
         <Route path="/" element={<ToC />} />
+        <Route path="user" element={<StudyInterface />} />
         <Route path="water/hex" element={<CentralValleyWater />} />
         <Route
           path="water/hex-no-vsup"

@@ -21,6 +21,20 @@ export default class MultivariableHextileLayer extends CompositeLayer {
 
     return [
       new SolidSquareTileLayer({
+        id: `SquareBorders`,
+        data,
+        getFillColor: [0, 0, 0, 0],
+        getLineColor: [80, 80, 80, 100],
+        stroked: true,
+        lineWidthUnits: 'pixels',
+        getValue: (d) => 2,
+        visible,
+        extruded: false,
+        opacity: 1.0,
+        zoomRange,
+        offset: [0, 0],
+      }),
+      new SolidSquareTileLayer({
         id: `Groundwater`,
         data,
         thicknessRange: [0, 1],

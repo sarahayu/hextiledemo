@@ -138,15 +138,15 @@ export const INITIAL_FIRE_VIEW_STATE = {
 export const electionScales = {
   party: {
     value: {
-      domain: [-100, 100],
+      domain: [-100, 100], //'DemLead',
       color: saturate(
         d3.interpolateRgbBasis(['red', 'purple', 'blue']),
-        -0.8,
+        -1.0,
         0.2
       ),
     },
     variance: {
-      domain: [400, 0],
+      domain: [0, 2000], //'DemLeadVar',
       // range: [1, 0],
     },
   },
@@ -160,23 +160,69 @@ export const electionScales = {
   },
   population: {
     value: {
-      domain: [0, 500],
+      domain: [0, 200], //'Pop',
       color: d3.interpolateGreys,
     },
     variance: {
-      domain: [100, 0],
+      domain: [0, 8e5],
     },
   },
   poc: {
     value: {
-      domain: [10, 50],
+      domain: [0, 50], //'PoC',
+      // range: [1, 0],
       color: saturate(d3.interpolateBuGn, 0.5, -0.3),
     },
     variance: {
-      domain: [0, 200],
+      domain: [0, 100], //'PoCVar',
     },
   },
 };
+
+// export const electionScales = {
+//   party: {
+//     value: {
+//       domain: [-100, 100],
+//       color: saturate(
+//         d3.interpolateRgbBasis(['red', 'purple', 'blue']),
+//         -1.0,
+//         0.2
+//       ),
+//     },
+//     variance: {
+//       domain: [0, 500],
+//       // range: [1, 0],
+//     },
+//   },
+//   votes: {
+//     value: {
+//       domain: [0, 42508],
+//     },
+//     variance: {
+//       domain: [0, 1],
+//     },
+//   },
+//   population: {
+//     value: {
+//       domain: 'PopSqKm',
+//       color: d3.interpolateGreys,
+//     },
+//     variance: {
+//       domain: 'PopSqKmVar',
+//     },
+//   },
+//   poc: {
+//     value: {
+//       domain: [0, 300],
+//       // range: [1, 0],
+//       color: saturate(d3.interpolateBuGn, 0.5, -0.3),
+//     },
+//     variance: {
+//       domain: [0, 1e5],
+//       // domain: [0, 5e9],
+//     },
+//   },
+// };
 
 export const fireScales = {
   power: {

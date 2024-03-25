@@ -192,15 +192,15 @@ h1 {
   bottom: 0;
   right: 0;
   pointer-events: none;
-  color: #333333;
-  fill: #333333;
+  /* color: #333333;
+  fill: #333333; */
   /* background-color: gray; */
 }
 
-.legend-area > g > g > path,
+/* .legend-area > g > g > path,
 .legend-area > g > g > g > line {
   stroke: #333333;
-}
+} */
 
 .styled-input div {
   position: absolute;
@@ -311,4 +311,27 @@ h1 {
 .styled-input input[type='range']::-moz-focus-inner,
 .styled-input input[type='range']::-moz-focus-outer {
   border: 0;
+}
+
+.study-area {
+  --height: 100px;
+  text-align: center;
+  position: absolute;
+  width: 100vw;
+  height: var(--height);
+  top: calc(100vh - var(--height));
+  isolation: isolate;
+}
+
+.study-area::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: white;
+  opacity: 1;
+  z-index: -1;
+}
+
+.study-input {
+  position: absolute;
 }

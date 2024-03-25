@@ -42,6 +42,7 @@ import {
   download,
   getFormattedTime,
 } from 'src/utils/utils';
+import { FlyToInterpolator } from 'deck.gl';
 
 const resRange = Object.keys(hexData).map((d) => parseInt(d));
 
@@ -57,6 +58,7 @@ export default function StudyInterface() {
   const [startTime, setStartTime] = useState();
   const [useVsup, setUseVsup] = useState(false);
   const [interSlide, setInterSlide] = useState(false);
+  const { curViewState, zoomInHex, zoomInSquare } = useCamera();
 
   function objToTileObj(obj) {
     const { CountyRgs, PrecinctRgs, ...rest } = obj;
@@ -73,8 +75,17 @@ export default function StudyInterface() {
   };
 
   const handleStart = () => {
-    setQuestion((c) => c + 1);
-    setStartTime(Date.now());
+    setQuestion((c) => {
+      if (questions[c + 1].map == 'hex')
+        zoomInHex(questions[c + 1].a, () => {
+          setStartTime(Date.now());
+        });
+      else
+        zoomInSquare(questions[c + 1].a, () => {
+          setStartTime(Date.now());
+        });
+      return c + 1;
+    });
   };
 
   const handleClick = useCallback(() => {
@@ -85,6 +96,7 @@ export default function StudyInterface() {
         time: Date.now() - startTime,
       };
 
+      console.log(d);
       allAns.current.push(d);
 
       setEnteredText('');
@@ -92,15 +104,44 @@ export default function StudyInterface() {
       if (question == 29) {
         setInterSlide(true);
       } else {
-        setQuestion((c) => c + 1);
-        setStartTime(Date.now());
+        setQuestion((c) => {
+          if (c + 1 < questions.length) {
+            if (questions[c + 1].type == 'text') {
+              if (questions[c + 1].map == 'hex')
+                zoomInHex(questions[c + 1].a, () => {
+                  setStartTime(Date.now());
+                });
+              else
+                zoomInSquare(questions[c + 1].a, () => {
+                  setStartTime(Date.now());
+                });
+            } else {
+              setStartTime(Date.now());
+            }
+          }
+          return c + 1;
+        });
       }
     } else {
-      setQuestion((c) => c + 1);
       setEnteredText('');
-      setStartTime(Date.now());
-
       setInterSlide(false);
+      setQuestion((c) => {
+        if (c + 1 < questions.length) {
+          if (questions[c + 1].type == 'text') {
+            if (questions[c + 1].map == 'hex')
+              zoomInHex(questions[c + 1].a, () => {
+                setStartTime(Date.now());
+              });
+            else
+              zoomInSquare(questions[c + 1].a, () => {
+                setStartTime(Date.now());
+              });
+          } else {
+            setStartTime(Date.now());
+          }
+        }
+        return c + 1;
+      });
     }
   });
 
@@ -111,11 +152,26 @@ export default function StudyInterface() {
         user: object.hexId,
         time: Date.now() - startTime,
       };
-
+      console.log(d);
       allAns.current.push(d);
 
-      setQuestion((c) => c + 1);
-      setStartTime(Date.now());
+      setQuestion((c) => {
+        if (c + 1 < questions.length) {
+          if (questions[c + 1].type == 'text') {
+            if (questions[c + 1].map == 'hex')
+              zoomInHex(questions[c + 1].a, () => {
+                setStartTime(Date.now());
+              });
+            else
+              zoomInSquare(questions[c + 1].a, () => {
+                setStartTime(Date.now());
+              });
+          } else {
+            setStartTime(Date.now());
+          }
+        }
+        return c + 1;
+      });
     },
     [startTime, question]
   );
@@ -141,8 +197,9 @@ export default function StudyInterface() {
       <DeckGL
         controller
         effects={[LIGHTING]}
-        initialViewState={USER_VIEW}
+        initialViewState={curViewState}
         onViewStateChange={({ viewState }) => {
+          // console.log(viewState.zoom);
           setZoom(viewState.zoom);
         }}
       >
@@ -634,4 +691,59 @@ function GUISquare({ res }) {
       <svg className="legend-area" ref={legendArea}></svg>
     </>
   );
+}
+
+function kmToLatDeg(dist) {
+  return dist / 111.1;
+}
+
+function resToDegSide(res) {
+  return kmToLatDeg(hexSideToSquareSide(res));
+}
+
+function square_to_geo_center(sqid) {
+  const [strLat, strLon, res] = sqid.split('/');
+  const sideDeg = resToDegSide(res);
+  return [parseFloat(strLat) + sideDeg / 2, parseFloat(strLon) + sideDeg / 2];
+}
+
+function useCamera() {
+  const [curViewState, setCurViewState] = useState(USER_VIEW);
+  const [transitioning, setTransitioning] = useState(false);
+
+  const zoomInHex = useCallback((hexId, cb) => {
+    const [centerLat, centerLng] = h3.cellToLatLng(hexId);
+    setTransitioning(true);
+    setCurViewState({
+      ...USER_VIEW,
+      zoom: 7.45,
+      latitude: centerLat,
+      longitude: centerLng,
+      transitionDuration: 500,
+      transitionInterpolator: new FlyToInterpolator(),
+      onTransitionEnd: () => {
+        setTransitioning(false);
+        cb();
+      },
+    });
+  }, []);
+
+  const zoomInSquare = useCallback((sqid, cb) => {
+    const [centerLat, centerLng] = square_to_geo_center(sqid);
+    setTransitioning(true);
+    setCurViewState({
+      ...USER_VIEW,
+      zoom: 7.45,
+      latitude: centerLat,
+      longitude: centerLng,
+      transitionDuration: 500,
+      transitionInterpolator: new FlyToInterpolator(),
+      onTransitionEnd: () => {
+        setTransitioning(false);
+        cb();
+      },
+    });
+  }, []);
+
+  return { curViewState, transitioning, zoomInHex, zoomInSquare };
 }

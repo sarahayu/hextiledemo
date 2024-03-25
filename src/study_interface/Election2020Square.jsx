@@ -159,7 +159,7 @@ export class UserSquareLayer extends CompositeLayer {
         getValue: (d) => 2,
         stroked: true,
         getLineWidth: (d) => {
-          return d.hexId == highlighted ? 5000 : 1;
+          return d.hexId == highlighted ? 2000 : 1;
         },
         // lineWidthUnits: 'pixels',
         visible,

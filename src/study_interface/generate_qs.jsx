@@ -171,7 +171,7 @@ function task2() {
     }
   }
 
-  tasks_final = [...tasks_final, ...getRanArr(16, 10).map((i) => tasks[i])];
+  tasks_final = [...tasks_final, ...getRanArr(32, 10).map((i) => tasks[i])];
 
   tasks = [];
 
@@ -210,7 +210,7 @@ function task2() {
     }
   }
 
-  tasks_final = [...tasks_final, ...getRanArr(16, 10).map((i) => tasks[i])];
+  tasks_final = [...tasks_final, ...getRanArr(32, 10).map((i) => tasks[i])];
 
   as = [
     [-100, -50],
@@ -255,7 +255,7 @@ function task2() {
     }
   }
 
-  tasks_final = [...tasks_final, ...getRanArr(16, 10).map((i) => tasks[i])];
+  tasks_final = [...tasks_final, ...getRanArr(32, 10).map((i) => tasks[i])];
 
   return tasks_final;
 }

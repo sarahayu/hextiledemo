@@ -1,42 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import { useLayoutEffect, useRef } from 'react';
+import React, { useState } from 'react';
 
 import DeckGL from '@deck.gl/react';
 import maplibregl from 'maplibre-gl';
 import { Map } from 'react-map-gl';
 import mapStyle from 'src/assets/style.json';
-import { LIGHTING } from 'src/utils/settings';
+import { INITIAL_VIEW_STATE, LIGHTING } from 'src/utils/settings';
 
 import {
-  electionDataSquare as data,
-  electionPrecinctGeo as dataDeag,
+  temporalDataSquare as data,
+  temporalDataGeo as dataDeag,
 } from 'src/utils/data';
 
 import useGUI from './useGUI';
+import useHexMouseEvts from './useHexMouseEvts';
 import useHexTooltip from './useHexTooltip';
 
-import useHexMouseEvts from 'src/sandbox/useHexMouseEvts';
+import { SCENARIOS } from 'src/utils/settings';
 import BaseTerrainLayer from './BaseTerrainLayer';
+import BasicGeoLayer from './BasicGeoLayer';
 
 import { CompositeLayer } from 'deck.gl';
 import SolidSquareTileLayer from 'src/squaretile/SolidSquareTileLayer';
 
-import { ELECTION_INTERPS } from 'src/utils/scales';
+import { ELECTION_INTERPS, WATER_INTERPS } from 'src/utils/scales';
+
+import { useLayoutEffect, useRef, useEffect } from 'react';
+import Clock from 'src/Clock';
 
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';
+import {
+  arcmapLegendPretty,
+  hexLegendU,
+  hexLegendV,
+  hexagonShape,
+  iconhexLegendU,
+  iconhexLegendV,
+} from 'src/utils/utils';
+import * as vsup from 'vsup';
 
-const resRange = Object.keys(data).map((d) => parseInt(d));
-
-export default function Election2020Square() {
-  const [zoom, setZoom] = useState(5);
+export default function CentralValleyWaterSquare() {
+  const { current: resRange } = useRef(
+    Object.keys(data).map((d) => parseInt(d))
+  );
   const curInput = useGUI();
   const hexMouseEvts = useHexMouseEvts({
     disabled: curInput.curOption > 1,
     dataDeag,
-    deagKey: 'PrecinctRgs',
+    deagKey: 'DURgs',
   });
   const { getTooltip } = useHexTooltip(curInput);
+  const [zoom, setZoom] = useState(INITIAL_VIEW_STATE.zoom);
 
   const curState = {
     data,
@@ -49,15 +63,7 @@ export default function Election2020Square() {
       <DeckGL
         controller
         effects={[LIGHTING]}
-        initialViewState={{
-          longitude: -97.7431,
-          latitude: 30.2672,
-          zoom: 5,
-          minZoom: 3,
-          maxZoom: 15,
-          pitch: 50.85,
-          bearing: 32.58,
-        }}
+        initialViewState={INITIAL_VIEW_STATE}
         getTooltip={getTooltip}
         onViewStateChange={({ viewState }) => {
           setZoom(viewState.zoom);
@@ -70,29 +76,32 @@ export default function Election2020Square() {
           mapStyle={mapStyle}
         />
         <BaseTerrainLayer id="slide-terrain" {...curState} />
-        <MultivariableSquareTileLayer
-          id="slide-election"
+        <MultivariableHextileLayer
+          id="slide-waters"
           {...curState}
-          zoomRange={[5, 7]}
+          zoomRange={[7, 9]}
           visible
         />
+        <BasicGeoLayer id="slide-basic" {...curState} />
       </DeckGL>
       <GUI
-        res={d3.scaleQuantize().domain([0, 1]).range(resRange)(
-          d3.scaleLinear().domain([5, 7]).range([0, 1]).clamp(true)(zoom)
-        )}
         {...curState}
+        res={d3.scaleQuantize().domain([0, 1]).range(resRange)(
+          d3.scaleLinear().domain([7, 9]).range([0, 1]).clamp(true)(zoom)
+        )}
       />
     </>
   );
 }
 
-class MultivariableSquareTileLayer extends CompositeLayer {
+const curScenario = 0;
+
+class MultivariableHextileLayer extends CompositeLayer {
   renderLayers() {
     const {
       data,
       curOption,
-      speedyCounter = 1026,
+      speedyCounter,
       clickedHexes,
       selectionFinalized,
       visible,
@@ -115,75 +124,165 @@ class MultivariableSquareTileLayer extends CompositeLayer {
         offset: [0, 0],
       }),
       new SolidSquareTileLayer({
-        id: `PoC`,
+        id: `Groundwater`,
         data,
-        getFillColor: [0, 121, 42],
-        getValue: (d) => ELECTION_INTERPS.poc.scaleLinear(d.properties['PoC']),
-        visible,
-        extruded: false,
-        opacity: 1.0,
-        zoomRange,
-        offset: [-1, -1],
-      }),
-      new SolidSquareTileLayer({
-        id: `Dem`,
-        data,
-        getFillColor: [72, 30, 197],
+        thicknessRange: [0, 1],
+        getFillColor: (d) => WATER_INTERPS.groundwater.interpColor(450),
         getValue: (d) =>
-          ELECTION_INTERPS.party.scaleLinear(
-            d.properties['DemLead'] > 0
-              ? d.properties['DemLead'] * 2 - 100
-              : -100
+          WATER_INTERPS.groundwater.scaleLinear(
+            d.properties.Groundwater[speedyCounter]
           ),
+        opacity: 1,
         visible,
-        extruded: false,
-        opacity: 1.0,
-        zoomRange,
-        offset: [-1, 1],
-      }),
-      new SolidSquareTileLayer({
-        id: `Repub`,
-        data,
-        getFillColor: [165, 0, 38],
-        getValue: (d) =>
-          ELECTION_INTERPS.party.scaleLinear(
-            d.properties['DemLead'] < 0
-              ? -d.properties['DemLead'] * 2 - 100
-              : -100
-          ),
-        visible,
-        extruded: false,
-        opacity: 1.0,
+        updateTriggers: {
+          getFillColor: [speedyCounter],
+        },
         zoomRange,
         offset: [1, 1],
       }),
       new SolidSquareTileLayer({
-        id: `Pop`,
+        id: `DifferencePos`,
         data,
-        getFillColor: [156, 156, 156],
+        thicknessRange: [0, 1],
+        getFillColor: WATER_INTERPS.difference.interpColor(25, false),
         getValue: (d) =>
-          ELECTION_INTERPS.population.scaleLinear(d.properties['PopSqKm']),
+          WATER_INTERPS.difference.scaleLinear(
+            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter] -
+              d.properties.UnmetDemandBaseline[speedyCounter]
+          ) > 0.5
+            ? (WATER_INTERPS.difference.scaleLinear(
+                d.properties.UnmetDemand[SCENARIOS[curScenario]][
+                  speedyCounter
+                ] - d.properties.UnmetDemandBaseline[speedyCounter]
+              ) -
+                0.5) /
+              0.5
+            : 0,
+        opacity: 1,
         visible,
-        extruded: false,
-        opacity: 1.0,
+        updateTriggers: {
+          getValue: [speedyCounter],
+        },
         zoomRange,
         offset: [1, -1],
+      }),
+      new SolidSquareTileLayer({
+        id: `DifferenceNeg`,
+        data,
+        thicknessRange: [0, 1],
+        getFillColor: WATER_INTERPS.difference.interpColor(-25, false),
+        getValue: (d) =>
+          WATER_INTERPS.difference.scaleLinear(
+            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter] -
+              d.properties.UnmetDemandBaseline[speedyCounter]
+          ) < 0.5
+            ? 1 -
+              WATER_INTERPS.difference.scaleLinear(
+                d.properties.UnmetDemand[SCENARIOS[curScenario]][
+                  speedyCounter
+                ] - d.properties.UnmetDemandBaseline[speedyCounter]
+              ) /
+                0.5
+            : 0,
+        opacity: 1,
+        visible,
+        updateTriggers: {
+          getValue: [speedyCounter],
+        },
+        zoomRange,
+        offset: [-1, -1],
+      }),
+      new SolidSquareTileLayer({
+        id: `UnmetDemand`,
+        data,
+        thicknessRange: [0, 1],
+        getFillColor: [157, 157, 157],
+        getValue: (d) =>
+          WATER_INTERPS.unmetDemand.scaleLinear(
+            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
+          ),
+        opacity: 1,
+        visible,
+        updateTriggers: {
+          getValue: [speedyCounter],
+        },
+        zoomRange,
+        offset: [-1, 1],
       }),
     ];
   }
 }
 
-MultivariableSquareTileLayer.layerName = 'MultivariableSquareTileLayer';
-MultivariableSquareTileLayer.defaultProps = {
+MultivariableHextileLayer.layerName = 'MultivariableHextileLayer';
+MultivariableHextileLayer.defaultProps = {
   ...CompositeLayer.defaultProps,
   autoHighlight: true,
 };
+
+function GUI({
+  curOption,
+  setCurOption,
+  speedyCounter,
+  setSpeedyCounter,
+  playing,
+  setPlaying,
+  res,
+}) {
+  return (
+    <>
+      <Clock
+        counter={speedyCounter}
+        displayMonth={false}
+        dataset="averageDemandBaseline"
+      />
+      <Legend res={res} />
+      <div className="styled-input" style={{ right: '40%', bottom: '50px' }}>
+        <button
+          onClick={() => {
+            setPlaying((p) => !p);
+          }}
+        >
+          {playing ? 'Pause' : 'Play'}
+        </button>
+        <input
+          onChange={function (e) {
+            setPlaying(false);
+            setSpeedyCounter(parseInt(e.target.value));
+          }}
+          onInput={function (e) {
+            setSpeedyCounter(parseInt(e.target.value));
+          }}
+          value={speedyCounter}
+          style={{
+            width: '40vw',
+            display: 'block',
+          }}
+          type="range"
+          min="0"
+          max="1199"
+          id="myRange"
+        />
+        <input
+          style={{
+            width: '10ch',
+            display: 'block',
+          }}
+          type="number"
+          value={speedyCounter}
+          onChange={function (e) {
+            setSpeedyCounter(parseInt(e.target.value));
+          }}
+        />
+      </div>
+    </>
+  );
+}
 
 function hexSideToSquareSide(res) {
   return h3.getHexagonEdgeLengthAvg(parseInt(res), h3.UNITS.km) * 2;
 }
 
-function GUI({ res }) {
+function Legend({ res }) {
   const legendArea = useRef();
   const hexText = useRef();
 
@@ -236,12 +335,12 @@ function GUI({ res }) {
 
     legendd3
       .append('g')
-      .attr('transform', `translate(${120},${height - 140})`)
+      .attr('transform', `translate(${200},${height - 140})`)
       .call((a) => {
         a.append('rect')
-          .attr('x', -120)
+          .attr('x', -200)
           .attr('y', -140)
-          .attr('width', 459)
+          .attr('width', 559)
           .attr('height', 240)
           // .attr('mix-blend-mode', 'lighten')
           .attr('fill', 'rgba(255, 255, 255, 1)');
@@ -260,29 +359,32 @@ function GUI({ res }) {
           .attr('y', -squareSide)
           .attr('width', squareSide)
           .attr('height', squareSide)
-          .attr('fill', 'rgba(72, 30, 197, 0.7)');
+          .attr('fill', 'rgba(157, 157, 157, 0.7)');
         a.append('rect')
           .attr('x', squareSide)
           .attr('y', -squareSide)
           .attr('width', squareSide)
           .attr('height', squareSide)
-          .attr('fill', 'rgba(165, 0, 38, 0.7)');
+          .attr('fill', 'rgba(57, 79, 132, 0.7)');
         a.append('rect')
           .attr('x', squareSide)
           .attr('y', 0)
           .attr('width', squareSide)
           .attr('height', squareSide)
-          .attr('fill', 'rgba(156, 156, 156, 0.7)');
+          .attr('fill', 'rgba(0, 104, 55, 0.7)');
         a.append('rect')
           .attr('x', 0)
           .attr('y', 0)
           .attr('width', squareSide)
           .attr('height', squareSide)
-          .attr('fill', 'rgba(0, 121, 42, 0.7)');
+          .attr('fill', 'rgba(165, 0, 38, 0.7)');
 
-        let domm, uAxisScale;
+        let domm = [],
+          uAxisScale;
 
-        domm = [100, 0];
+        [domm[1], domm[0]] =
+          WATER_INTERPS.unmetDemandPositive.scaleLinear.domain();
+        // [domm[1], domm[0]] = domm;
         uAxisScale = d3
           .scalePoint()
           .range([0, squareSide])
@@ -291,7 +393,7 @@ function GUI({ res }) {
           .attr('transform', `translate(${0},${-squareSide})`)
           .call(d3.axisLeft(uAxisScale));
 
-        domm = ELECTION_INTERPS.poc.scaleLinear.domain();
+        domm = [0, 30];
         uAxisScale = d3
           .scalePoint()
           .range([0, squareSide])
@@ -300,7 +402,8 @@ function GUI({ res }) {
           .attr('transform', `translate(${0},${0})`)
           .call(d3.axisLeft(uAxisScale));
 
-        domm = [-100, 0];
+        [domm[1], domm[0]] = WATER_INTERPS.groundwater.scaleLinear.domain();
+        // [domm[1], domm[0]] = domm;
         uAxisScale = d3
           .scalePoint()
           .range([0, squareSide])
@@ -309,7 +412,7 @@ function GUI({ res }) {
           .attr('transform', `translate(${squareSide * 2},${-squareSide})`)
           .call(d3.axisRight(uAxisScale));
 
-        domm = ELECTION_INTERPS.population.scaleLinear.domain();
+        domm = [0, 30];
         uAxisScale = d3
           .scalePoint()
           .range([0, squareSide])
@@ -321,23 +424,27 @@ function GUI({ res }) {
         a.append('text')
           .attr('x', -20)
           .attr('y', -18)
+          .style('font-size', 12)
           .attr('text-anchor', 'end')
-          .text('% Dem. Lead');
+          .text('Scenario Unmet (600 TAF/km2)');
         a.append('text')
           .attr('x', squareSide * 2 + 20)
           .attr('y', -18)
           .attr('text-anchor', 'start')
-          .text('% Rep. Lead');
+          .style('font-size', 12)
+          .text('GW (ft)');
         a.append('text')
           .attr('x', squareSide * 2 + 20)
           .attr('y', 0 + 12)
           .attr('text-anchor', 'start')
-          .text('Pop. / Km2');
+          .style('font-size', 12)
+          .text('+ Diff. w/ BL (600 TAF/km2)');
         a.append('text')
           .attr('x', -20)
           .attr('y', 0 + 12)
           .attr('text-anchor', 'end')
-          .text('% PoC');
+          .style('font-size', 12)
+          .text('- Diff. w/ BL (600 TAF/km2)');
       });
   }, []);
 
@@ -351,9 +458,5 @@ function GUI({ res }) {
     );
   }, [res]);
 
-  return (
-    <>
-      <svg className="legend-area" ref={legendArea}></svg>
-    </>
-  );
+  return <svg className="legend-area" ref={legendArea}></svg>;
 }

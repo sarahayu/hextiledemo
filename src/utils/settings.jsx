@@ -277,6 +277,15 @@ export const waterScales = {
       domain: [0, 650],
     },
   },
+  unmetDemandPositive: {
+    value: {
+      domain: [0, 150],
+      color: saturate(d3.interpolateOranges, 0, 0),
+    },
+    variance: {
+      domain: [0, 650],
+    },
+  },
   difference: {
     value: {
       domain: [-30, 30],

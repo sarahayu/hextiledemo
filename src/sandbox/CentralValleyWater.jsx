@@ -26,6 +26,8 @@ export default function CentralValleyWater() {
     Object.keys(data).map((d) => parseInt(d))
   );
   const [zoom, setZoom] = useState(INITIAL_VIEW_STATE.zoom);
+  const [useVsup, setUseVsup] = useState(false);
+  const [showAllRings, setShowAllRings] = useState(false);
 
   const curInput = useGUI();
   const hexMouseEvts = useHexMouseEvts({
@@ -64,6 +66,8 @@ export default function CentralValleyWater() {
           {...curState}
           zoomRange={[7, 9]}
           visible
+          useVsup={useVsup}
+          showAllRings={showAllRings}
         />
       </DeckGL>
       <GUI
@@ -71,6 +75,10 @@ export default function CentralValleyWater() {
         res={d3.scaleQuantize().domain([0, 1]).range(resRange)(
           d3.scaleLinear().domain([7, 9]).range([0, 1]).clamp(true)(zoom)
         )}
+        useVsup={useVsup}
+        setUseVsup={setUseVsup}
+        showAllRings={showAllRings}
+        setShowAllRings={setShowAllRings}
       />
     </>
   );

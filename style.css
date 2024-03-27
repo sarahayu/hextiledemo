@@ -202,7 +202,19 @@ h1 {
   stroke: #333333;
 } */
 
-.styled-input div {
+.styled-input {
+  position: absolute;
+  bottom: 140px;
+  display: flex;
+  flex-direction: row;
+  width: min-content;
+  right: 50%;
+  transform: translateX(50%);
+  gap: 1rem;
+  align-items: center;
+}
+
+/* .styled-input div {
   position: absolute;
   display: flex;
   bottom: 20px;
@@ -210,7 +222,7 @@ h1 {
   transform: translateX(50%);
   gap: 1em;
   align-items: center;
-}
+} */
 
 .styled-input button {
   outline: 0;
@@ -224,11 +236,11 @@ h1 {
   font-size: 12px;
   font-weight: 500;
 
-  position: absolute;
+  /* position: absolute;
   display: block;
   bottom: 60px;
   right: 60%;
-  transform: translateX(50%);
+  transform: translateX(50%); */
 }
 
 .styled-input input[type='number'] {
@@ -253,7 +265,7 @@ h1 {
 
 .styled-input input[type='range'] {
   width: 40vw;
-  display: block;
+  /* display: block; */
 }
 
 .styled-input input[type='range'] {

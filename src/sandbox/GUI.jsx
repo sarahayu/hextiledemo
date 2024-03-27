@@ -10,6 +10,10 @@ export default function GUI({
   playing,
   setPlaying,
   res,
+  useVsup,
+  setUseVsup,
+  showAllRings,
+  setShowAllRings,
 }) {
   return (
     <>
@@ -18,7 +22,13 @@ export default function GUI({
         displayMonth={false}
         dataset="averageDemandBaseline"
       />
-      <Legend res={res} />
+      <Legend
+        res={res}
+        useVsup={useVsup}
+        setUseVsup={setUseVsup}
+        showAllRings={showAllRings}
+        setShowAllRings={setShowAllRings}
+      />
       <div className="styled-input">
         <button
           onClick={() => {
@@ -27,37 +37,35 @@ export default function GUI({
         >
           {playing ? 'Pause' : 'Play'}
         </button>
-        <div>
-          <input
-            style={{
-              width: '10ch',
-              display: 'block',
-            }}
-            type="number"
-            value={speedyCounter}
-            onChange={function (e) {
-              setSpeedyCounter(parseInt(e.target.value));
-            }}
-          />
-          <input
-            onChange={function (e) {
-              setPlaying(false);
-              setSpeedyCounter(parseInt(e.target.value));
-            }}
-            onInput={function (e) {
-              setSpeedyCounter(parseInt(e.target.value));
-            }}
-            value={speedyCounter}
-            style={{
-              width: '40vw',
-              display: 'block',
-            }}
-            type="range"
-            min="0"
-            max="1199"
-            id="myRange"
-          />
-        </div>
+        <input
+          onChange={function (e) {
+            setPlaying(false);
+            setSpeedyCounter(parseInt(e.target.value));
+          }}
+          onInput={function (e) {
+            setSpeedyCounter(parseInt(e.target.value));
+          }}
+          value={speedyCounter}
+          style={{
+            width: '40vw',
+            display: 'block',
+          }}
+          type="range"
+          min="0"
+          max="1199"
+          id="myRange"
+        />
+        <input
+          style={{
+            width: '10ch',
+            display: 'block',
+          }}
+          type="number"
+          value={speedyCounter}
+          onChange={function (e) {
+            setSpeedyCounter(parseInt(e.target.value));
+          }}
+        />
       </div>
     </>
   );

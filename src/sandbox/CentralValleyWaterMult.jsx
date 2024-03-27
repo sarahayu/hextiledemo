@@ -191,7 +191,7 @@ function GUI({ speedyCounter, setSpeedyCounter, playing, setPlaying }) {
         dataset="averageDemandBaseline"
       />
       <Legend />
-      <div className="styled-input">
+      <div className="styled-input" style={{ bottom: '20px' }}>
         <button
           onClick={() => {
             setPlaying((p) => !p);
@@ -199,37 +199,35 @@ function GUI({ speedyCounter, setSpeedyCounter, playing, setPlaying }) {
         >
           {playing ? 'Pause' : 'Play'}
         </button>
-        <div>
-          <input
-            style={{
-              width: '10ch',
-              display: 'block',
-            }}
-            type="number"
-            value={speedyCounter}
-            onChange={function (e) {
-              setSpeedyCounter(parseInt(e.target.value));
-            }}
-          />
-          <input
-            onChange={function (e) {
-              setPlaying(false);
-              setSpeedyCounter(parseInt(e.target.value));
-            }}
-            onInput={function (e) {
-              setSpeedyCounter(parseInt(e.target.value));
-            }}
-            value={speedyCounter}
-            style={{
-              width: '40vw',
-              display: 'block',
-            }}
-            type="range"
-            min="0"
-            max="1199"
-            id="myRange"
-          />
-        </div>
+        <input
+          onChange={function (e) {
+            setPlaying(false);
+            setSpeedyCounter(parseInt(e.target.value));
+          }}
+          onInput={function (e) {
+            setSpeedyCounter(parseInt(e.target.value));
+          }}
+          value={speedyCounter}
+          style={{
+            width: '40vw',
+            display: 'block',
+          }}
+          type="range"
+          min="0"
+          max="1199"
+          id="myRange"
+        />
+        <input
+          style={{
+            width: '10ch',
+            display: 'block',
+          }}
+          type="number"
+          value={speedyCounter}
+          onChange={function (e) {
+            setSpeedyCounter(parseInt(e.target.value));
+          }}
+        />
       </div>
     </>
   );
@@ -247,8 +245,8 @@ function Legend({}) {
       .call(function (a) {
         a.append('g').call(
           vsup.legend
-            .simpleLegend()
-            .title('Groundwater')
+            .simpleLegend(null, 250, 20, '.2s')
+            .title('GW (ft)')
             .size(250)
             .height(20)
             .scale(WATER_INTERPS.groundwater.colorsStepped)
@@ -259,11 +257,11 @@ function Legend({}) {
       .call(function (a) {
         a.append('g').call(
           vsup.legend
-            .simpleLegend()
-            .title('Scenario Unmet Demand')
+            .simpleLegend(null, 250, 20, '.2s')
+            .title('Scenario Unmet (600 TAF/km2)')
             .size(250)
             .height(20)
-            .scale(WATER_INTERPS.unmetDemand.colorsStepped)
+            .scale(WATER_INTERPS.unmetDemandPositive.colorsStepped)
             .x(width - 280)
             .y(height - 170)
         );
@@ -271,8 +269,8 @@ function Legend({}) {
       .call(function (a) {
         a.append('g').call(
           vsup.legend
-            .simpleLegend()
-            .title('Difference w/ Baseline')
+            .simpleLegend(null, 250, 20, '.2s')
+            .title('Diff. w/ BL (600 TAF / km2)')
             .size(250)
             .height(20)
             .scale(WATER_INTERPS.difference.colorsStepped)

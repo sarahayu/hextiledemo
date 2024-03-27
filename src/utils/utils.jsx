@@ -645,7 +645,7 @@ export function iconhexLegendV(measure, iconFile) {
     });
 }
 
-export function hexLegendU(measure, title = 'Title') {
+export function hexLegendU(measure, title = 'Title', showAllRings = false) {
   const thickRange = [0.4, 0.65],
     valueRange = [0.3, 1];
   const i = (d) =>
@@ -679,7 +679,9 @@ export function hexLegendU(measure, title = 'Title') {
               0,
               20,
               hexSize,
-              d3.rgb(...measure.interpColor(toInterpolatorDomain(d))),
+              d3.rgb(
+                ...measure.interpColor(toInterpolatorDomain(d), !showAllRings)
+              ),
               ringThickness(1)
             )
           );

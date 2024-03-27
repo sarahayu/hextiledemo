@@ -24,6 +24,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
       visible,
       zoomRange,
       useVsup,
+      showAllRings,
     } = this.props;
 
     return [
@@ -49,11 +50,11 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         zoomRange,
       }),
       new SolidHexTileLayer({
-        id: `White`,
+        id: `PoC`,
         data,
         thicknessRange: [0.4, 0.65],
         getFillColor: (d) =>
-          ELECTION_INTERPS.poc.interpColor(d.properties['PoC'], false),
+          ELECTION_INTERPS.poc.interpColor(d.properties['PoC'], !showAllRings),
         getValue: (d) => {
           // console.log(d.properties['WhiteVar']);
           if (useVsup)
@@ -76,7 +77,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         extensions: [new PathStyleExtension({ offset: true })],
         opacity: 1.0,
         updateTriggers: {
-          getFillColor: [curOption, speedyCounter],
+          getFillColor: [curOption, speedyCounter, showAllRings],
           getValue: [curOption, speedyCounter, useVsup],
           getElevation: [selectionFinalized],
           getLineWidth: [selectionFinalized],

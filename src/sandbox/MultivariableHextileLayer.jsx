@@ -23,6 +23,8 @@ export default class MultivariableHextileLayer extends CompositeLayer {
       selectionFinalized,
       visible,
       zoomRange,
+      useVsup,
+      showAllRings,
     } = this.props;
 
     return [
@@ -31,14 +33,18 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         data,
         thicknessRange: [0, 1],
         getFillColor: (d) =>
-          WATER_INTERPS.groundwater.interpVsup(
-            d.properties.Groundwater[speedyCounter],
-            d.properties.GroundwaterVar[speedyCounter]
-          ),
+          useVsup
+            ? WATER_INTERPS.groundwater.interpVsup(
+                d.properties.Groundwater[speedyCounter],
+                d.properties.GroundwaterVar[speedyCounter]
+              )
+            : WATER_INTERPS.groundwater.interpColor(
+                d.properties.Groundwater[speedyCounter]
+              ),
         opacity: 1,
         visible,
         updateTriggers: {
-          getFillColor: [speedyCounter],
+          getFillColor: [speedyCounter, useVsup],
         },
         zoomRange,
       }),
@@ -47,29 +53,14 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         data,
         thicknessRange: [0.4, 0.65],
         getFillColor: (d) =>
-          curOption == 0
-            ? WATER_INTERPS.difference.interpVsup(
-                d.properties.UnmetDemand[SCENARIOS[curScenario]][
-                  speedyCounter
-                ] - d.properties.UnmetDemandBaseline[speedyCounter],
-                indepVariance(
-                  d.properties.UnmetDemandBaselineVar[speedyCounter],
-                  d.properties.UnmetDemandVar[SCENARIOS[curScenario]][
-                    speedyCounter
-                  ]
-                ),
-                true
-              )
-            : WATER_INTERPS.difference.interpColor(
-                d.properties.UnmetDemand[SCENARIOS[curScenario]][
-                  speedyCounter
-                ] - d.properties.UnmetDemandBaseline[speedyCounter],
-                true
-              ),
+          WATER_INTERPS.difference.interpColor(
+            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter] -
+              d.properties.UnmetDemandBaseline[speedyCounter],
+            !showAllRings
+          ),
         getValue: (d) =>
-          curOption == 0
-            ? 1
-            : WATER_INTERPS.difference.scaleLinearVar(
+          useVsup
+            ? WATER_INTERPS.difference.scaleLinearVar(
                 indepVariance(
                   d.properties.UnmetDemandBaselineVar[speedyCounter],
                   d.properties.UnmetDemandVar[SCENARIOS[curScenario]][
@@ -77,8 +68,9 @@ export default class MultivariableHextileLayer extends CompositeLayer {
                   ]
                 )
               ) *
-                0.8 +
-              0.2,
+                0.7 +
+              0.3
+            : 1,
         raised: true,
         visible,
         getElevation: (d) => (d.hexId in clickedHexes ? 5000 : 0),
@@ -91,8 +83,8 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         extensions: [new PathStyleExtension({ offset: true })],
         opacity: 1.0,
         updateTriggers: {
-          getFillColor: [curOption, speedyCounter],
-          getValue: [curOption, speedyCounter],
+          getFillColor: [curOption, speedyCounter, showAllRings],
+          getValue: [curOption, speedyCounter, useVsup],
           getElevation: [selectionFinalized],
           getLineWidth: [selectionFinalized],
         },
@@ -108,9 +100,13 @@ export default class MultivariableHextileLayer extends CompositeLayer {
           255,
           130,
           35,
-          WATER_INTERPS.unmetDemand.scaleLinearVar(
-            d.properties.UnmetDemandVar[SCENARIOS[curScenario]][speedyCounter]
-          ) *
+          (useVsup
+            ? WATER_INTERPS.unmetDemand.scaleLinearVar(
+                d.properties.UnmetDemandVar[SCENARIOS[curScenario]][
+                  speedyCounter
+                ]
+              )
+            : 1) *
             200 +
             55,
         ],
@@ -123,6 +119,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         opacity: 1,
         updateTriggers: {
           getTranslation: [speedyCounter],
+          getColor: [useVsup],
         },
         zoomRange,
       }),

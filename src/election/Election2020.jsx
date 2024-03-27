@@ -40,7 +40,8 @@ export default function Election2020() {
     Object.keys(data).map((d) => parseInt(d))
   );
   const [zoom, setZoom] = useState(5);
-  const [useVsup, setUseVsup] = useState(5);
+  const [useVsup, setUseVsup] = useState(false);
+  const [showAllRings, setShowAllRings] = useState(false);
 
   const curInput = useGUI();
   const hexMouseEvts = useHexMouseEvts({
@@ -66,7 +67,7 @@ export default function Election2020() {
           latitude: 30.2672,
           zoom: 5,
           minZoom: 3,
-          maxZoom: 15,
+          maxZoom: 10,
           pitch: 50.85,
           bearing: 32.58,
         }}
@@ -85,23 +86,26 @@ export default function Election2020() {
         <MultivariableHextileLayer
           id="slide-election"
           {...curState}
-          zoomRange={[5, 8]}
+          zoomRange={[5, 7]}
           visible={curInput.curOption == 1}
           useVsup={useVsup}
+          showAllRings={showAllRings}
         />
       </DeckGL>
       <GUI
         res={d3.scaleQuantize().domain([0, 1]).range(resRange)(
-          d3.scaleLinear().domain([5, 8]).range([0, 1]).clamp(true)(zoom)
+          d3.scaleLinear().domain([5, 7]).range([0, 1]).clamp(true)(zoom)
         )}
         useVsup={useVsup}
         setUseVsup={setUseVsup}
+        showAllRings={showAllRings}
+        setShowAllRings={setShowAllRings}
       />
     </>
   );
 }
 
-function GUI({ res, useVsup, setUseVsup }) {
+function GUI({ res, useVsup, setUseVsup, showAllRings, setShowAllRings }) {
   const legendArea = useRef();
   const hexText = useRef();
 
@@ -110,11 +114,11 @@ function GUI({ res, useVsup, setUseVsup }) {
       'visibility',
       useVsup ? 'hidden' : 'visible'
     );
-    d3.selectAll('.vsup-legend-u').style(
+    d3.selectAll('.vsup-legend-v').style(
       'visibility',
       useVsup ? 'visible' : 'hidden'
     );
-    d3.selectAll('.vsup-legend-v').attr(
+    d3.selectAll('.vsup-legend-u').attr(
       'transform',
       `translate(${0},${useVsup ? 0 : 50})`
     );
@@ -126,6 +130,12 @@ function GUI({ res, useVsup, setUseVsup }) {
       .attr('transform', `translate(${0},${useVsup ? 0 : 60})`)
       .attr('height', useVsup ? 170 : 110);
   }, [useVsup]);
+
+  useEffect(() => {
+    d3.select('#diff-u')
+      .html('')
+      .call(hexLegendU(ELECTION_INTERPS.poc, '% PoC', showAllRings));
+  }, [showAllRings]);
 
   useLayoutEffect(() => {
     const svg = d3
@@ -161,7 +171,7 @@ function GUI({ res, useVsup, setUseVsup }) {
 
     legendElem
       .append('g')
-      .attr('class', 'vsup-legend-u')
+      .attr('class', 'vsup-legend-v')
       .append('g')
       .call(
         arcmapLegendPretty()
@@ -195,14 +205,15 @@ function GUI({ res, useVsup, setUseVsup }) {
       .append('g')
       .attr('transform', `translate(${xPos},${yPos})`)
       .append('g')
-      .attr('class', 'vsup-legend-v')
-      .call(hexLegendU(ELECTION_INTERPS.poc, '% PoC'));
+      .attr('class', 'vsup-legend-u')
+      .attr('id', 'diff-u')
+      .call(hexLegendU(ELECTION_INTERPS.poc, '% PoC', showAllRings));
 
     legendElem
       .append('g')
       .attr('transform', `translate(${xPos},${yPos + 20})`)
       .append('g')
-      .attr('class', 'vsup-legend-u')
+      .attr('class', 'vsup-legend-v')
       .call(hexLegendV(ELECTION_INTERPS.poc));
 
     (xPos = 750), (yPos = height - 120);
@@ -211,7 +222,7 @@ function GUI({ res, useVsup, setUseVsup }) {
       .append('g')
       .attr('transform', `translate(${xPos},${yPos})`)
       .append('g')
-      .attr('class', 'vsup-legend-v')
+      .attr('class', 'vsup-legend-u')
       .call(
         iconhexLegendU(
           ELECTION_INTERPS.population,
@@ -224,7 +235,7 @@ function GUI({ res, useVsup, setUseVsup }) {
       .append('g')
       .attr('transform', `translate(${xPos},${yPos + 55})`)
       .append('g')
-      .attr('class', 'vsup-legend-u')
+      .attr('class', 'vsup-legend-v')
       .call(iconhexLegendV(ELECTION_INTERPS.population, 'assets/human.png'));
 
     legendElem
@@ -260,6 +271,18 @@ function GUI({ res, useVsup, setUseVsup }) {
       });
   }, []);
 
+  useEffect(() => {
+    let [areaText, sideText] = hexText.current;
+    areaText.text(
+      `${d3.format('.2s')(h3.getHexagonAreaAvg(res, h3.UNITS.km2))} km\u00B2`
+    );
+    sideText.text(
+      `\u2190 ${d3.format('.2s')(
+        h3.getHexagonEdgeLengthAvg(res, h3.UNITS.km)
+      )} km \u2192;`
+    );
+  }, [res]);
+
   return (
     <>
       <svg className="legend-area" ref={legendArea}></svg>
@@ -270,6 +293,12 @@ function GUI({ res, useVsup, setUseVsup }) {
           onChange={() => setUseVsup((prev) => !prev)}
         />
         <span>Use VSUP</span>
+        <input
+          type="checkbox"
+          checked={showAllRings}
+          onChange={() => setShowAllRings((prev) => !prev)}
+        />
+        <span>Show All Rings</span>
       </div>
     </>
   );

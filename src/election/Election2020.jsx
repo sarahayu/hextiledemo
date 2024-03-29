@@ -1,15 +1,14 @@
 import React from 'react';
 import { useRef, useState } from 'react';
 
-import DeckGL from '@deck.gl/react';
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';
 import maplibregl from 'maplibre-gl';
 import { Map } from 'react-map-gl';
-import mapStyle from 'src/assets/style.json';
-import { LIGHTING } from 'src/utils/settings';
+import { INITIAL_ELEC_VIEW_STATE, LIGHTING } from 'src/utils/settings';
 
 import {
+  TEX_BBOX,
   electionDataHex as data,
   electionPrecinctGeo as dataDeag,
 } from 'src/utils/data';
@@ -18,13 +17,14 @@ import useGUI from './useGUI';
 import useHexTooltip from './useHexTooltip';
 
 import useHexMouseEvts from 'src/sandbox/useHexMouseEvts';
-import BaseTerrainLayer from './BaseTerrainLayer';
 import MultivariableHextileLayer from './MultivariableHextileLayer';
 
 import { useEffect, useLayoutEffect } from 'react';
 
 import * as vsup from 'vsup';
 
+import { GeoJsonLayer } from 'deck.gl';
+import DeckGLOverlay from 'src/utils/overlay';
 import { ELECTION_INTERPS } from 'src/utils/scales';
 import {
   arcmapLegendPretty,
@@ -49,7 +49,7 @@ export default function Election2020() {
     dataDeag,
     deagKey: 'PrecinctRgs',
   });
-  const { getTooltip } = useHexTooltip(curInput);
+  const hexTooltip = useHexTooltip(curInput);
 
   const curState = {
     data,
@@ -59,39 +59,41 @@ export default function Election2020() {
 
   return (
     <>
-      <DeckGL
-        controller
-        effects={[LIGHTING]}
-        initialViewState={{
-          longitude: -97.7431,
-          latitude: 30.2672,
-          zoom: 5,
-          minZoom: 3,
-          maxZoom: 10,
-          pitch: 50.85,
-          bearing: 32.58,
-        }}
-        onViewStateChange={({ viewState }) => {
-          setZoom(viewState.zoom);
-        }}
-        getTooltip={getTooltip}
+      <Map
+        reuseMaps
+        preventStyleDiffing
+        mapLib={maplibregl}
+        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        antialias
+        initialViewState={INITIAL_ELEC_VIEW_STATE}
       >
-        <Map
-          reuseMaps
-          preventStyleDiffing
-          mapLib={maplibregl}
-          mapStyle={mapStyle}
-        />
-        <BaseTerrainLayer id="slide-terrain" {...curState} />
-        <MultivariableHextileLayer
-          id="slide-election"
-          {...curState}
-          zoomRange={[5, 7]}
-          visible={curInput.curOption == 1}
-          useVsup={useVsup}
-          showAllRings={showAllRings}
-        />
-      </DeckGL>
+        <DeckGLOverlay
+          getTooltip={hexTooltip}
+          interleaved
+          effects={[LIGHTING]}
+          onViewStateChange={({ viewState }) => {
+            setZoom(viewState.zoom);
+          }}
+          antialias
+        >
+          <GeoJsonLayer
+            id="ground"
+            data={TEX_BBOX}
+            stroked={false}
+            getFillColor={[0, 0, 0, 0]}
+            beforeId={'landcover'}
+          />
+          <MultivariableHextileLayer
+            id="slide-election"
+            {...curState}
+            zoomRange={[5, 7]}
+            visible
+            useVsup={useVsup}
+            showAllRings={showAllRings}
+            beforeId={'place_hamlet'}
+          />
+        </DeckGLOverlay>
+      </Map>
       <GUI
         res={d3.scaleQuantize().domain([0, 1]).range(resRange)(
           d3.scaleLinear().domain([5, 7]).range([0, 1]).clamp(true)(zoom)

@@ -1,5 +1,4 @@
-import { arrGroupBy, dataFilter } from 'src/utils/utils';
-import * as turf from '@turf/turf';
+import { arrGroupBy, dataFilter, getMapsizeSquare } from 'src/utils/utils';
 
 export const temporalDataHex = dataFilter(
   await (await fetch('./assets/hex_5_6.json')).json(),
@@ -47,14 +46,5 @@ export const precinctGeo = await (
 
 export const countyGeo = await (await fetch('./assets/county_geo.json')).json();
 
-export const CALI_BBOX = (() => {
-  const poly = turf.bboxPolygon(turf.bbox(temporalDataGeoGW));
-  const [centerX, centerY] = turf.center(poly).geometry.coordinates;
-
-  for (let coord of poly.geometry.coordinates[0]) {
-    coord[0] += (coord[0] - centerX) * 2;
-    coord[1] += (coord[1] - centerY) * 2;
-  }
-
-  return poly;
-})();
+export const CALI_BBOX = getMapsizeSquare(temporalDataGeoGW);
+export const TEX_BBOX = getMapsizeSquare(electionPrecinctGeo);

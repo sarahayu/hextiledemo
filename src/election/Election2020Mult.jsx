@@ -34,7 +34,7 @@ export default function Election2020Mult() {
     dataDeag,
     deagKey: 'PrecinctRgs',
   });
-  const { getTooltip } = useHexTooltip({ ...curInput, curOption: 100 });
+  const getTooltip = useHexTooltip({ ...curInput, curOption: 100 });
 
   const curState = {
     data,
@@ -210,7 +210,7 @@ function Legend({}) {
       .call(function (a) {
         a.append('g').call(
           vsup.legend
-            .simpleLegend()
+            .simpleLegend(null, 250, 20, '.2s')
             .title('Population / Km2')
             .size(250)
             .height(20)
@@ -222,7 +222,7 @@ function Legend({}) {
       .call(function (a) {
         a.append('g').call(
           vsup.legend
-            .simpleLegend()
+            .simpleLegend(null, 250, 20, '.2s')
             .title('Percent Democrat Lead')
             .size(250)
             .height(20)
@@ -234,7 +234,7 @@ function Legend({}) {
       .call(function (a) {
         a.append('g').call(
           vsup.legend
-            .simpleLegend()
+            .simpleLegend(null, 250, 20, '.2s')
             .title('Percent PoC')
             .size(250)
             .height(20)

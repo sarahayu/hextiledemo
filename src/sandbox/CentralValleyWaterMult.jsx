@@ -32,7 +32,7 @@ export default function CentralValleyWaterMult() {
     dataDeag,
     deagKey: 'DURgs',
   });
-  const { getTooltip } = useHexTooltip({ ...curInput, curOption: 100 });
+  const getTooltip = useHexTooltip({ ...curInput, curOption: 100 });
 
   const curState = {
     data,

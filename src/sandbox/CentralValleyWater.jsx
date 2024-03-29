@@ -26,8 +26,6 @@ import { GeoJsonLayer, PolygonLayer } from 'deck.gl';
 const RES_RANGE = Object.keys(data).map((d) => parseInt(d));
 const ZOOM_RANGE = [7, 9];
 
-console.log(CALI_BBOX);
-
 export default function CentralValleyWater() {
   const [zoom, setZoom] = useState(INITIAL_VIEW_STATE.zoom);
 
@@ -60,9 +58,7 @@ export default function CentralValleyWater() {
             id="ground"
             data={CALI_BBOX}
             stroked={false}
-            // getPolygon={(f) => f}
             getFillColor={[0, 0, 0, 0]}
-            // getPolygonOffset={({ layerIndex }) => [0, layerIndex * 1000]}
             beforeId={'landcover'}
           />
           <MultivariableHextileLayer

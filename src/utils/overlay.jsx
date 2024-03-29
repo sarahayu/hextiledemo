@@ -1,9 +1,9 @@
-import React from 'react';
 import { Children } from 'react';
 
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { useControl } from 'react-map-gl';
 
+// adapted from https://github.com/visgl/deck.gl/blob/9.0-release/modules/react/src/utils/extract-jsx-layers.ts
 function createLayer(LayerType, reactProps) {
   const props = {};
   // Layer.defaultProps is treated as ReactElement.defaultProps and merged into react props
@@ -14,7 +14,7 @@ function createLayer(LayerType, reactProps) {
       props[key] = reactProps[key];
     }
   }
-  // @ts-ignore Cannot instantiate an abstract class (Layer)
+
   return new LayerType(props);
 }
 

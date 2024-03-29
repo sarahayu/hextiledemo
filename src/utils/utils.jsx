@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import * as turf from '@turf/turf';
 import * as vsup from 'vsup';
 import { HOLDERS } from './settings';
 
@@ -1228,6 +1229,18 @@ export function getFormattedTime() {
   let mi = today.getMinutes();
   let s = today.getSeconds();
   return y + '-' + m + '-' + d + '-' + h + '-' + mi + '-' + s;
+}
+
+export function getMapsizeSquare(geojson) {
+  const poly = turf.bboxPolygon(turf.bbox(geojson));
+  const [centerX, centerY] = turf.center(poly).geometry.coordinates;
+
+  for (let coord of poly.geometry.coordinates[0]) {
+    coord[0] += (coord[0] - centerX) * 2;
+    coord[1] += (coord[1] - centerY) * 2;
+  }
+
+  return poly;
 }
 
 // prettier-ignore

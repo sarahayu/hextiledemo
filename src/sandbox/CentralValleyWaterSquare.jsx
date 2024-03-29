@@ -1,10 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 
-import DeckGL from '@deck.gl/react';
 import maplibregl from 'maplibre-gl';
 import { Map } from 'react-map-gl';
-import mapStyle from 'src/assets/style.json';
 import { INITIAL_VIEW_STATE, LIGHTING } from 'src/utils/settings';
 
 import {
@@ -14,10 +12,8 @@ import {
 
 import useGUI from './useGUI';
 import useHexMouseEvts from './useHexMouseEvts';
-import useHexTooltip from './useHexTooltip';
 
 import { SCENARIOS } from 'src/utils/settings';
-import BaseTerrainLayer from './BaseTerrainLayer';
 
 import { CompositeLayer } from 'deck.gl';
 import SolidSquareTileLayer from 'src/squaretile/SolidSquareTileLayer';
@@ -29,6 +25,7 @@ import Clock from 'src/Clock';
 
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';
+import DeckGLOverlay from 'src/utils/overlay';
 
 export default function CentralValleyWaterSquare() {
   const { current: resRange } = useRef(
@@ -40,7 +37,6 @@ export default function CentralValleyWaterSquare() {
     dataDeag,
     deagKey: 'DURgs',
   });
-  const { getTooltip } = useHexTooltip(curInput);
   const [zoom, setZoom] = useState(INITIAL_VIEW_STATE.zoom);
 
   const curState = {
@@ -51,29 +47,30 @@ export default function CentralValleyWaterSquare() {
 
   return (
     <>
-      <DeckGL
-        controller
-        effects={[LIGHTING]}
+      <Map
+        reuseMaps
+        preventStyleDiffing
+        mapLib={maplibregl}
+        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        antialias
         initialViewState={INITIAL_VIEW_STATE}
-        getTooltip={getTooltip}
-        onViewStateChange={({ viewState }) => {
-          setZoom(viewState.zoom);
-        }}
       >
-        <Map
-          reuseMaps
-          preventStyleDiffing
-          mapLib={maplibregl}
-          mapStyle={mapStyle}
-        />
-        <BaseTerrainLayer id="slide-terrain" {...curState} />
-        <MultivariableHextileLayer
-          id="slide-waters"
-          {...curState}
-          zoomRange={[7, 9]}
-          visible
-        />
-      </DeckGL>
+        <DeckGLOverlay
+          interleaved
+          effects={[LIGHTING]}
+          onViewStateChange={({ viewState }) => {
+            setZoom(viewState.zoom);
+          }}
+        >
+          <MultivariableHextileLayer
+            id="slide-waters"
+            {...curState}
+            zoomRange={[7, 9]}
+            visible
+            beforeId={'place_hamlet'}
+          />
+        </DeckGLOverlay>
+      </Map>
       <GUI
         {...curState}
         res={d3.scaleQuantize().domain([0, 1]).range(resRange)(

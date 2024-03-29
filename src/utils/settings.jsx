@@ -135,6 +135,16 @@ export const INITIAL_FIRE_VIEW_STATE = {
   bearing: 28.126875,
 };
 
+export const INITIAL_ELEC_VIEW_STATE = {
+  longitude: -97.7431,
+  latitude: 30.2672,
+  zoom: 5,
+  minZoom: 3,
+  maxZoom: 10,
+  pitch: 50.85,
+  bearing: 32.58,
+};
+
 export const electionScales = {
   party: {
     value: {

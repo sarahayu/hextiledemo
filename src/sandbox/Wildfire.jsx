@@ -49,7 +49,12 @@ export default function Wildfire() {
       antialias
       initialViewState={INITIAL_FIRE_VIEW_STATE}
     >
-      <DeckGLOverlay getTooltip={getTooltip} interleaved effects={[LIGHTING]}>
+      <DeckGLOverlay
+        antialias
+        getTooltip={getTooltip}
+        interleaved
+        effects={[LIGHTING]}
+      >
         <PolygonLayer
           id={'ground'}
           data={[

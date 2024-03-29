@@ -82,38 +82,31 @@ export default function useHexTooltip({ curOption }) {
       `;
   }, []);
 
-  const getTooltip = useCallback(
-    ({ object }) => {
-      if (!object) {
-        if (lastObject.current) {
-          secondaryTooltipElem.current.classList.remove('active');
+  const getTooltip = useCallback(({ object }) => {
+    if (!object) {
+      if (lastObject.current) {
+        secondaryTooltipElem.current.classList.remove('active');
 
-          if (isHex(lastObject.current)) {
-            mainTooltipElem.current.classList.remove('active');
-          }
-
-          lastObject.current = object;
-        }
-
-        if (curOption > 1) {
-          secondaryTooltipElem.current.classList.remove('active');
+        if (isHex(lastObject.current)) {
           mainTooltipElem.current.classList.remove('active');
         }
-        return;
+
+        lastObject.current = object;
       }
 
-      if (curOption <= 1 && isHex(object)) {
-        handleHex(object);
-      } else if (curOption <= 1 && isGeo(object)) {
-        handleExtrudedGeo(object);
-      } else {
-        handleBasicGeo(object);
-      }
+      return;
+    }
 
-      lastObject.current = object;
-    },
-    [curOption]
-  );
+    if (isHex(object)) {
+      handleHex(object);
+    } else if (isGeo(object)) {
+      handleExtrudedGeo(object);
+    } else {
+      handleBasicGeo(object);
+    }
 
-  return { getTooltip };
+    lastObject.current = object;
+  }, []);
+
+  return getTooltip;
 }

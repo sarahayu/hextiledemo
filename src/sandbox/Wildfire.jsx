@@ -1,9 +1,21 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  Children,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { OBJLoader } from '@loaders.gl/obj';
-import { BitmapLayer, CompositeLayer, PolygonLayer, TileLayer } from 'deck.gl';
-import { useMap } from 'react-map-gl';
+import {
+  BitmapLayer,
+  CompositeLayer,
+  DeckGL,
+  PolygonLayer,
+  TileLayer,
+} from 'deck.gl';
+import { useControl, useMap } from 'react-map-gl';
 import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
 import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 
@@ -16,36 +28,51 @@ import { INITIAL_FIRE_VIEW_STATE, LIGHTING } from 'src/utils/settings';
 import { fireDataHex as data } from 'src/utils/data';
 
 import useGUI from './useGUI';
-
-// function DeckGLOverlay(props) {
-//   const overlay = useControl(() => new MapboxOverlay(props));
-//   overlay.setProps(props);
-//   return null;
-// }
+import DeckGLOverlay from 'src/utils/overlay';
 
 export default function Wildfire() {
   const curInput = useGUI();
   const { getTooltip } = useHexTooltip(curInput);
 
+  const curState = {
+    data,
+    ...curInput,
+  };
+  const layers = [];
+
   return (
     <Map
-      getTooltip={getTooltip}
-      id="mymap"
-      style={{ width: 1200, height: 800 }}
-      effects={[LIGHTING]}
-      light={{
-        anchor: 'viewport',
-        color: 'yellow',
-        intensity: 1,
-      }}
-      antialias
-      interleaved
-      initialViewState={INITIAL_FIRE_VIEW_STATE}
+      reuseMaps
+      preventStyleDiffing
       mapLib={maplibregl}
       mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-      preventStyleDiffing={true}
+      antialias
+      initialViewState={INITIAL_FIRE_VIEW_STATE}
     >
-      <_Wildfire curInput={curInput} />
+      <DeckGLOverlay getTooltip={getTooltip} interleaved effects={[LIGHTING]}>
+        <PolygonLayer
+          id={'ground'}
+          data={[
+            [
+              [-119.99582643167989 - 1, 37.88453894208306 - 1],
+              [-119.99582643167989 - 1, 37.88453894208306 + 1],
+              [-119.99582643167989 + 1, 37.88453894208306 + 1],
+              [-119.99582643167989 + 1, 37.88453894208306 - 1],
+            ],
+          ]}
+          stroked={false}
+          getPolygon={(f) => f}
+          getFillColor={[0, 0, 0, 0]}
+          getPolygonOffset={({ layerIndex }) => [0, layerIndex * 1000]}
+          beforeId={'background'}
+        />
+        <WildfireLayer
+          id={'slide-fire'}
+          {...curState}
+          zoomRange={[9, 14]}
+          beforeId={'place_hamlet'}
+        />
+      </DeckGLOverlay>
     </Map>
   );
 }
@@ -53,93 +80,50 @@ export default function Wildfire() {
 function _Wildfire({ curInput }) {
   const { current: mapbox } = useMap();
 
-  useEffect(() => {
-    if (!mapbox) return;
+  // useEffect(() => {
+  //   if (!mapbox) return;
 
-    const curState = {
-      data,
-      ...curInput,
-    };
-    mapbox.on('load', () => {
-      const overlay = new MapboxOverlay({
-        interleaved: true,
-        effects: [LIGHTING],
+  //   const curState = {
+  //     data,
+  //     ...curInput,
+  //   };
+  //   mapbox.on('load', () => {
+  //     const overlay = new MapboxOverlay({
+  //       interleaved: true,
+  //       effects: [LIGHTING],
 
-        layers: [
-          new TileLayer({
-            id: 'carto',
-            data: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}',
-            minZoom: 7,
-            maxZoom: 11,
-            tileSize: 256,
-            // zoomOffset: -1,
-
-            renderSubLayers: (props) => {
-              const {
-                bbox: { west, south, east, north },
-              } = props.tile;
-
-              return new BitmapLayer(props, {
-                data: null,
-                image: props.data,
-                bounds: [west, south, east, north],
-              });
-            },
-            beforeId: 'waterway',
-          }),
-          new TileLayer({
-            id: 'supply',
-            data: 'http://infovis.cs.ucdavis.edu/mapProxy/wmts/fbfm40/webmercator/{z}/{x}/{y}.png',
-            minZoom: 7,
-            maxZoom: 11,
-            tileSize: 256,
-            // zoomOffset: -1,
-
-            renderSubLayers: (props) => {
-              const {
-                bbox: { west, south, east, north },
-              } = props.tile;
-
-              if (-(west - -119.94742725262628) < north - 37.90192590898632)
-                return new BitmapLayer(props, {
-                  data: null,
-                  image: props.data,
-                  bounds: [west, south, east, north],
-                });
-            },
-            beforeId: 'waterway',
-          }),
-          new PolygonLayer({
-            id: 'ground',
-            data: [
-              [
-                [-119.99582643167989 - 1, 37.88453894208306 - 1],
-                [-119.99582643167989 - 1, 37.88453894208306 + 1],
-                [-119.99582643167989 + 1, 37.88453894208306 + 1],
-                [-119.99582643167989 + 1, 37.88453894208306 - 1],
-              ],
-            ],
-            stroked: false,
-            getPolygon: (f) => f,
-            getFillColor: [0, 0, 0, 0],
-            getPolygonOffset: ({ layerIndex }) => [0, layerIndex * 1000],
-            beforeId: 'background',
-          }),
-          new WildfireLayer({
-            id: 'slide-fire',
-            ...curState,
-            zoomRange: [9, 14],
-            // beforeId: 'waterway_label',
-          }),
-        ],
-      });
-      mapbox.getMap().addControl(overlay).setLight({
-        anchor: 'viewport',
-        color: 'yellow',
-        intensity: 1,
-      });
-    });
-  }, []);
+  //       layers: [
+  //         new PolygonLayer({
+  //           id: 'ground',
+  //           data: [
+  //             [
+  //               [-119.99582643167989 - 1, 37.88453894208306 - 1],
+  //               [-119.99582643167989 - 1, 37.88453894208306 + 1],
+  //               [-119.99582643167989 + 1, 37.88453894208306 + 1],
+  //               [-119.99582643167989 + 1, 37.88453894208306 - 1],
+  //             ],
+  //           ],
+  //           stroked: false,
+  //           getPolygon: (f) => f,
+  //           getFillColor: [0, 0, 0, 0],
+  //           getPolygonOffset: ({ layerIndex }) => [0, layerIndex * 1000],
+  //           beforeId: 'background',
+  //         }),
+  //         new WildfireLayer({
+  //           id: 'slide-fire',
+  //           ...curState,
+  //           zoomRange: [9, 14],
+  //           beforeId: 'place_hamlet',
+  //         }),
+  //       ],
+  //     });
+  //     mapbox.getMap().addControl(overlay).setLight({
+  //       anchor: 'viewport',
+  //       color: 'yellow',
+  //       intensity: 1,
+  //     });
+  //   });
+  // }, []);
 }
 
 class WildfireLayer extends CompositeLayer {

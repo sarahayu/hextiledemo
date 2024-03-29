@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 export default function useGUI() {
   const [speedyCounter, setSpeedyCounter] = useState(1027);
   const [playing, setPlaying] = useState(false);
-  const [curOption, setCurOption] = useState(1);
+  const [useVsup, setUseVsup] = useState(false);
+  const [showAllRings, setShowAllRings] = useState(false);
 
   useEffect(() => {
     if (playing) {
@@ -22,7 +23,9 @@ export default function useGUI() {
     setSpeedyCounter,
     playing,
     setPlaying,
-    curOption,
-    setCurOption,
+    useVsup,
+    setUseVsup,
+    showAllRings,
+    setShowAllRings,
   };
 }

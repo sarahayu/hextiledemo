@@ -10,14 +10,19 @@ import { indepVariance } from 'src/utils/utils';
 import DeagHexTileLayer from '../hextile/DeagHexTileLayer';
 import { WATER_INTERPS } from 'src/utils/scales';
 import { temporalDataGeo } from 'src/utils/data';
+import { useCallback } from 'react';
 
-const curScenario = 0;
+const SCENARIO = SCENARIOS[0];
+
+const cb = (d) =>
+  WATER_INTERPS.unmetDemand.scaleLinear(
+    d.properties.UnmetDemand[SCENARIO][1027]
+  );
 
 export default class MultivariableHextileLayer extends CompositeLayer {
   renderLayers() {
     const {
       data,
-      curOption,
       speedyCounter,
       clickedHexes,
       selectionFinalized,
@@ -47,6 +52,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
           getFillColor: [speedyCounter, useVsup],
         },
         zoomRange,
+        pickable: false,
       }),
       new SolidHexTileLayer({
         id: `DiffRings`,
@@ -54,7 +60,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         thicknessRange: [0.4, 0.65],
         getFillColor: (d) =>
           WATER_INTERPS.difference.interpColor(
-            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter] -
+            d.properties.UnmetDemand[SCENARIO][speedyCounter] -
               d.properties.UnmetDemandBaseline[speedyCounter],
             !showAllRings
           ),
@@ -63,18 +69,13 @@ export default class MultivariableHextileLayer extends CompositeLayer {
             ? WATER_INTERPS.difference.scaleLinearVar(
                 indepVariance(
                   d.properties.UnmetDemandBaselineVar[speedyCounter],
-                  d.properties.UnmetDemandVar[SCENARIOS[curScenario]][
-                    speedyCounter
-                  ]
+                  d.properties.UnmetDemandVar[SCENARIO][speedyCounter]
                 )
               ) *
                 0.7 +
               0.3
             : 1,
-        raised: true,
         visible,
-        getElevation: (d) => (d.hexId in clickedHexes ? 5000 : 0),
-        getLineWidth: (d) => (d.hexId in clickedHexes ? 100 : 0),
         stroked: true,
         extruded: false,
         lineJointRounded: true,
@@ -83,28 +84,24 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         extensions: [new PathStyleExtension({ offset: true })],
         opacity: 1.0,
         updateTriggers: {
-          getFillColor: [curOption, speedyCounter, showAllRings],
-          getValue: [curOption, speedyCounter, useVsup],
-          getElevation: [selectionFinalized],
-          getLineWidth: [selectionFinalized],
+          getFillColor: [speedyCounter, showAllRings],
+          getValue: [speedyCounter, useVsup],
         },
         zoomRange,
+        pickable: false,
       }),
       new IconHexTileLayer({
         id: `ScenarioUnmet`,
         data,
         loaders: [OBJLoader],
         mesh: './assets/drop.obj',
-        raised: true,
         getColor: (d) => [
           255,
           130,
           35,
           (useVsup
             ? WATER_INTERPS.unmetDemand.scaleLinearVar(
-                d.properties.UnmetDemandVar[SCENARIOS[curScenario]][
-                  speedyCounter
-                ]
+                d.properties.UnmetDemandVar[SCENARIO][speedyCounter]
               )
             : 1) *
             200 +
@@ -112,7 +109,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         ],
         getValue: (d) =>
           WATER_INTERPS.unmetDemand.scaleLinear(
-            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter]
+            d.properties.UnmetDemand[SCENARIO][speedyCounter]
           ),
         visible,
         sizeScale: 3000,
@@ -122,6 +119,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
           getColor: [useVsup],
         },
         zoomRange,
+        pickable: false,
       }),
       new DeagHexTileLayer({
         ...this.props,
@@ -130,7 +128,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         deagData: temporalDataGeo,
         getFillColor: (d) => {
           return WATER_INTERPS.unmetDemand.interpColor(
-            d.properties.UnmetDemand[SCENARIOS[curScenario]][speedyCounter],
+            d.properties.UnmetDemand[SCENARIO][speedyCounter],
             false,
             false
           );
@@ -146,5 +144,5 @@ export default class MultivariableHextileLayer extends CompositeLayer {
 MultivariableHextileLayer.layerName = 'MultivariableHextileLayer';
 MultivariableHextileLayer.defaultProps = {
   ...CompositeLayer.defaultProps,
-  autoHighlight: true,
+  autoHighlight: true, // have to do this or else component layers can't detect picking and autoHighlighting (stupid)
 };

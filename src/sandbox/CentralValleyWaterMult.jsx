@@ -20,8 +20,6 @@ import useHexMouseEvts from './useHexMouseEvts';
 import useHexTooltip from './useHexTooltip';
 
 import BaseTerrainLayer from './BaseTerrainLayer';
-import BasicGeoLayer from './BasicGeoLayer';
-import MultivariableHextileLayer from './MultivariableHextileLayer';
 import { GeoJsonLayer, MapView, View } from 'deck.gl';
 import { WATER_INTERPS } from 'src/utils/scales';
 import Clock from 'src/Clock';

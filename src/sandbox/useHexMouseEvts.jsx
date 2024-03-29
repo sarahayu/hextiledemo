@@ -33,9 +33,7 @@ export default function useHexMouseEvts({
         setHoveredGeoActive([]);
         return;
       }
-
       if (disabled) return;
-
       if (selectionFinalized) {
         // hover geos
         setHoveredHex(null);
@@ -51,13 +49,15 @@ export default function useHexMouseEvts({
             hoveredHexFeature,
             f.geometry
           );
-          hovereds[f.properties.id] =
-            turf.area(intersectionFeature) / turf.area(hoveredHexFeature);
+
+          // have to do a null check because simplifying using mapshaper sometimes make previously intersecting regions no longer intersect
+          if (intersectionFeature)
+            hovereds[f.properties.id] =
+              turf.area(intersectionFeature) / turf.area(hoveredHexFeature);
         }
         setHoveredGeos(hovereds);
         setHoveredHex(object.hexId);
       }
-
       return true;
     },
     [clickedHexes, selectionFinalized, disabled, deagKey]

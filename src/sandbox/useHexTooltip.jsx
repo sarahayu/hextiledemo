@@ -13,7 +13,7 @@ import {
 
 const curScenario = 0;
 
-export default function useHexTooltip({ speedyCounter, curOption }) {
+export default function useHexTooltip({ speedyCounter }) {
   const mainTooltipElem = useRef();
   const secondaryTooltipElem = useRef();
   const lastObject = useRef({});
@@ -134,16 +134,12 @@ export default function useHexTooltip({ speedyCounter, curOption }) {
           lastObject.current = object;
         }
 
-        if (curOption > 1) {
-          secondaryTooltipElem.current.classList.remove('active');
-          mainTooltipElem.current.classList.remove('active');
-        }
         return;
       }
 
-      if (curOption <= 1 && isHex(object)) {
+      if (isHex(object)) {
         handleHex(object);
-      } else if (curOption <= 1 && isGeo(object)) {
+      } else if (isGeo(object)) {
         handleExtrudedGeo(object);
       } else {
         handleBasicGeo(object);
@@ -151,8 +147,8 @@ export default function useHexTooltip({ speedyCounter, curOption }) {
 
       lastObject.current = object;
     },
-    [speedyCounter, curOption]
+    [speedyCounter]
   );
 
-  return { getTooltip };
+  return getTooltip;
 }

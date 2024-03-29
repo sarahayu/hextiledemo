@@ -57,7 +57,6 @@ export default class SolidHexTileLayer extends CompositeLayer {
   }
 
   createPolygons() {
-    // console.log('updating SolidHexTile polygons');
     const { lastResolution } = this.state;
 
     const polygons = [];

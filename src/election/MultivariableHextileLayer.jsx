@@ -48,6 +48,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
           getFillColor: [speedyCounter, useVsup],
         },
         zoomRange,
+        pickable: false,
       }),
       new SolidHexTileLayer({
         id: `PoC`,
@@ -83,12 +84,13 @@ export default class MultivariableHextileLayer extends CompositeLayer {
           getLineWidth: [selectionFinalized],
         },
         zoomRange,
+        pickable: false,
       }),
       new IconHexTileLayer({
         id: `Population`,
         data,
         loaders: [OBJLoader],
-        mesh: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/humanoid_quad.obj',
+        mesh: 'assets/human.obj',
         raised: true,
         getColor: (d) => [
           255,
@@ -112,6 +114,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
           getColor: [useVsup],
         },
         zoomRange,
+        pickable: false,
       }),
       new DeagHexTileLayer({
         ...this.props,

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 import DeckGL from '@deck.gl/react';
 import maplibregl from 'maplibre-gl';
@@ -8,6 +8,7 @@ import { INITIAL_VIEW_STATE, LIGHTING } from 'src/utils/settings';
 import * as d3 from 'd3';
 
 import {
+  CALI_BBOX,
   temporalDataHex as data,
   temporalDataGeo as dataDeag,
 } from 'src/utils/data';
@@ -17,68 +18,69 @@ import useHexMouseEvts from './useHexMouseEvts';
 import useHexTooltip from './useHexTooltip';
 
 import BaseTerrainLayer from './BaseTerrainLayer';
-import BasicGeoLayer from './BasicGeoLayer';
 import GUI from './GUI';
 import MultivariableHextileLayer from './MultivariableHextileLayer';
+import DeckGLOverlay from 'src/utils/overlay';
+import { GeoJsonLayer, PolygonLayer } from 'deck.gl';
+
+const RES_RANGE = Object.keys(data).map((d) => parseInt(d));
+const ZOOM_RANGE = [7, 9];
+
+console.log(CALI_BBOX);
 
 export default function CentralValleyWater() {
-  const { current: resRange } = useRef(
-    Object.keys(data).map((d) => parseInt(d))
-  );
   const [zoom, setZoom] = useState(INITIAL_VIEW_STATE.zoom);
-  const [useVsup, setUseVsup] = useState(false);
-  const [showAllRings, setShowAllRings] = useState(false);
 
   const curInput = useGUI();
   const hexMouseEvts = useHexMouseEvts({
-    disabled: curInput.curOption > 1,
     dataDeag,
     deagKey: 'DURgs',
   });
-  const { getTooltip } = useHexTooltip(curInput);
-
-  const curState = {
-    data,
-    ...curInput,
-    ...hexMouseEvts,
-  };
+  const hexTooltip = useHexTooltip(curInput);
 
   return (
     <>
-      <DeckGL
-        controller
-        effects={[LIGHTING]}
+      <Map
+        reuseMaps
+        preventStyleDiffing
+        mapLib={maplibregl}
+        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        antialias
         initialViewState={INITIAL_VIEW_STATE}
-        getTooltip={getTooltip}
-        onViewStateChange={({ viewState }) => {
-          setZoom(viewState.zoom);
-        }}
       >
-        <Map
-          reuseMaps
-          preventStyleDiffing
-          mapLib={maplibregl}
-          mapStyle={mapStyle}
-        />
-        <BaseTerrainLayer id="slide-terrain" {...curState} />
-        <MultivariableHextileLayer
-          id="slide-waters"
-          {...curState}
-          zoomRange={[7, 9]}
-          visible
-          useVsup={useVsup}
-          showAllRings={showAllRings}
-        />
-      </DeckGL>
+        <DeckGLOverlay
+          getTooltip={hexTooltip}
+          interleaved
+          effects={[LIGHTING]}
+          onViewStateChange={({ viewState }) => {
+            setZoom(viewState.zoom);
+          }}
+        >
+          <GeoJsonLayer
+            id="ground"
+            data={CALI_BBOX}
+            stroked={false}
+            // getPolygon={(f) => f}
+            getFillColor={[0, 0, 0, 0]}
+            // getPolygonOffset={({ layerIndex }) => [0, layerIndex * 1000]}
+            beforeId={'landcover'}
+          />
+          <MultivariableHextileLayer
+            id="slide-waters"
+            data={data}
+            zoomRange={ZOOM_RANGE}
+            visible
+            {...{
+              ...curInput,
+              ...hexMouseEvts,
+            }}
+            beforeId={'place_hamlet'}
+          />
+        </DeckGLOverlay>
+      </Map>
       <GUI
-        {...curState}
-        res={d3.scaleQuantize().domain([0, 1]).range(resRange)(
-          d3.scaleLinear().domain([7, 9]).range([0, 1]).clamp(true)(zoom)
-        )}
-        useVsup={useVsup}
-        setUseVsup={setUseVsup}
-        showAllRings={showAllRings}
-        setShowAllRings={setShowAllRings}
+        res={d3.scaleQuantize().domain(ZOOM_RANGE).range(RES_RANGE)(zoom)}
+        {...curInput}
       />
     </>
   );

@@ -3,8 +3,6 @@ import Clock from 'src/Clock';
 import Legend from './Legend';
 
 export default function GUI({
-  curOption,
-  setCurOption,
   speedyCounter,
   setSpeedyCounter,
   playing,

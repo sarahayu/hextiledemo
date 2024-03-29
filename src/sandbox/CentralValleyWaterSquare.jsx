@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useState } from 'react';
 
 import DeckGL from '@deck.gl/react';
 import maplibregl from 'maplibre-gl';
@@ -17,27 +18,17 @@ import useHexTooltip from './useHexTooltip';
 
 import { SCENARIOS } from 'src/utils/settings';
 import BaseTerrainLayer from './BaseTerrainLayer';
-import BasicGeoLayer from './BasicGeoLayer';
 
 import { CompositeLayer } from 'deck.gl';
 import SolidSquareTileLayer from 'src/squaretile/SolidSquareTileLayer';
 
-import { ELECTION_INTERPS, WATER_INTERPS } from 'src/utils/scales';
+import { WATER_INTERPS } from 'src/utils/scales';
 
-import { useLayoutEffect, useRef, useEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import Clock from 'src/Clock';
 
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';
-import {
-  arcmapLegendPretty,
-  hexLegendU,
-  hexLegendV,
-  hexagonShape,
-  iconhexLegendU,
-  iconhexLegendV,
-} from 'src/utils/utils';
-import * as vsup from 'vsup';
 
 export default function CentralValleyWaterSquare() {
   const { current: resRange } = useRef(
@@ -82,7 +73,6 @@ export default function CentralValleyWaterSquare() {
           zoomRange={[7, 9]}
           visible
         />
-        <BasicGeoLayer id="slide-basic" {...curState} />
       </DeckGL>
       <GUI
         {...curState}

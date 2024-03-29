@@ -85,12 +85,13 @@ export default class DeagHexTileLayer extends CompositeLayer {
         updateTriggers: {
           getFillColor: [hoveredHex, selectionFinalized],
         },
+        pickable: false,
       }),
       new GeoJsonLayer({
         id: 'GeoJsonColor',
         data: deagData,
         opacity: 1,
-        pickable: true,
+        pickable: selectionFinalized,
         visible,
         getLineWidth: (d) => {
           if (!(d.properties.id in selectedGeos)) return 0;
@@ -146,5 +147,5 @@ export default class DeagHexTileLayer extends CompositeLayer {
 DeagHexTileLayer.layerName = 'DeaggregatedLayer';
 DeagHexTileLayer.defaultProps = {
   ...CompositeLayer.defaultProps,
-  autoHighlight: true,
+  autoHighlight: true, // have to do this or else component layers can't detect picking and autoHighlighting (stupid)
 };

@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -7,42 +8,36 @@ import React, {
 } from 'react';
 
 import DeckGL from '@deck.gl/react';
+import * as d3 from 'd3';
+import * as h3 from 'h3-js';
 import maplibregl from 'maplibre-gl';
 import { Map } from 'react-map-gl';
 import mapStyle from 'src/assets/style.json';
-import { INITIAL_VIEW_STATE, LIGHTING } from 'src/utils/settings';
-import * as d3 from 'd3';
+import { LIGHTING } from 'src/utils/settings';
 import * as vsup from 'vsup';
-import * as h3 from 'h3-js';
 
 import {
   electionDataHex as hexData,
   electionDataSquare as squareData,
-  electionPrecinctGeo as dataDeag,
 } from 'src/utils/data';
 
-import useGUI from './useGUI';
-import useHexTooltip from './useHexTooltip';
-
-import BaseTerrainLayer from './BaseTerrainLayer';
-import UserHexLayer from './MultivariableHextileLayer';
-import useHexMouseEvts from 'src/sandbox/useHexMouseEvts';
-import Legend from './Legend';
-import { ELECTION_INTERPS, valueInterpResolution } from 'src/utils/scales';
-import { USER_VIEW } from './user_settings';
-import { UserSquareLayer } from './Election2020Square';
-import generateQs from './generate_qs';
+import { FlyToInterpolator } from 'deck.gl';
+import { ELECTION_INTERPS } from 'src/utils/scales';
 import {
-  hexLegendV,
-  hexLegendU,
-  hexagonShape,
-  iconhexLegendU,
-  iconhexLegendV,
   arcmapLegendPretty,
   download,
   getFormattedTime,
+  hexLegendU,
+  hexLegendV,
+  hexagonShape,
+  iconhexLegendU,
+  iconhexLegendV,
 } from 'src/utils/utils';
-import { FlyToInterpolator } from 'deck.gl';
+import BaseTerrainLayer from './BaseTerrainLayer';
+import UserSquareLayer from './Election2020Square';
+import UserHexLayer from './Election2020';
+import generateQs from './generate_qs';
+import { USER_VIEW } from './user_settings';
 
 const resRange = Object.keys(hexData).map((d) => parseInt(d));
 
@@ -50,9 +45,7 @@ const questions = generateQs();
 export default function StudyInterface() {
   const [zoom, setZoom] = useState(5);
 
-  const curInput = useGUI();
   const allAns = useRef([]);
-  const { getTooltip } = useHexTooltip(curInput);
   const [question, setQuestion] = useState(-1);
   const [enteredText, setEnteredText] = useState('');
   const [startTime, setStartTime] = useState();
@@ -60,18 +53,8 @@ export default function StudyInterface() {
   const [interSlide, setInterSlide] = useState(false);
   const { curViewState, zoomInHex, zoomInSquare } = useCamera();
 
-  function objToTileObj(obj) {
-    const { CountyRgs, PrecinctRgs, ...rest } = obj;
-
-    return {
-      id: obj.hexId,
-      ...rest,
-    };
-  }
-
   const curState = {
     data: hexData,
-    ...curInput,
   };
 
   const handleStart = () => {
@@ -218,7 +201,6 @@ export default function StudyInterface() {
           id="slide-hex"
           {...{
             data: hexData,
-            ...curInput,
           }}
           zoomRange={[0, 1]}
           visible={(questions[question] || {}).map == 'hex'}
@@ -238,7 +220,6 @@ export default function StudyInterface() {
           id="slide-elec-square"
           {...{
             data: squareData,
-            ...curInput,
           }}
           zoomRange={[0, 1]}
           visible={(questions[question] || {}).map == 'square'}
@@ -283,8 +264,8 @@ export default function StudyInterface() {
             <>
               <p
                 style={{
-                  'font-size': '12px',
-                  'margin-top': '0.3em',
+                  fontSize: '12px',
+                  marginTop: '0.3em',
                 }}
               >
                 {question + 1} / 60

@@ -1,84 +1,12 @@
 import React from 'react';
-
-import DeckGL from '@deck.gl/react';
-import maplibregl from 'maplibre-gl';
-import { Map } from 'react-map-gl';
-import mapStyle from 'src/assets/style.json';
-import { INITIAL_VIEW_STATE, LIGHTING } from 'src/utils/settings';
-
-import {
-  electionDataSquare as data,
-  electionPrecinctGeo as dataDeag,
-} from 'src/utils/data';
-
-import useGUI from './useGUI';
-import useHexTooltip from './useHexTooltip';
-
-import BaseTerrainLayer from './BaseTerrainLayer';
-import BasicGeoLayer from './BasicGeoLayer';
-import useHexMouseEvts from 'src/sandbox/useHexMouseEvts';
-
-import { PathStyleExtension } from '@deck.gl/extensions';
-import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer } from 'deck.gl';
 import SolidSquareTileLayer from 'src/squaretile/SolidSquareTileLayer';
-import { indepVariance } from 'src/utils/utils';
 
 import { ELECTION_INTERPS } from 'src/utils/scales';
-import { electionPrecinctGeo } from 'src/utils/data';
-import Clock from 'src/Clock';
-import Legend from './Legend';
-import { USER_VIEW } from './user_settings';
 
-export default function Election2020Square() {
-  const curInput = useGUI();
-  // const hexMouseEvts = useHexMouseEvts({
-  //   disabled: curInput.curOption > 1,
-  //   dataDeag,
-  //   deagKey: 'PrecinctRgs',
-  // });
-  const { getTooltip } = useHexTooltip(curInput);
-
-  const curState = {
-    data,
-    ...curInput,
-    // ...hexMouseEvts,
-  };
-
-  return (
-    <>
-      <DeckGL controller effects={[LIGHTING]} initialViewState={USER_VIEW}>
-        <Map
-          reuseMaps
-          preventStyleDiffing
-          mapLib={maplibregl}
-          mapStyle={mapStyle}
-        />
-        <BaseTerrainLayer id="slide-terrain" {...curState} />
-        <UserSquareLayer
-          id="slide-election"
-          {...curState}
-          zoomRange={[0, 1]}
-          visible
-        />
-      </DeckGL>
-      <GUI {...curState} />
-    </>
-  );
-}
-
-export class UserSquareLayer extends CompositeLayer {
+export default class UserSquareLayer extends CompositeLayer {
   renderLayers() {
-    const {
-      data,
-      curOption,
-      speedyCounter = 1026,
-      clickedHexes,
-      selectionFinalized,
-      visible,
-      zoomRange,
-      highlighted,
-    } = this.props;
+    const { data, visible, zoomRange, highlighted } = this.props;
 
     return [
       new SolidSquareTileLayer({

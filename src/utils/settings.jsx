@@ -254,6 +254,43 @@ export const fireScales = {
   },
 };
 
+export const wildfireScales = {
+  fire: {
+    value: {
+      domain: [0, 300],
+      color: saturate(
+        (d) => d3.interpolateYlOrRd(d3.scaleLinear([0.4, 1.0])(d)),
+        -0.5,
+        0.5
+      ),
+    },
+    variance: {
+      domain: 'FireVar',
+    },
+  },
+  personnel: {
+    value: {
+      domain: [0, 1],
+    },
+    variance: {
+      domain: [0, 1],
+    },
+  },
+  gr2: {
+    value: {
+      domain: [0, 0.75],
+      color: saturate(
+        (d) => d3.interpolateBlues(d3.scaleLinear([0.2, 1.0])(d)),
+        1,
+        0.8
+      ),
+    },
+    variance: {
+      domain: [0, 1],
+    },
+  },
+};
+
 export const waterScales = {
   groundwater: {
     value: {

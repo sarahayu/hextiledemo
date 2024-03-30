@@ -8,8 +8,9 @@ import Election2020Square from './election/Election2020Square';
 import CentralValleyWater from './sandbox/CentralValleyWater';
 import CentralValleyWaterMult from './sandbox/CentralValleyWaterMult';
 import CentralValleyWaterSquare from './sandbox/CentralValleyWaterSquare';
-import Wildfire from './sandbox/Wildfire';
+// import Wildfire from './sandbox/Wildfire';
 import StudyInterface from './study_interface/StudyInterface';
+import Wildfire from './wildfire/Wildfire';
 
 export function renderToDOM(container) {
   createRoot(container).render(

@@ -27,6 +27,10 @@ export const electionPrecinctGeo = await (
   await fetch('./assets/precinct_geo.json')
 ).json();
 
+export const wildfireDataHex = await (
+  await fetch('./assets/wildfire_hex_7_9.json')
+).json();
+
 // export const temporalDataGeoByDUID = arrGroupBy(
 //   temporalDataGeo.features,
 //   (t) => t.properties.id

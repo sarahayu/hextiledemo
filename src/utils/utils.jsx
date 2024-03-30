@@ -555,7 +555,12 @@ export const hexagonOutline = (x, y, size, color, thicknessValue = 0.2) => {
   };
 };
 
-export function iconhexLegendU(measure, iconFile, title = 'Title') {
+export function iconhexLegendU(
+  measure,
+  iconFile,
+  title = 'Title',
+  fmat = '.2s'
+) {
   const opac = d3.scaleLinear().range([55 / 255, 1]);
 
   return (svgElement) =>
@@ -585,12 +590,12 @@ export function iconhexLegendU(measure, iconFile, title = 'Title') {
         .attr('text-anchor', 'middle')
         .text((d, i) =>
           i == 0
-            ? `<${d3.format('.2s')(ss((i + 1) / FORMATIONS.length))}`
+            ? `<${d3.format(fmat)(ss((i + 1) / FORMATIONS.length))}`
             : i == FORMATIONS.length - 1
-            ? `>${d3.format('.2s')(ss(i / FORMATIONS.length))}`
-            : `${d3.format('.2s')(
-                ss(i / FORMATIONS.length)
-              )} \u2014 ${d3.format('.2s')(ss((i + 1) / FORMATIONS.length))}`
+            ? `>${d3.format(fmat)(ss(i / FORMATIONS.length))}`
+            : `${d3.format(fmat)(ss(i / FORMATIONS.length))} \u2014 ${d3.format(
+                fmat
+              )(ss((i + 1) / FORMATIONS.length))}`
         );
 
       a.append('text')
@@ -646,7 +651,12 @@ export function iconhexLegendV(measure, iconFile) {
     });
 }
 
-export function hexLegendU(measure, title = 'Title', showAllRings = false) {
+export function hexLegendU(
+  measure,
+  title = 'Title',
+  showAllRings = false,
+  fmat = '.2s'
+) {
   const thickRange = [0.4, 0.65],
     valueRange = [0.3, 1];
   const i = (d) =>
@@ -694,10 +704,10 @@ export function hexLegendU(measure, title = 'Title', showAllRings = false) {
         .attr('y', 0)
         .text((d, i) =>
           i == 0
-            ? `<${d3.format('.2s')(s((i + 1) / amtHex))}`
+            ? `<${d3.format(fmat)(s((i + 1) / amtHex))}`
             : i == amtHex - 1
-            ? `>${d3.format('.2s')(s(i / amtHex))}`
-            : `${d3.format('.2s')(s(i / amtHex))} \u2014 ${d3.format('.2s')(
+            ? `>${d3.format(fmat)(s(i / amtHex))}`
+            : `${d3.format(fmat)(s(i / amtHex))} \u2014 ${d3.format(fmat)(
                 s((i + 1) / amtHex)
               )}`
         );

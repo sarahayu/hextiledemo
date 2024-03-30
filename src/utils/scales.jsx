@@ -4,10 +4,16 @@ import {
   electionDataHex,
   precinctGeo,
   temporalDataHex,
+  wildfireDataHex,
 } from 'src/utils/data';
 import { createScales, percentile, saturate } from 'src/utils/utils';
 import * as vsup from 'vsup';
-import { electionScales, fireScales, waterScales } from './settings';
+import {
+  electionScales,
+  fireScales,
+  waterScales,
+  wildfireScales,
+} from './settings';
 
 // /////////////////// extents /////////////////////////
 
@@ -348,6 +354,7 @@ export const ELECTION_INTERPS = createScales(
   false
 );
 export const FIRE_INTERPS = createScales(fireScales, {});
+export const WILDFIRE_INTERPS = createScales(wildfireScales, wildfireDataHex);
 
 /////////////////// other interpolators /////////////////////////
 

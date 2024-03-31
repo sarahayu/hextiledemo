@@ -6,7 +6,7 @@ export default class BaseTerrainLayer extends CompositeLayer {
   renderLayers() {
     return [
       new TileLayer({
-        data: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
+        data: 'http://infovis.cs.ucdavis.edu/mapProxy/wmts/fbfm40/webmercator/{z}/{x}/{y}.png',
         minZoom: 2,
         maxZoom: 11,
         tileSize: 256,

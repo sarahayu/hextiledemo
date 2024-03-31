@@ -378,6 +378,8 @@ export const createScales = (
               rangeValue[0]
           )
       );
+    curScaleObj['scaleStepped'] = scaleStepped;
+
     curScaleObj['scaleLinearVar'] = scaleVariance.copy().clamp(true);
     const scaleSteppedVar = d3
       .scaleQuantize()
@@ -391,6 +393,7 @@ export const createScales = (
               rangeVariance[0]
           )
       );
+    curScaleObj['scaleSteppedVar'] = scaleSteppedVar;
 
     // create colorScales
     curScaleObj['colorsLinear'] = (d) => colorsValue(scaleValue(d));
@@ -721,7 +724,7 @@ export function hexLegendU(
     });
 }
 
-export function hexLegendV(measure) {
+export function hexLegendV(measure, colorHigh = false) {
   const thickRange = [0.4, 0.65],
     valueRange = [0.3, 1];
   const i = (d) =>
@@ -755,7 +758,9 @@ export function hexLegendV(measure) {
               0,
               0,
               hexSize,
-              d3.rgb(...measure.interpColor(toInterpolatorDomain(0))),
+              d3.rgb(
+                ...measure.interpColor(toInterpolatorDomain(colorHigh ? 1 : 0))
+              ),
               ringThickness(1 - d)
             )
           );

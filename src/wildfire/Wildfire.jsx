@@ -34,6 +34,7 @@ import {
   iconhexLegendU,
   iconhexLegendV,
 } from 'src/utils/utils';
+import BaseTerrainLayer from './BaseTerrainLayer';
 
 const RES_RANGE = Object.keys(data).map((d) => parseInt(d));
 const ZOOM_RANGE = [10, 12];
@@ -86,6 +87,7 @@ export default function Wildfire() {
             showAllRings={showAllRings}
             beforeId={'place_hamlet'}
           />
+          {/* <BaseTerrainLayer /> */}
         </DeckGLOverlay>
       </Map>
       <GUI
@@ -127,7 +129,9 @@ function GUI({ res, useVsup, setUseVsup, showAllRings, setShowAllRings }) {
   useEffect(() => {
     d3.select('#diff-u')
       .html('')
-      .call(hexLegendU(WILDFIRE_INTERPS.gr2, 'GR2', showAllRings, '.2'));
+      .call(
+        hexLegendU(WILDFIRE_INTERPS.gr2, 'Spread Rate', showAllRings, '.2')
+      );
   }, [showAllRings]);
 
   useLayoutEffect(() => {
@@ -200,14 +204,16 @@ function GUI({ res, useVsup, setUseVsup, showAllRings, setShowAllRings }) {
       .append('g')
       .attr('class', 'vsup-legend-u')
       .attr('id', 'diff-u')
-      .call(hexLegendU(WILDFIRE_INTERPS.gr2, 'GR2', showAllRings, '.2'));
+      .call(
+        hexLegendU(WILDFIRE_INTERPS.gr2, 'Spread Rate', showAllRings, '.2')
+      );
 
     legendElem
       .append('g')
       .attr('transform', `translate(${xPos},${yPos + 20})`)
       .append('g')
       .attr('class', 'vsup-legend-v')
-      .call(hexLegendV(WILDFIRE_INTERPS.gr2));
+      .call(hexLegendV(WILDFIRE_INTERPS.gr2, true));
 
     (xPos = 750), (yPos = height - 120);
 

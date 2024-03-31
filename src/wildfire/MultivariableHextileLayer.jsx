@@ -19,9 +19,13 @@ export default class MultivariableHextileLayer extends CompositeLayer {
           if (useVsup)
             return WILDFIRE_INTERPS.fire.interpVsup(
               d.properties['Fire'] || 0,
-              d.properties['FireVar'] || 0
+              d.properties['FireVar'] || 0,
+              true
             );
-          return WILDFIRE_INTERPS.fire.interpColor(d.properties['Fire'] || 0);
+          return WILDFIRE_INTERPS.fire.interpColor(
+            d.properties['Fire'] || 0,
+            true
+          );
         },
         opacity: 1,
         visible,
@@ -36,15 +40,19 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         data,
         thicknessRange: [0.4, 0.65],
         getFillColor: (d) =>
-          WILDFIRE_INTERPS.gr2.interpColor(d.properties['GR2'], !showAllRings),
+          WILDFIRE_INTERPS.gr2.interpColor(
+            d.properties['SpreadRate'],
+            !showAllRings
+          ),
         getValue: (d) => {
-          // console.log(d.properties['WhiteVar']);
-          // if (useVsup)
-          //   return (
-          //     WILDFIRE_INTERPS.GR2.scaleLinearVar(d.properties['GR2Var']) *
-          //       0.7 +
-          //     0.3
-          //   );
+          if (useVsup)
+            return (
+              WILDFIRE_INTERPS.gr2.scaleLinearVar(
+                d.properties['SpreadRateVar']
+              ) *
+                0.7 +
+              0.3
+            );
           return 1;
         },
         visible,

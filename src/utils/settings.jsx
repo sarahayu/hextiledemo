@@ -259,7 +259,7 @@ export const wildfireScales = {
     value: {
       domain: [0, 300],
       color: saturate(
-        (d) => d3.interpolateYlOrRd(d3.scaleLinear([0.4, 1.0])(d)),
+        (d) => d3.interpolateOrRd(d3.scaleLinear([0.4, 1.0])(d)),
         -0.5,
         0.5
       ),
@@ -270,7 +270,7 @@ export const wildfireScales = {
   },
   personnel: {
     value: {
-      domain: [0, 1],
+      domain: [0, 100],
     },
     variance: {
       domain: [0, 1],
@@ -278,15 +278,15 @@ export const wildfireScales = {
   },
   gr2: {
     value: {
-      domain: [0, 0.75],
+      domain: [2, 4],
       color: saturate(
-        (d) => d3.interpolateBlues(d3.scaleLinear([0.2, 1.0])(d)),
+        (d) => d3.interpolatePuBuGn(d3.scaleLinear([0.4, 1.0])(d)),
         1,
         0.8
       ),
     },
     variance: {
-      domain: [0, 1],
+      domain: [0, 2],
     },
   },
 };

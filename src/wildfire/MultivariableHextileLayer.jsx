@@ -6,9 +6,19 @@ import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
 
 import { WILDFIRE_INTERPS } from 'src/utils/scales';
 
+function getElev(d) {
+  if (d.properties['Fire'] != 0)
+    return (
+      Math.pow(WILDFIRE_INTERPS.elev.scaleLinear(d.properties['Elev']), 2) *
+      3000
+    );
+  return 0;
+}
+
 export default class MultivariableHextileLayer extends CompositeLayer {
   renderLayers() {
-    const { data, visible, zoomRange, useVsup, showAllRings } = this.props;
+    const { data, visible, zoomRange, useVsup, showAllRings, useElev } =
+      this.props;
 
     return [
       new SolidHexTileLayer({
@@ -20,13 +30,18 @@ export default class MultivariableHextileLayer extends CompositeLayer {
             return WILDFIRE_INTERPS.fire.interpVsup(
               d.properties['Fire'] || 0,
               d.properties['FireVar'] || 0,
-              true
+              d.properties['Fire'] === 0,
+              0.001
             );
           return WILDFIRE_INTERPS.fire.interpColor(
             d.properties['Fire'] || 0,
-            true
+            d.properties['Fire'] === 0,
+            true,
+            0.001
           );
         },
+        extruded: true,
+        getElevation: useElev ? getElev : 0,
         opacity: 1,
         visible,
         updateTriggers: {
@@ -57,7 +72,8 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         },
         visible,
         stroked: true,
-        extruded: false,
+        raised: true,
+        getElevation: useElev ? getElev : 0,
         lineJointRounded: true,
         getLineColor: [255, 255, 255, 200],
         getOffset: -0.5,
@@ -76,6 +92,7 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         loaders: [OBJLoader],
         mesh: 'assets/human.obj',
         raised: true,
+        getElevation: useElev ? getElev : 0,
         getColor: (d) => [
           255,
           255,

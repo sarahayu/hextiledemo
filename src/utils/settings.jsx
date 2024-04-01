@@ -278,12 +278,20 @@ export const wildfireScales = {
   },
   gr2: {
     value: {
-      domain: [2, 4],
+      domain: [0, 60],
       color: saturate(
-        (d) => d3.interpolatePuBuGn(d3.scaleLinear([0.4, 1.0])(d)),
+        (d) => d3.interpolateGreys(d3.scaleLinear([0.2, 1.0])(d)),
         1,
-        0.8
+        0.6
       ),
+    },
+    variance: {
+      domain: 'SpreadRateVar',
+    },
+  },
+  elev: {
+    value: {
+      domain: [500, 2000],
     },
     variance: {
       domain: [0, 2],

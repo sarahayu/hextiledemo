@@ -43,6 +43,7 @@ export default function Wildfire() {
   const [zoom, setZoom] = useState(5);
   const [useVsup, setUseVsup] = useState(false);
   const [showAllRings, setShowAllRings] = useState(false);
+  const [useElev, setUseElev] = useState(false);
 
   const curInput = useGUI();
   const hexTooltip = useHexTooltip(curInput);
@@ -85,6 +86,7 @@ export default function Wildfire() {
             visible
             useVsup={useVsup}
             showAllRings={showAllRings}
+            useElev={useElev}
             beforeId={'place_hamlet'}
           />
           {/* <BaseTerrainLayer /> */}
@@ -96,12 +98,22 @@ export default function Wildfire() {
         setUseVsup={setUseVsup}
         showAllRings={showAllRings}
         setShowAllRings={setShowAllRings}
+        useElev={useElev}
+        setUseElev={setUseElev}
       />
     </>
   );
 }
 
-function GUI({ res, useVsup, setUseVsup, showAllRings, setShowAllRings }) {
+function GUI({
+  res,
+  useVsup,
+  setUseVsup,
+  showAllRings,
+  setShowAllRings,
+  useElev,
+  setUseElev,
+}) {
   const legendArea = useRef();
 
   useEffect(() => {
@@ -129,9 +141,7 @@ function GUI({ res, useVsup, setUseVsup, showAllRings, setShowAllRings }) {
   useEffect(() => {
     d3.select('#diff-u')
       .html('')
-      .call(
-        hexLegendU(WILDFIRE_INTERPS.gr2, 'Spread Rate', showAllRings, '.2')
-      );
+      .call(hexLegendU(WILDFIRE_INTERPS.gr2, 'ROS (ch/h)', showAllRings, '.2'));
   }, [showAllRings]);
 
   useLayoutEffect(() => {
@@ -204,9 +214,7 @@ function GUI({ res, useVsup, setUseVsup, showAllRings, setShowAllRings }) {
       .append('g')
       .attr('class', 'vsup-legend-u')
       .attr('id', 'diff-u')
-      .call(
-        hexLegendU(WILDFIRE_INTERPS.gr2, 'Spread Rate', showAllRings, '.2')
-      );
+      .call(hexLegendU(WILDFIRE_INTERPS.gr2, 'ROS (ch/h)', showAllRings, '.2'));
 
     legendElem
       .append('g')
@@ -255,6 +263,12 @@ function GUI({ res, useVsup, setUseVsup, showAllRings, setShowAllRings }) {
           onChange={() => setShowAllRings((prev) => !prev)}
         />
         <span>Show All Rings</span>
+        <input
+          type="checkbox"
+          checked={useElev}
+          onChange={() => setUseElev((prev) => !prev)}
+        />
+        <span>Show Elevation</span>
       </div>
     </>
   );

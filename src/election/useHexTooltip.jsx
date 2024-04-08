@@ -13,7 +13,7 @@ import {
 
 const curScenario = 0;
 
-export default function useHexTooltip({ curOption }) {
+export default function useHexTooltip({ hextiles = true }) {
   const mainTooltipElem = useRef();
   const secondaryTooltipElem = useRef();
   const lastObject = useRef({});
@@ -87,7 +87,7 @@ export default function useHexTooltip({ curOption }) {
       if (lastObject.current) {
         secondaryTooltipElem.current.classList.remove('active');
 
-        if (isHex(lastObject.current)) {
+        if (!hextiles || isHex(lastObject.current)) {
           mainTooltipElem.current.classList.remove('active');
         }
 
@@ -97,9 +97,9 @@ export default function useHexTooltip({ curOption }) {
       return;
     }
 
-    if (isHex(object)) {
+    if (isHex(object) && hextiles) {
       handleHex(object);
-    } else if (isGeo(object)) {
+    } else if (isGeo(object) && hextiles) {
       handleExtrudedGeo(object);
     } else {
       handleBasicGeo(object);

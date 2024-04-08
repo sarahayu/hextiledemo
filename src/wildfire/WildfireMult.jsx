@@ -16,7 +16,7 @@ import useGUI from './useGUI';
 import useHexTooltip from './useHexTooltip';
 
 import { MapView, View } from 'deck.gl';
-import useHexMouseEvts from 'src/sandbox/useHexMouseEvts';
+import useHexMouseEvts from 'src/water/useHexMouseEvts';
 import { countyGeo, precinctGeo } from 'src/utils/data';
 import BaseTerrainLayer from './BaseTerrainLayer';
 

@@ -12,7 +12,7 @@ import {
 
 import useGUI from './useGUI';
 
-import useHexMouseEvts from 'src/sandbox/useHexMouseEvts';
+import useHexMouseEvts from 'src/water/useHexMouseEvts';
 
 import { CompositeLayer } from 'deck.gl';
 import SolidSquareTileLayer from 'src/squaretile/SolidSquareTileLayer';

@@ -16,7 +16,7 @@ import useGUI from './useGUI';
 import useHexTooltip from './useHexTooltip';
 
 import { MapView, View } from 'deck.gl';
-import useHexMouseEvts from 'src/sandbox/useHexMouseEvts';
+import useHexMouseEvts from 'src/water/useHexMouseEvts';
 import { countyGeo, precinctGeo } from 'src/utils/data';
 import BaseTerrainLayer from './BaseTerrainLayer';
 
@@ -34,7 +34,7 @@ export default function Election2020Mult() {
     dataDeag,
     deagKey: 'PrecinctRgs',
   });
-  const getTooltip = useHexTooltip({ ...curInput, curOption: 100 });
+  const getTooltip = useHexTooltip({ ...curInput, hextiles: false });
 
   const curState = {
     data,

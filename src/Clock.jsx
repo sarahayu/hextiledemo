@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
-import { averageData } from './utils/data';
+import { waterDataAvgs } from './utils/data';
 import { dateInterpIdx } from 'src/utils/scales';
 import { saturate } from 'src/utils/utils';
 
@@ -26,14 +26,14 @@ export default function Clock({ counter, displayMonth, dataset }) {
   const avgDataByYr = useRef();
 
   useEffect(() => {
-    avgDataByYr.current = Object.groupBy(averageData[dataset], (_, i) =>
+    avgDataByYr.current = Object.groupBy(waterDataAvgs[dataset], (_, i) =>
       dateInterpIdx(i).toLocaleString('default', { year: 'numeric' })
     );
   }, [dataset]);
 
   const radScale = d3
     .scaleLinear()
-    .domain([0, d3.max(averageData[dataset], (d) => d)])
+    .domain([0, d3.max(waterDataAvgs[dataset], (d) => d)])
     .range([40, 90]);
   const monthScale = d3
     .scaleLinear()
@@ -71,7 +71,7 @@ export default function Clock({ counter, displayMonth, dataset }) {
           : `rgba(${demandUnsat}, 1)`
       );
     d3.select('#demandLine path')
-      .data([averageData[dataset]])
+      .data([waterDataAvgs[dataset]])
       .join('path')
       .attr('d', (avgs) => radial(avgs))
       .attr(

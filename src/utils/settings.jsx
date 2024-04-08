@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { AmbientLight, _SunLight as SunLight } from '@deck.gl/core';
-import { FlyToInterpolator, LightingEffect } from 'deck.gl';
+import { LightingEffect } from 'deck.gl';
 import { saturate } from './utils';
 
 export const INITIAL_VIEW_STATE = {
@@ -11,78 +11,6 @@ export const INITIAL_VIEW_STATE = {
   maxZoom: 15,
   pitch: 50.85,
   bearing: 32.58,
-};
-
-export const COWS_VIEW_STATE = {
-  longitude: -120.799348991653,
-  latitude: 37.07909824584108,
-  zoom: 9.589607161282105,
-  minZoom: 7,
-  maxZoom: 11,
-  pitch: 50.85,
-  bearing: 32.58,
-  transitionDuration: 3000,
-  transitionInterpolator: new FlyToInterpolator(),
-};
-
-export const COWS_OUT_VIEW_STATE = {
-  longitude: -121.134704643101,
-  latitude: 37.71392572292552,
-  zoom: 7.714668594935653,
-  minZoom: 7,
-  maxZoom: 11,
-  pitch: 50.85,
-  bearing: 32.58,
-  transitionDuration: 3000,
-  transitionInterpolator: new FlyToInterpolator(),
-};
-
-export const PROJ_OUT_VIEW_STATE = {
-  longitude: -121.724611542995,
-  latitude: 38.20436329728941,
-  zoom: 8.054386171593723,
-  minZoom: 7,
-  maxZoom: 11,
-  pitch: 50.85,
-  bearing: 32.58,
-  transitionDuration: 3000,
-  transitionInterpolator: new FlyToInterpolator(),
-};
-
-export const SETT_VIEW_STATE = {
-  longitude: -121.816103974157,
-  latitude: 38.98693235425995,
-  zoom: 9.654348182289308,
-  minZoom: 7,
-  maxZoom: 11,
-  pitch: 50.85,
-  bearing: 32.58,
-  transitionDuration: 3000,
-  transitionInterpolator: new FlyToInterpolator(),
-};
-
-export const PROJ_VIEW_STATE = {
-  longitude: -121.80183018585,
-  latitude: 38.26807071392864,
-  zoom: 9.572807132250027,
-  minZoom: 7,
-  maxZoom: 11,
-  pitch: 50.85,
-  bearing: 32.58,
-  transitionDuration: 3000,
-  transitionInterpolator: new FlyToInterpolator(),
-};
-
-export const JUXTAPOSE_VIEW_STATE = {
-  longitude: -120.732027389154,
-  latitude: 37.00972667884932,
-  zoom: 8.599616427840187,
-  minZoom: 7,
-  maxZoom: 11,
-  pitch: 50.85,
-  bearing: 32.58,
-  transitionDuration: 3000,
-  transitionInterpolator: new FlyToInterpolator(),
 };
 
 export const AMBIENT_LIGHT = new AmbientLight({
@@ -188,51 +116,6 @@ export const electionScales = {
     },
   },
 };
-
-// export const electionScales = {
-//   party: {
-//     value: {
-//       domain: [-100, 100],
-//       color: saturate(
-//         d3.interpolateRgbBasis(['red', 'purple', 'blue']),
-//         -1.0,
-//         0.2
-//       ),
-//     },
-//     variance: {
-//       domain: [0, 500],
-//       // range: [1, 0],
-//     },
-//   },
-//   votes: {
-//     value: {
-//       domain: [0, 42508],
-//     },
-//     variance: {
-//       domain: [0, 1],
-//     },
-//   },
-//   population: {
-//     value: {
-//       domain: 'PopSqKm',
-//       color: d3.interpolateGreys,
-//     },
-//     variance: {
-//       domain: 'PopSqKmVar',
-//     },
-//   },
-//   poc: {
-//     value: {
-//       domain: [0, 300],
-//       // range: [1, 0],
-//       color: saturate(d3.interpolateBuGn, 0.5, -0.3),
-//     },
-//     variance: {
-//       domain: [0, 1e5],
-//       // domain: [0, 5e9],
-//     },
-//   },
-// };
 
 export const fireScales = {
   power: {

@@ -16,7 +16,7 @@ import {
 import useGUI from './useGUI';
 import useHexTooltip from './useHexTooltip';
 
-import useHexMouseEvts from 'src/sandbox/useHexMouseEvts';
+import useHexMouseEvts from 'src/water/useHexMouseEvts';
 import MultivariableHextileLayer from './MultivariableHextileLayer';
 
 import { useEffect, useLayoutEffect } from 'react';

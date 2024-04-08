@@ -1,18 +1,25 @@
-import { arrGroupBy, dataFilter, getMapsizeSquare } from 'src/utils/utils';
+import { dataFilter, getMapsizeSquare } from 'src/utils/utils';
 
-export const temporalDataHex = dataFilter(
+export const waterDataHex = dataFilter(
   await (await fetch('./assets/hex_5_6.json')).json(),
   (d) => d.DemandBaseline
 );
 
-export const temporalDataSquare = dataFilter(
+export const waterDataSquare = dataFilter(
   await (await fetch('./assets/square_5_6.json')).json(),
   (d) => d.DemandBaseline
 );
 
-export const averageData = await (await fetch('./assets/averages.json')).json();
-export const temporalDataGeo = await (
+export const waterDataAvgs = await (
+  await fetch('./assets/averages.json')
+).json();
+
+export const demandUnitGeo = await (
   await fetch('./assets/demand_geo_small.json')
+).json();
+
+export const groundwaterGeo = await (
+  await fetch('./assets/groundwater_geo.json')
 ).json();
 
 export const electionDataHex = await (
@@ -31,15 +38,6 @@ export const wildfireDataHex = await (
   await fetch('./assets/wildfire_hex_7_8.json')
 ).json();
 
-// export const temporalDataGeoByDUID = arrGroupBy(
-//   temporalDataGeo.features,
-//   (t) => t.properties.id
-// );
-
-export const temporalDataGeoGW = await (
-  await fetch('./assets/groundwater_geo.json')
-).json();
-
 export const fireDataHex = await (
   await fetch('./assets/fire_hex_7_9.json')
 ).json();
@@ -50,5 +48,5 @@ export const precinctGeo = await (
 
 export const countyGeo = await (await fetch('./assets/county_geo.json')).json();
 
-export const CALI_BBOX = getMapsizeSquare(temporalDataGeoGW);
+export const CALI_BBOX = getMapsizeSquare(groundwaterGeo);
 export const TEX_BBOX = getMapsizeSquare(electionPrecinctGeo);

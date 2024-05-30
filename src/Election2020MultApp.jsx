@@ -12,13 +12,13 @@ import {
   electionPrecinctGeo as dataDeag,
 } from 'src/utils/data';
 
-import useGUI from './useGUI';
-import useHexTooltip from './useHexTooltip';
+import useGUI from './election/useGUI';
+import useHexTooltip from './election/useHexTooltip';
 
 import { MapView, View } from 'deck.gl';
 import useHexMouseEvts from 'src/water/useHexMouseEvts';
 import { countyGeo, precinctGeo } from 'src/utils/data';
-import BaseTerrainLayer from './BaseTerrainLayer';
+import BaseTerrainLayer from './election/BaseTerrainLayer';
 
 import { GeoJsonLayer } from 'deck.gl';
 import { useLayoutEffect, useRef } from 'react';
@@ -27,14 +27,14 @@ import { ELECTION_INTERPS } from 'src/utils/scales';
 import * as d3 from 'd3';
 import * as vsup from 'vsup';
 
-export default function WildfireMult() {
+export default function Election2020Mult() {
   const curInput = useGUI();
   const hexMouseEvts = useHexMouseEvts({
     disabled: curInput.curOption > 1,
     dataDeag,
     deagKey: 'PrecinctRgs',
   });
-  const getTooltip = useHexTooltip({ ...curInput, curOption: 100 });
+  const getTooltip = useHexTooltip({ ...curInput, hextiles: false });
 
   const curState = {
     data,

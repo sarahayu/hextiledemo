@@ -1,0 +1,10 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+
+import CentralValleyWaterApp from './CentralValleyWaterApp';
+
+export function renderToDOM(container) {
+  createRoot(container).render(
+    <CentralValleyWaterApp />
+  );
+}

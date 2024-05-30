@@ -13,11 +13,11 @@ import {
   electionPrecinctGeo as dataDeag,
 } from 'src/utils/data';
 
-import useGUI from './useGUI';
-import useHexTooltip from './useHexTooltip';
+import useGUI from './election/useGUI';
+import useHexTooltip from './election/useHexTooltip';
 
 import useHexMouseEvts from 'src/water/useHexMouseEvts';
-import MultivariableHextileLayer from './MultivariableHextileLayer';
+import MultivariableHextileLayer from './election/MultivariableHextileLayer';
 
 import { useEffect, useLayoutEffect } from 'react';
 

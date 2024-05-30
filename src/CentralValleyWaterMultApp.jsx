@@ -15,11 +15,11 @@ import {
 
 import * as d3 from 'd3';
 import * as vsup from 'vsup';
-import useGUI from './useGUI';
-import useHexMouseEvts from './useHexMouseEvts';
-import useHexTooltip from './useHexTooltip';
+import useGUI from './water/useGUI';
+import useHexMouseEvts from './water/useHexMouseEvts';
+import useHexTooltip from './water/useHexTooltip';
 
-import BaseTerrainLayer from './BaseTerrainLayer';
+import BaseTerrainLayer from './water/BaseTerrainLayer';
 import { GeoJsonLayer, MapView, View } from 'deck.gl';
 import { WATER_INTERPS } from 'src/utils/scales';
 import Clock from 'src/Clock';

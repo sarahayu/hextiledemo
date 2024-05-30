@@ -13,11 +13,11 @@ import {
 
 import { CALI_BBOX, wildfireDataHex as data } from 'src/utils/data';
 
-import useGUI from './useGUI';
-import useHexTooltip from './useHexTooltip';
+import useGUI from './wildfire/useGUI';
+import useHexTooltip from './wildfire/useHexTooltip';
 
 import useHexMouseEvts from 'src/water/useHexMouseEvts';
-import MultivariableHextileLayer from './MultivariableHextileLayer';
+import MultivariableHextileLayer from './wildfire/MultivariableHextileLayer';
 
 import { useEffect, useLayoutEffect } from 'react';
 
@@ -34,7 +34,7 @@ import {
   iconhexLegendU,
   iconhexLegendV,
 } from 'src/utils/utils';
-import BaseTerrainLayer from './BaseTerrainLayer';
+import BaseTerrainLayer from './wildfire/BaseTerrainLayer';
 
 const RES_RANGE = Object.keys(data).map((d) => parseInt(d));
 const ZOOM_RANGE = [10, 12];

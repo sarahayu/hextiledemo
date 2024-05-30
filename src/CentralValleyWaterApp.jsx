@@ -13,13 +13,13 @@ import {
   demandUnitGeo as dataDeag,
 } from 'src/utils/data';
 
-import useGUI from './useGUI';
-import useHexMouseEvts from './useHexMouseEvts';
-import useHexTooltip from './useHexTooltip';
+import useGUI from './water/useGUI';
+import useHexMouseEvts from './water/useHexMouseEvts';
+import useHexTooltip from './water/useHexTooltip';
 
-import BaseTerrainLayer from './BaseTerrainLayer';
-import GUI from './GUI';
-import MultivariableHextileLayer from './MultivariableHextileLayer';
+import BaseTerrainLayer from './water/BaseTerrainLayer';
+import GUI from './water/GUI';
+import MultivariableHextileLayer from './water/MultivariableHextileLayer';
 import DeckGLOverlay from 'src/utils/overlay';
 import { GeoJsonLayer, PolygonLayer } from 'deck.gl';
 

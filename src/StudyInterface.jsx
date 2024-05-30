@@ -33,11 +33,11 @@ import {
   iconhexLegendU,
   iconhexLegendV,
 } from 'src/utils/utils';
-import BaseTerrainLayer from './BaseTerrainLayer';
-import UserSquareLayer from './Election2020Square';
-import UserHexLayer from './Election2020';
-import generateQs from './generate_qs';
-import { USER_VIEW } from './user_settings';
+import BaseTerrainLayer from './study_interface/BaseTerrainLayer';
+import UserSquareLayer from './study_interface/Election2020Square';
+import UserHexLayer from './study_interface/Election2020';
+import generateQs from './study_interface/generate_qs';
+import { USER_VIEW } from './study_interface/user_settings';
 
 const resRange = Object.keys(hexData).map((d) => parseInt(d));
 

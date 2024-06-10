@@ -26,7 +26,7 @@ import * as vsup from 'vsup';
 
 import { GeoJsonLayer } from 'deck.gl';
 import DeckGLOverlay from 'src/utils/overlay';
-import { ELECTION_INTERPS } from 'src/utils/scales';
+import { ELECTION_INTERPS } from 'src/utils/electionInterps';
 import {
   arcmapLegendPretty,
   hexLegendU,

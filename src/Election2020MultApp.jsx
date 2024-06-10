@@ -22,7 +22,7 @@ import BaseTerrainLayer from './election/BaseTerrainLayer';
 
 import { GeoJsonLayer } from 'deck.gl';
 import { useLayoutEffect, useRef } from 'react';
-import { ELECTION_INTERPS } from 'src/utils/scales';
+import { ELECTION_INTERPS } from 'src/utils/electionInterps';
 
 import * as d3 from 'd3';
 import * as vsup from 'vsup';

@@ -19,7 +19,7 @@ import useHexTooltip from './water/useHexTooltip';
 
 import BaseTerrainLayer from './water/BaseTerrainLayer';
 import { GeoJsonLayer, MapView, View } from 'deck.gl';
-import { WATER_INTERPS } from 'src/utils/scales';
+import { WATER_INTERPS } from 'src/utils/waterInterps';
 import Clock from 'src/utils/Clock';
 
 const SCENARIO = SCENARIOS[0];

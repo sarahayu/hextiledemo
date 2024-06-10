@@ -13,9 +13,9 @@ import useGUI from './election/useGUI';
 import useHexMouseEvts from 'src/water/useHexMouseEvts';
 
 import { CompositeLayer } from 'deck.gl';
-import SolidSquareTileLayer from 'src/squaretile/SolidSquareTileLayer';
+import SolidSquareTileLayer from 'src/squaretile-lib/SolidSquareTileLayer';
 
-import { ELECTION_INTERPS } from 'src/utils/scales';
+import { ELECTION_INTERPS } from 'src/utils/electionInterps';
 
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';

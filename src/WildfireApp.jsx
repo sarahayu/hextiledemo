@@ -2,14 +2,9 @@ import React from 'react';
 import { useRef, useState } from 'react';
 
 import * as d3 from 'd3';
-import * as h3 from 'h3-js';
 import maplibregl from 'maplibre-gl';
 import { Map } from 'react-map-gl';
-import {
-  INITIAL_ELEC_VIEW_STATE,
-  INITIAL_FIRE_VIEW_STATE,
-  LIGHTING,
-} from 'src/utils/settings';
+import { INITIAL_FIRE_VIEW_STATE, LIGHTING } from 'src/utils/settings';
 
 import { wildfireDataHex as data } from 'src/data/wildfireDataHex';
 import { CALI_BBOX } from 'src/data/groundwaterGeo';
@@ -17,7 +12,6 @@ import { CALI_BBOX } from 'src/data/groundwaterGeo';
 import useGUI from './wildfire/useGUI';
 import useHexTooltip from './wildfire/useHexTooltip';
 
-import useHexMouseEvts from 'src/water/useHexMouseEvts';
 import MultivariableHextileLayer from './wildfire/MultivariableHextileLayer';
 
 import { useEffect, useLayoutEffect } from 'react';
@@ -26,7 +20,7 @@ import * as vsup from 'vsup';
 
 import { GeoJsonLayer } from 'deck.gl';
 import DeckGLOverlay from 'src/utils/overlay';
-import { ELECTION_INTERPS, WILDFIRE_INTERPS } from 'src/utils/scales';
+import { WILDFIRE_INTERPS } from 'src/utils/wildfireInterps';
 import {
   arcmapLegendPretty,
   hexLegendU,

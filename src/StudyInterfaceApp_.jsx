@@ -1,3 +1,5 @@
+// disabled for now
+
 import React from 'react';
 import {
   useCallback,
@@ -20,7 +22,7 @@ import { electionDataSquare as squareData } from 'src/data/electionDataSquare';
 import { electionDataHex as hexData } from 'src/data/electionDataHex';
 
 import { FlyToInterpolator } from 'deck.gl';
-import { ELECTION_INTERPS } from 'src/utils/scales';
+import { ELECTION_INTERPS } from 'src/utils/electionInterps';
 import {
   arcmapLegendPretty,
   download,
@@ -31,11 +33,11 @@ import {
   iconhexLegendU,
   iconhexLegendV,
 } from 'src/utils/utils';
-import BaseTerrainLayer from './study_interface/BaseTerrainLayer';
-import UserSquareLayer from './study_interface/Election2020Square';
-import UserHexLayer from './study_interface/Election2020';
-import generateQs from './study_interface/generate_qs';
-import { USER_VIEW } from './study_interface/user_settings';
+import BaseTerrainLayer from './studyinterface/BaseTerrainLayer';
+import UserSquareLayer from './studyinterface/Election2020Square';
+import UserHexLayer from './studyinterface/Election2020';
+import generateQs from './studyinterface/generate_qs';
+import { USER_VIEW } from './studyinterface/user_settings';
 
 const resRange = Object.keys(hexData).map((d) => parseInt(d));
 

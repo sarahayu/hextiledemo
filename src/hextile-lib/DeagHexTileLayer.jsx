@@ -1,5 +1,5 @@
 import { CompositeLayer, GeoJsonLayer } from 'deck.gl';
-import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
+import SolidHexTileLayer from 'src/hextile-lib/SolidHexTileLayer';
 
 export default class DeagHexTileLayer extends CompositeLayer {
   renderLayers() {

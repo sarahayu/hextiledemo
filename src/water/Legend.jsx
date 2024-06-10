@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';
 import * as vsup from 'vsup';
-import { WATER_INTERPS } from 'src/utils/scales';
+import { WATER_INTERPS } from 'src/utils/waterInterps';
 import {
   FORMATIONS,
   arcmapLegendPretty,

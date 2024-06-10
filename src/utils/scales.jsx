@@ -1,29 +1,6 @@
 import * as d3 from 'd3';
-import { wildfireDataHex } from 'src/data/wildfireDataHex';
-import { electionDataHex } from 'src/data/electionDataHex';
-import { waterDataHex } from 'src/data/waterDataHex';
-import { createScales } from 'src/utils/utils';
-import {
-  electionScales,
-  fireScales,
-  waterScales,
-  wildfireScales,
-} from './settings';
-
-export const WATER_INTERPS = createScales(waterScales, waterDataHex);
-export const ELECTION_INTERPS = createScales(
-  electionScales,
-  electionDataHex,
-  true,
-  false
-);
-export const FIRE_INTERPS = createScales(fireScales, {});
-export const WILDFIRE_INTERPS = createScales(wildfireScales, wildfireDataHex);
 
 /////////////////// other interpolators /////////////////////////
-
-export const heightInterpUDem = (val) =>
-  d3.scaleLinear([100, 4090])(WATER_INTERPS.unmetDemand.scaleLinear(val));
 
 export const valueInterpResolution = d3
   .scaleLinear()

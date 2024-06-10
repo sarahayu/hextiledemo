@@ -14,9 +14,9 @@ import useHexMouseEvts from './water/useHexMouseEvts';
 import { SCENARIOS } from 'src/utils/settings';
 
 import { CompositeLayer } from 'deck.gl';
-import SolidSquareTileLayer from 'src/squaretile/SolidSquareTileLayer';
+import SolidSquareTileLayer from 'src/squaretile-lib/SolidSquareTileLayer';
 
-import { WATER_INTERPS } from 'src/utils/scales';
+import { WATER_INTERPS } from 'src/utils/waterInterps';
 
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import Clock from 'src/utils/Clock';

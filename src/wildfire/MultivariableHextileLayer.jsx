@@ -1,10 +1,10 @@
 import { PathStyleExtension } from '@deck.gl/extensions';
 import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer } from 'deck.gl';
-import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
-import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
+import IconHexTileLayer from 'src/hextile-lib/IconHexTileLayer';
+import SolidHexTileLayer from 'src/hextile-lib/SolidHexTileLayer';
 
-import { WILDFIRE_INTERPS } from 'src/utils/scales';
+import { WILDFIRE_INTERPS } from 'src/utils/wildfireInterps';
 
 function getElev(d) {
   if (d.properties['Fire'] != 0)

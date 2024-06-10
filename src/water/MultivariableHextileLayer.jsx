@@ -3,12 +3,12 @@ import { SCENARIOS } from 'src/utils/settings';
 import { PathStyleExtension } from '@deck.gl/extensions';
 import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer } from 'deck.gl';
-import IconHexTileLayer from 'src/hextile/IconHexTileLayer';
-import SolidHexTileLayer from 'src/hextile/SolidHexTileLayer';
+import IconHexTileLayer from 'src/hextile-lib/IconHexTileLayer';
+import SolidHexTileLayer from 'src/hextile-lib/SolidHexTileLayer';
 import { indepVariance } from 'src/utils/utils';
 
-import DeagHexTileLayer from '../hextile/DeagHexTileLayer';
-import { WATER_INTERPS } from 'src/utils/scales';
+import DeagHexTileLayer from '../hextile-lib/DeagHexTileLayer';
+import { WATER_INTERPS } from 'src/utils/waterInterps';
 import { demandUnitGeo } from 'src/data/demandUnitGeo';
 import { useCallback } from 'react';
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import { CompositeLayer } from 'deck.gl';
-import SolidSquareTileLayer from 'src/squaretile/SolidSquareTileLayer';
+import SolidSquareTileLayer from 'src/squaretile-lib/SolidSquareTileLayer';
 
-import { ELECTION_INTERPS } from 'src/utils/scales';
+import { ELECTION_INTERPS } from 'src/utils/electionInterps';
 
 export default class UserSquareLayer extends CompositeLayer {
   renderLayers() {

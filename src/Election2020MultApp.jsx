@@ -9,14 +9,15 @@ import { LIGHTING } from 'src/utils/settings';
 
 import { electionDataHex as data } from 'src/data/electionDataHex';
 
-import { electionPrecinctGeo as dataDeag } from 'src/data/electionPrecinctGeo';
-
 import useGUI from './election/useGUI';
 import useHexTooltip from './election/useHexTooltip';
 
 import { MapView, View } from 'deck.gl';
 import useHexMouseEvts from 'src/water/useHexMouseEvts';
-import { countyGeo, precinctGeo } from './data/precinctGeo';
+import {
+  electionCountyGeo,
+  electionPrecinctGeo,
+} from './data/electionPrecinctGeo';
 import BaseTerrainLayer from './election/BaseTerrainLayer';
 
 import { GeoJsonLayer } from 'deck.gl';
@@ -30,7 +31,7 @@ export default function Election2020Mult() {
   const curInput = useGUI();
   const hexMouseEvts = useHexMouseEvts({
     disabled: curInput.curOption > 1,
-    dataDeag,
+    dataDeag: electionPrecinctGeo,
     deagKey: 'PrecinctRgs',
   });
   const getTooltip = useHexTooltip({ ...curInput, hextiles: false });
@@ -127,7 +128,7 @@ export default function Election2020Mult() {
         <BaseTerrainLayer id="slide-terrain" {...curState} />
         <GeoJsonLayer
           id={'Pop'}
-          data={countyGeo}
+          data={electionCountyGeo}
           opacity={1}
           stroked={true}
           lineWidthScale={100}
@@ -144,7 +145,7 @@ export default function Election2020Mult() {
         />
         <GeoJsonLayer
           id={'Votes'}
-          data={precinctGeo}
+          data={electionPrecinctGeo}
           opacity={1}
           stroked={true}
           lineWidthScale={100}
@@ -161,7 +162,7 @@ export default function Election2020Mult() {
         />
         <GeoJsonLayer
           id={'Demog'}
-          data={countyGeo}
+          data={electionCountyGeo}
           opacity={1}
           stroked={true}
           lineWidthScale={100}

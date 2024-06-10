@@ -9,7 +9,7 @@ import { indepVariance } from 'src/utils/utils';
 
 import DeagHexTileLayer from '../hextile/DeagHexTileLayer';
 import { ELECTION_INTERPS } from 'src/utils/scales';
-import { electionPrecinctGeo } from 'src/utils/data';
+import { electionPrecinctGeo } from 'src/data/data';
 
 const curScenario = 0;
 

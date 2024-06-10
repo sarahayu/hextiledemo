@@ -5,13 +5,11 @@ import maplibregl from 'maplibre-gl';
 import { Map } from 'react-map-gl';
 import mapStyle from 'src/assets/style.json';
 import { INITIAL_VIEW_STATE, LIGHTING, SCENARIOS } from 'src/utils/settings';
-import { groundwaterGeo } from 'src/utils/data';
-import { demandUnitGeo } from 'src/utils/data';
+import { groundwaterGeo } from 'src/data/groundwaterGeo';
+import { demandUnitGeo } from 'src/data/demandUnitGeo';
 
-import {
-  waterDataHex as data,
-  demandUnitGeo as dataDeag,
-} from 'src/utils/data';
+import { demandUnitGeo as dataDeag } from 'src/data/demandUnitGeo';
+import { waterDataHex as data } from 'src/data/waterDataHex';
 
 import * as d3 from 'd3';
 import * as vsup from 'vsup';
@@ -22,7 +20,7 @@ import useHexTooltip from './water/useHexTooltip';
 import BaseTerrainLayer from './water/BaseTerrainLayer';
 import { GeoJsonLayer, MapView, View } from 'deck.gl';
 import { WATER_INTERPS } from 'src/utils/scales';
-import Clock from 'src/Clock';
+import Clock from 'src/utils/Clock';
 
 const SCENARIO = SCENARIOS[0];
 

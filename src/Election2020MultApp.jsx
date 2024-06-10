@@ -7,17 +7,16 @@ import { Map } from 'react-map-gl';
 import mapStyle from 'src/assets/style.json';
 import { LIGHTING } from 'src/utils/settings';
 
-import {
-  electionDataHex as data,
-  electionPrecinctGeo as dataDeag,
-} from 'src/utils/data';
+import { electionDataHex as data } from 'src/data/electionDataHex';
+
+import { electionPrecinctGeo as dataDeag } from 'src/data/electionPrecinctGeo';
 
 import useGUI from './election/useGUI';
 import useHexTooltip from './election/useHexTooltip';
 
 import { MapView, View } from 'deck.gl';
 import useHexMouseEvts from 'src/water/useHexMouseEvts';
-import { countyGeo, precinctGeo } from 'src/utils/data';
+import { countyGeo, precinctGeo } from './data/precinctGeo';
 import BaseTerrainLayer from './election/BaseTerrainLayer';
 
 import { GeoJsonLayer } from 'deck.gl';

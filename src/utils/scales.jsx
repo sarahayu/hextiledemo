@@ -1,5 +1,7 @@
 import * as d3 from 'd3';
-import { electionDataHex, waterDataHex, wildfireDataHex } from 'src/utils/data';
+import { wildfireDataHex } from 'src/data/wildfireDataHex';
+import { electionDataHex } from 'src/data/electionDataHex';
+import { waterDataHex } from 'src/data/waterDataHex';
 import { createScales } from 'src/utils/utils';
 import {
   electionScales,

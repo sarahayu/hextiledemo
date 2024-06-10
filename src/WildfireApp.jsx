@@ -11,7 +11,8 @@ import {
   LIGHTING,
 } from 'src/utils/settings';
 
-import { CALI_BBOX, wildfireDataHex as data } from 'src/utils/data';
+import { wildfireDataHex as data } from 'src/data/wildfireDataHex';
+import { CALI_BBOX } from 'src/data/groundwaterGeo';
 
 import useGUI from './wildfire/useGUI';
 import useHexTooltip from './wildfire/useHexTooltip';

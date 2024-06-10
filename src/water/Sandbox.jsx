@@ -10,12 +10,12 @@ import SandboxSlide from 'src/sandbox/SandboxSlide';
 
 import { useState } from 'react';
 
-import { waterDataHex } from 'src/utils/data';
+import { waterDataHex } from 'src/data/waterDataHex';
 
 import useCamera from 'src/scrollyline/hooks/useCamera';
 import useCounters from 'src/scrollyline/hooks/useCounters';
 
-import Clock from 'src/Clock';
+import Clock from 'src/utils/Clock';
 
 import GUI from './GUI';
 import BaseTerrainLayer from './BaseTerrainLayer';

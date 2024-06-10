@@ -16,10 +16,8 @@ import mapStyle from 'src/assets/style.json';
 import { LIGHTING } from 'src/utils/settings';
 import * as vsup from 'vsup';
 
-import {
-  electionDataHex as hexData,
-  electionDataSquare as squareData,
-} from 'src/utils/data';
+import { electionDataSquare as squareData } from 'src/data/electionDataSquare';
+import { electionDataHex as hexData } from 'src/data/electionDataHex';
 
 import { FlyToInterpolator } from 'deck.gl';
 import { ELECTION_INTERPS } from 'src/utils/scales';

@@ -1258,6 +1258,19 @@ export function getMapsizeSquare(geojson) {
   return poly;
 }
 
+export async function jsonLoad(
+  filename,
+  processCb = async function (json) {
+    return json;
+  }
+) {
+  console.log(`DATA: loading ${filename}`);
+
+  return await processCb(
+    await (await fetch(`./assets/${filename}.json`)).json()
+  );
+}
+
 // prettier-ignore
 export const FORMATIONS = [
     /* none         */[[0, 0, -1], [-0.67, 0, -1], [0.67, 0, -1], [-0.33, 0.58, -1], [0.33, 0.58, -1], [-0.33, -0.58, -1], [0.33, -0.58, -1]],

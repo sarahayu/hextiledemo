@@ -9,7 +9,7 @@ import { indepVariance } from 'src/utils/utils';
 
 import DeagHexTileLayer from '../hextile/DeagHexTileLayer';
 import { WATER_INTERPS } from 'src/utils/scales';
-import { demandUnitGeo } from 'src/utils/data';
+import { demandUnitGeo } from 'src/data/demandUnitGeo';
 import { useCallback } from 'react';
 
 const SCENARIO = SCENARIOS[0];

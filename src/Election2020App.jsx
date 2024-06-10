@@ -7,11 +7,12 @@ import maplibregl from 'maplibre-gl';
 import { Map } from 'react-map-gl';
 import { INITIAL_ELEC_VIEW_STATE, LIGHTING } from 'src/utils/settings';
 
+import { electionDataHex as data } from 'src/data/electionDataHex';
+
 import {
   TEX_BBOX,
-  electionDataHex as data,
   electionPrecinctGeo as dataDeag,
-} from 'src/utils/data';
+} from 'src/data/electionPrecinctGeo';
 
 import useGUI from './election/useGUI';
 import useHexTooltip from './election/useHexTooltip';

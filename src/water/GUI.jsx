@@ -1,5 +1,5 @@
 import React from 'react';
-import Clock from 'src/Clock';
+import Clock from 'src/utils/Clock';
 import Legend from './Legend';
 
 export default function GUI({

@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
-import { waterDataAvgs } from './utils/data';
+import { waterDataAvgs } from '../data/waterDataAvgs';
 import { dateInterpIdx } from 'src/utils/scales';
 import { saturate } from 'src/utils/utils';
 

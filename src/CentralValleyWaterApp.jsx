@@ -7,11 +7,10 @@ import mapStyle from 'src/assets/style.json';
 import { INITIAL_VIEW_STATE, LIGHTING } from 'src/utils/settings';
 import * as d3 from 'd3';
 
-import {
-  CALI_BBOX,
-  waterDataHex as data,
-  demandUnitGeo as dataDeag,
-} from 'src/utils/data';
+import { demandUnitGeo as dataDeag } from 'src/data/demandUnitGeo';
+import { waterDataHex as data } from 'src/data/waterDataHex';
+
+import { CALI_BBOX } from 'src/data/groundwaterGeo';
 
 import useGUI from './water/useGUI';
 import useHexMouseEvts from './water/useHexMouseEvts';

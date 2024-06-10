@@ -5,10 +5,8 @@ import maplibregl from 'maplibre-gl';
 import { Map } from 'react-map-gl';
 import { INITIAL_ELEC_VIEW_STATE, LIGHTING } from 'src/utils/settings';
 
-import {
-  electionDataSquare as data,
-  electionPrecinctGeo as dataDeag,
-} from 'src/utils/data';
+import { electionPrecinctGeo as dataDeag } from 'src/data/electionPrecinctGeo';
+import { electionDataSquare as data } from 'src/data/electionDataSquare';
 
 import useGUI from './election/useGUI';
 

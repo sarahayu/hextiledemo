@@ -5,10 +5,8 @@ import maplibregl from 'maplibre-gl';
 import { Map } from 'react-map-gl';
 import { INITIAL_VIEW_STATE, LIGHTING } from 'src/utils/settings';
 
-import {
-  waterDataSquare as data,
-  demandUnitGeo as dataDeag,
-} from 'src/utils/data';
+import { demandUnitGeo as dataDeag } from 'src/data/demandUnitGeo';
+import { waterDataSquare as data } from 'src/data/waterDataSquare';
 
 import useGUI from './water/useGUI';
 import useHexMouseEvts from './water/useHexMouseEvts';
@@ -21,7 +19,7 @@ import SolidSquareTileLayer from 'src/squaretile/SolidSquareTileLayer';
 import { WATER_INTERPS } from 'src/utils/scales';
 
 import { useEffect, useLayoutEffect, useRef } from 'react';
-import Clock from 'src/Clock';
+import Clock from 'src/utils/Clock';
 
 import * as d3 from 'd3';
 import * as h3 from 'h3-js';

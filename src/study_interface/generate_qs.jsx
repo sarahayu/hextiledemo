@@ -1,8 +1,6 @@
-import {
-  electionDataHex as _hexData,
-  electionDataSquare as _squareData,
-  electionPrecinctGeo as dataDeag,
-} from 'src/utils/data';
+import { electionPrecinctGeo as dataDeag } from 'src/data/data';
+import { electionDataSquare as _squareData } from 'src/data/electionDataSquare';
+import { electionDataHex as _hexData } from 'src/data/electionDataHex';
 
 const hexData = Object.keys(_hexData['4']).map((id) => hexToObject(id));
 const squareData = Object.keys(_squareData['4']).map((id) =>

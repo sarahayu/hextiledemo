@@ -389,6 +389,7 @@ main#index-main {
 
 .main-container a {
   font-size: 1rem;
+  padding: 1em;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -407,6 +408,7 @@ main#index-main {
 
 .main-container a[title] {
   font-size: 2rem;
+  padding: 0;
   background-color: transparent;
 }
 
@@ -421,6 +423,7 @@ main#index-main {
 
 .main-container a[title]::after {
   content: attr(title);
+  padding: 1em;
   position: absolute;
   display: block;
   width: 100%;

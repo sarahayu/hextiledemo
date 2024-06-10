@@ -20,9 +20,16 @@ def lazyDefn(app_name):
     return f"const {app_name} = React.lazy(() => import(\"./{app_name}\"));"
 
 def linkElem(app_name):
+  # modified from https://stackoverflow.com/a/9283563
+  # e.g. Election2020App -> Election 2020 App
+  space_case = re.sub(r'((?<=[a-z])[A-Z\d]|(?<!\A)[A-Z\d](?=[a-z]))', r' \1', app_name)
+
+  # remove 'App' at the end of app name, e.g. Election 2020 App -> Election 2020
+  space_case = ' '.join(space_case.split(' ')[:-1])
+
   if app_name in app_pics:
-    return f"<Link to=\"{ app_name }\" title=\"{ app_name }\" ><img src=\"{ app_name }.png\" className=\"linkPics\" /></Link>"
-  return f"<Link to=\"{ app_name }\">{ app_name }</Link>"
+    return f"<Link to=\"{ app_name }\" title=\"{ space_case }\" ><img src=\"{ app_name }.png\" className=\"linkPics\" /></Link>"
+  return f"<Link to=\"{ app_name }\">{ space_case }</Link>"
 
 def routeElem(app_name):
     return f"""<Route

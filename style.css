@@ -353,3 +353,98 @@ h1 {
   width: 100%;
   height: 100%;
 }
+
+main#index-main {
+  background-color: aliceblue;
+  display: grid;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.main-container {
+  --width: 50rem;
+  --gap: 1rem;
+  --cols: 3;
+  --colSize: calc(var(--width) / var(--cols));
+  --cellSize: calc(
+    (var(--width) - (var(--gap) * (var(--cols) - 1))) / var(--cols)
+  );
+
+  place-self: center;
+
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--colSize));
+  gap: var(--gap);
+  max-width: var(--width);
+  margin: 2rem auto;
+}
+
+.main-container > * {
+  display: block;
+  width: var(--cellSize);
+  height: var(--cellSize);
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+.main-container a {
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  text-decoration: none;
+  color: darkslateblue;
+  position: relative;
+  background-color: white;
+  text-align: center;
+}
+
+.main-container a:hover {
+  font-size: 2rem;
+  z-index: 10;
+}
+
+.main-container a[title] {
+  font-size: 2rem;
+  background-color: transparent;
+}
+
+.main-container a[title]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: white;
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+
+.main-container a[title]::after {
+  content: attr(title);
+  position: absolute;
+  display: block;
+  width: 100%;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+}
+
+.main-container a[title]:hover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: white;
+  opacity: 0.5;
+  mix-blend-mode: screen;
+}
+
+.main-container a[title]:hover::after {
+  opacity: 1;
+}
+
+.main-container img {
+  display: block;
+  margin: 0;
+  max-width: 100%;
+}

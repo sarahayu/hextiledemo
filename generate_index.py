@@ -8,15 +8,21 @@ import os
 import re
 
 SRC_DIR = 'src'
+PUBLIC_DIR = 'public'
 
 # collect all jsx files ending in 'App'
 apps = [f.split('.')[0] for f in os.listdir(SRC_DIR) if re.match(r'\w*App\b.jsx', f)]
+
+# collect all png files ending in 'App'
+app_pics = [f.split('.')[0] for f in os.listdir(PUBLIC_DIR) if re.match(r'\w*App\b.png', f)]
 
 def lazyDefn(app_name):
     return f"const {app_name} = React.lazy(() => import(\"./{app_name}\"));"
 
 def linkElem(app_name):
-    return f"<Link to=\"{ app_name }\">{ app_name }</Link>"
+  if app_name in app_pics:
+    return f"<Link to=\"{ app_name }\" title=\"{ app_name }\" ><img src=\"{ app_name }.png\" className=\"linkPics\" /></Link>"
+  return f"<Link to=\"{ app_name }\">{ app_name }</Link>"
 
 def routeElem(app_name):
     return f"""<Route
@@ -47,8 +53,10 @@ export function renderToDOM(container) {{
         <Route
             index
             element={{
-            <main>
-                { f'{newline}            '.join(list(map(linkElem, apps))) }
+            <main id=\"index-main\">
+                <div className=\"main-container\">
+                    { f'{newline}            '.join(list(map(linkElem, apps))) }
+                </div>
             </main>
             }}
         />

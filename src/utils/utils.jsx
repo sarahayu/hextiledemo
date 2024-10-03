@@ -149,6 +149,12 @@ export const getHolderStr = (object) =>
       : object.properties.LandUse
   ];
 
+// conversion rate depends on current lon/lat
+// (i.e. at latitude 80, longtitude will be smaller than at latitude 0)
+export function kmToLonLat([x, y], lon, lat) {
+  return [x / (111.32 * Math.cos((lat * Math.PI) / 180)), y / 110.574];
+}
+
 const epsilon = 1e-9;
 
 function treeQuantization(branchingFactor, treeLayers) {

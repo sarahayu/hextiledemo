@@ -7,6 +7,7 @@ import { HashRouter, Link, Route, Routes } from "react-router-dom";
 const CentralValleyWaterApp = React.lazy(() => import("./CentralValleyWaterApp"));
 const WildfireApp = React.lazy(() => import("./WildfireApp"));
 const Election2020App = React.lazy(() => import("./Election2020App"));
+const CentralValleyWaterFlatApp = React.lazy(() => import("./CentralValleyWaterFlatApp"));
 const Election2020SquareApp = React.lazy(() => import("./Election2020SquareApp"));
 const CentralValleyWaterMultApp = React.lazy(() => import("./CentralValleyWaterMultApp"));
 const Election2020MultApp = React.lazy(() => import("./Election2020MultApp"));
@@ -25,6 +26,7 @@ export function renderToDOM(container) {
                     <Link to="CentralValleyWaterApp" title="Central Valley Water" ><img src="CentralValleyWaterApp.png" className="linkPics" /></Link>
             <Link to="WildfireApp" title="Wildfire" ><img src="WildfireApp.png" className="linkPics" /></Link>
             <Link to="Election2020App" title="Election 2020" ><img src="Election2020App.png" className="linkPics" /></Link>
+            <Link to="CentralValleyWaterFlatApp" title="Central Valley Water Flat" ><img src="CentralValleyWaterFlatApp.png" className="linkPics" /></Link>
             <Link to="Election2020SquareApp" title="Election 2020 Square" ><img src="Election2020SquareApp.png" className="linkPics" /></Link>
             <Link to="CentralValleyWaterMultApp" title="Central Valley Water Mult" ><img src="CentralValleyWaterMultApp.png" className="linkPics" /></Link>
             <Link to="Election2020MultApp" title="Election 2020 Mult" ><img src="Election2020MultApp.png" className="linkPics" /></Link>
@@ -54,6 +56,14 @@ export function renderToDOM(container) {
         element={
           <React.Suspense fallback={<>...</>}>
             <Election2020App />
+          </React.Suspense>
+        }
+      />
+      <Route
+        path="CentralValleyWaterFlatApp"
+        element={
+          <React.Suspense fallback={<>...</>}>
+            <CentralValleyWaterFlatApp />
           </React.Suspense>
         }
       />

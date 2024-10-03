@@ -10,10 +10,11 @@ import { indepVariance } from 'src/utils/utils';
 import DeagHexTileLayer from '../hextile-lib/DeagHexTileLayer';
 import { WATER_INTERPS } from 'src/utils/waterInterps';
 import { demandUnitGeo } from 'src/data/demandUnitGeo';
+import IconHexTileFlatLayer from './IconHexTileFlatLayer';
 
 const SCENARIO = SCENARIOS[0];
 
-export default class MultivariableHextileLayer extends CompositeLayer {
+export default class MultivariableHextileFlatLayer extends CompositeLayer {
   renderLayers() {
     const { data, speedyCounter, visible, zoomRange, useVsup, showAllRings } =
       this.props;
@@ -76,11 +77,21 @@ export default class MultivariableHextileLayer extends CompositeLayer {
         zoomRange,
         pickable: false,
       }),
-      new IconHexTileLayer({
+      new IconHexTileFlatLayer({
         id: `ScenarioUnmet`,
         data,
-        loaders: [OBJLoader],
-        mesh: './assets/drop.obj',
+        hexIconAtlas: './assets/drop.png',
+        hexIconMapping: {
+          default: {
+            x: 0,
+            y: 0,
+            width: 128,
+            height: 128,
+            anchorY: 128,
+            mask: true,
+          },
+        },
+        getHexIcon: () => 'default',
         getColor: (d) => [
           255,
           130,
@@ -98,10 +109,13 @@ export default class MultivariableHextileLayer extends CompositeLayer {
             d.properties.UnmetDemand[SCENARIO][speedyCounter]
           ),
         visible,
-        sizeScale: 3000,
+        billboard: false,
+        getSize: 4000,
+        sizeUnits: 'meters',
+        sizeScale: 1,
         opacity: 1,
         updateTriggers: {
-          getTranslation: [speedyCounter],
+          getPosition: [speedyCounter],
           getColor: [useVsup],
         },
         zoomRange,
@@ -127,8 +141,8 @@ export default class MultivariableHextileLayer extends CompositeLayer {
   }
 }
 
-MultivariableHextileLayer.layerName = 'MultivariableHextileLayer';
-MultivariableHextileLayer.defaultProps = {
+MultivariableHextileFlatLayer.layerName = 'MultivariableHextileFlatLayer';
+MultivariableHextileFlatLayer.defaultProps = {
   ...CompositeLayer.defaultProps,
   autoHighlight: true, // have to do this or else component layers can't detect picking and autoHighlighting (stupid)
 };

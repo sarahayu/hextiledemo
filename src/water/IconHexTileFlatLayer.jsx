@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { CompositeLayer, SimpleMeshLayer } from 'deck.gl';
+import { CompositeLayer, IconLayer } from 'deck.gl';
 import * as h3 from 'h3-js';
 import { FORMATIONS, kmToLonLat } from 'src/utils/utils';
 
@@ -10,7 +10,7 @@ const formationInterp = d3
 
 const START_FORM = FORMATIONS[0];
 
-export default class IconHexTileLayer extends CompositeLayer {
+export default class IconHexTileFlatLayer extends CompositeLayer {
   initializeState() {
     super.initializeState();
 
@@ -123,64 +123,68 @@ export default class IconHexTileLayer extends CompositeLayer {
       h3.getHexagonEdgeLengthAvg(5, h3.UNITS.km);
 
     return [
-      new SimpleMeshLayer(
+      new IconLayer(
         this.getSubLayerProps({
-          ...{
-            data: this.props.data,
-            mesh: this.props.mesh,
-            texture: this.props.texture,
-            textureParameters: this.props.textureParameters,
-            getPosition: this.props.getPosition,
-            getColor: this.props.getColor,
-            getOrientation: this.props.getOrientation,
-            getScale: this.props.getScale,
-            getTranslation: this.props.getTranslation,
-            getTransformMatrix: this.props.getTransformMatrix,
-            sizeScale: this.props.sizeScale,
-            _useMeshColors: this.props._useMeshColors,
-            _instanced: this.props._instanced,
-            wireframe: this.props.wireframe,
-            material: this.props.material,
-            transitions: this.props.transitions,
-            updateTriggers: this.props.updateTriggers,
-          },
+          iconAtlas: this.props.hexIconAtlas,
+          iconMapping: this.props.hexIconMapping,
+          sizeScale: this.props.sizeScale,
+          billboard: this.props.billboard,
+          sizeUnits: this.props.sizeUnits,
+          sizeMinPixels: this.props.sizeMinPixels,
+          sizeMaxPixels: this.props.sizeMaxPixels,
+          alphaCutoff: this.props.alphaCutoff,
+          getPosition: this.props.getPosition,
+          getIcon: this.props.getHexIcon,
+          getColor: this.props.getColor,
+          getSize: this.props.getSize,
+          getAngle: this.props.getAngle,
+          getPixelOffset: this.props.getPixelOffset,
+          onIconError: this.props.onIconError,
+          textureParameters: this.props.textureParameters,
+          updateTriggers: this.props.updateTriggers,
 
-          id: `IconHexTileLayer`,
+          id: `IconHexTileFlatLayer`,
           data: polygons,
-          getPosition: (d) => d.position,
-          sizeScale: this.props.sizeScale * iconScale,
-          // TODO: optimize this by only updating getTranslation fn on getValue change (similarly, cache getValue fn higher up)
-          getTranslation:
-            this.props.getValue === null
-              ? [0, 0, 0]
-              : (d) => {
-                  const curForm =
-                    FORMATIONS[formationInterp(this.props.getValue(d))][
-                      d.polyIdx
-                    ];
-                  const baseForm = FORMATIONS[0][d.polyIdx];
-                  const edgeLen =
-                    h3.edgeLength(
-                      h3.originToDirectedEdges(d.hexID)[0],
-                      h3.UNITS.m
-                    ) * 0.5;
+          getPosition: (d) => {
+            if (this.props.getValue === null) return [0, 0, 0];
 
-                  return [
-                    (curForm[0] - baseForm[0]) * edgeLen,
-                    (curForm[1] - baseForm[1]) * edgeLen,
-                    (curForm[2] - baseForm[2]) * 100000 * iconScale,
-                  ];
-                },
+            const curForm =
+              FORMATIONS[formationInterp(this.props.getValue(d))][d.polyIdx];
+            const baseForm = FORMATIONS[0][d.polyIdx];
+            const edgeLen =
+              h3.edgeLength(h3.originToDirectedEdges(d.hexID)[0], h3.UNITS.km) *
+              0.5;
+
+            const pngCorrectionY = -edgeLen / 3;
+
+            const transX = (curForm[0] - baseForm[0]) * edgeLen;
+            const transY =
+              (curForm[1] - baseForm[1]) * edgeLen + pngCorrectionY;
+            const transZ = (curForm[2] - baseForm[2]) * 100000 * iconScale;
+
+            const [transLon, transLat] = kmToLonLat(
+              [transX, transY],
+              d.position[0],
+              d.position[1]
+            );
+
+            return [
+              d.position[0] + transLon,
+              d.position[1] + transLat,
+              d.position[2] + transZ,
+            ];
+          },
+          sizeScale: this.props.sizeScale * iconScale,
         })
       ),
     ];
   }
 }
 
-IconHexTileLayer.layerName = 'IconHexTileLayer';
-IconHexTileLayer.defaultProps = {
+IconHexTileFlatLayer.layerName = 'IconHexTileFlatLayer';
+IconHexTileFlatLayer.defaultProps = {
   ...CompositeLayer.defaultProps,
-  ...SimpleMeshLayer.defaultProps,
+  ...IconLayer.defaultProps,
   thicknessRange: [0.7, 0.9],
   getValue: null,
   getElevation: () => 0,

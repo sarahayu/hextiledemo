@@ -5,11 +5,7 @@ import { OBJLoader } from '@loaders.gl/obj';
 import { CompositeLayer } from 'deck.gl';
 import IconHexTileLayer from 'src/hextile-lib/IconHexTileLayer';
 import SolidHexTileLayer from 'src/hextile-lib/SolidHexTileLayer';
-import { indepVariance } from 'src/utils/utils';
-
-import DeagHexTileLayer from '../hextile-lib/DeagHexTileLayer';
 import { ELECTION_INTERPS } from 'src/utils/electionInterps';
-import { electionPrecinctGeo } from 'src/data/data';
 
 const curScenario = 0;
 

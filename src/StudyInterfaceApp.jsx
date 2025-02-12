@@ -1,4 +1,4 @@
-// disabled for now
+// enabled for now
 
 import React from 'react';
 import {
@@ -162,16 +162,16 @@ export default function StudyInterface() {
   useEffect(() => {
     if (question == questions.length) {
       console.log(allAns.current);
-      let xhr = new XMLHttpRequest();
-      xhr.open(
-        'POST',
-        `https://userstudy-4f273-default-rtdb.firebaseio.com/${getFormattedTime()}.json`,
-        true
-      );
-      xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+      // let xhr = new XMLHttpRequest();
+      // xhr.open(
+      //   'POST',
+      //   `https://userstudy-4f273-default-rtdb.firebaseio.com/${getFormattedTime()}.json`,
+      //   true
+      // );
+      // xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 
-      // send the collected data as JSON
-      xhr.send(JSON.stringify(allAns.current));
+      // // send the collected data as JSON
+      // xhr.send(JSON.stringify(allAns.current));
     }
   }, [question]);
 

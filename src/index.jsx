@@ -10,6 +10,7 @@ const Election2020App = React.lazy(() => import("./Election2020App"));
 const CentralValleyWaterFlatApp = React.lazy(() => import("./CentralValleyWaterFlatApp"));
 const Election2020SquareApp = React.lazy(() => import("./Election2020SquareApp"));
 const CentralValleyWaterMultApp = React.lazy(() => import("./CentralValleyWaterMultApp"));
+const StudyInterfaceApp = React.lazy(() => import("./StudyInterfaceApp"));
 const Election2020MultApp = React.lazy(() => import("./Election2020MultApp"));
 const CentralValleyWaterSquareApp = React.lazy(() => import("./CentralValleyWaterSquareApp"));
 
@@ -29,6 +30,7 @@ export function renderToDOM(container) {
             <Link to="CentralValleyWaterFlatApp" title="Central Valley Water Flat" ><img src="CentralValleyWaterFlatApp.png" className="linkPics" /></Link>
             <Link to="Election2020SquareApp" title="Election 2020 Square" ><img src="Election2020SquareApp.png" className="linkPics" /></Link>
             <Link to="CentralValleyWaterMultApp" title="Central Valley Water Mult" ><img src="CentralValleyWaterMultApp.png" className="linkPics" /></Link>
+            <Link to="StudyInterfaceApp">Study Interface</Link>
             <Link to="Election2020MultApp" title="Election 2020 Mult" ><img src="Election2020MultApp.png" className="linkPics" /></Link>
             <Link to="CentralValleyWaterSquareApp" title="Central Valley Water Square" ><img src="CentralValleyWaterSquareApp.png" className="linkPics" /></Link>
                 </div>
@@ -80,6 +82,14 @@ export function renderToDOM(container) {
         element={
           <React.Suspense fallback={<>...</>}>
             <CentralValleyWaterMultApp />
+          </React.Suspense>
+        }
+      />
+      <Route
+        path="StudyInterfaceApp"
+        element={
+          <React.Suspense fallback={<>...</>}>
+            <StudyInterfaceApp />
           </React.Suspense>
         }
       />

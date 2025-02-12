@@ -1,4 +1,3 @@
-import { electionPrecinctGeo as dataDeag } from 'src/data/data';
 import { electionDataSquare as _squareData } from 'src/data/electionDataSquare';
 import { electionDataHex as _hexData } from 'src/data/electionDataHex';
 

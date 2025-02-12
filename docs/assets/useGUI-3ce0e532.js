@@ -1,0 +1,1 @@
+import{j as t,D as a}from"./settings-d9638802.js";import{r as s}from"./index-ceb2395b.js";const n=await t("precinct_geo"),i=await t("county_geo"),u=a(n);function p(){const[o,e]=s.useState(1);return{curOption:o,setCurOption:e}}export{u as T,i as a,n as e,p as u};
